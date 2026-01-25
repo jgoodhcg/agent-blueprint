@@ -1,24 +1,29 @@
 # Roadmap
 
-## Canonical State
+## Goal
 
-**Goal:** Maintain a reusable, versioned AGENTS core policy that can be copied into projects as the source of truth.
+Maintain a single-file seed that can be copied into any project to establish
+consistent agent behavior, artifact formats, and safety guardrails.
 
-**Current Focus:** Draft and stabilize AGENTS_CORE v1 (baseline rules, adoption workflow, decision matrix guidance).
+## Current Focus
 
-**Active Work Units:**
-- AGENTS_CORE v1 baseline (structure, workflow, validation, safety)
-- Adoption workflow (new projects, missing AGENTS.md, legacy instructions)
+v1 is complete. Ready for real-world testing across projects.
 
-**Backlog / Ideas:**
-- agents-core-sync skill (init/sync/refresh across repos)
-- Decide and document log format (session/decision/change/task)
+## Completed
 
-## Roadmap Rules
-- This file is the canonical roadmap (no separate index).
-- One work unit at a time for LLM sessions.
-- Keep updates short and narrative; avoid checklists unless needed.
+- AGENT_BLUEPRINT v1: safety rules, adoption workflow, guardrails
+- AGENTS.md template with command categories and project-specific rules
+- Roadmap template and structure
+- Decision artifact format (markdown and matrix-reloaded JSON)
+- Session log format
+- Regulated environments guidance
 
-## Maintenance
-- Periodically prune and update the roadmap with current state.
-- Archive entire file when appropriate (create dated version before major rework).
+## Backlog
+
+- Test adoption in 2-3 existing projects and gather friction points
+- Consider whether DESIGN_SYSTEM_GUIDE.md should be folded in or kept separate
+
+## Rules
+
+- This file is the canonical roadmap.
+- Keep it short; archive when it grows stale.
