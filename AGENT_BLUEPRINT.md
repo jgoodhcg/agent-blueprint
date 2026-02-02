@@ -130,40 +130,133 @@ Follows AGENT_BLUEPRINT.md
 
 ## Roadmap
 
-Canonical project direction lives in `roadmap/README.md`.
+Canonical project direction lives in `roadmap/`. The presence of `roadmap/index.md` identifies a project as using this roadmap system.
 
-### Template
+### Structure
+
+```
+roadmap/
+├── index.md       # Project overview and directory of work units
+├── _template.md   # Starting point for new work units
+├── *.md           # Individual work unit files (with frontmatter)
+└── archived/      # Completed or dropped work units
+```
+
+### Work Unit Frontmatter
+
+Every work unit file **must** begin with YAML frontmatter for machine parsing:
+
+```yaml
+---
+title: "Feature Name"
+status: idea | planned | active | paused | done | dropped
+description: "One-line summary of what this work unit accomplishes"
+tags: [area/frontend, type/feature]  # Optional but recommended
+priority: medium                      # high | medium | low
+created: 2024-01-15
+updated: 2024-01-20
+effort: M                             # Optional: XS | S | M | L | XL
+depends-on: []                        # Optional: filenames of blocking work units
+---
+```
+
+**Required fields:**
+- `title` — Display name for the work unit
+- `status` — Current state (see Status Definitions below)
+- `description` — One-line summary
+
+**Recommended fields:**
+- `tags` — Array for categorization and filtering
+- `priority` — high | medium | low (default: medium)
+- `created` — Date work unit was created (YYYY-MM-DD)
+- `updated` — Date of last modification (YYYY-MM-DD)
+
+**Optional fields:**
+- `effort` — T-shirt size estimate: XS | S | M | L | XL
+- `depends-on` — Array of work unit filenames this is blocked by
+
+### Status Definitions
+
+| Status | Meaning | Kanban Column |
+|--------|---------|---------------|
+| `idea` | Captured but not yet scoped | Backlog |
+| `planned` | Scoped and ready to start | Backlog |
+| `active` | Currently being worked on | In Progress |
+| `paused` | Started but blocked or deprioritized | In Progress |
+| `done` | Shipped and working | Done |
+| `dropped` | Decided not to pursue | (hidden) |
+
+### index.md Template
 
 ```markdown
+---
+title: "Project Name Roadmap"
+goal: "One sentence: what this project exists to achieve."
+---
+
 # Roadmap
-
-## Goal
-
-[One sentence: what this project exists to achieve.]
 
 ## Current Focus
 
-[What is actively being worked on.]
+[What is actively being worked on right now.]
 
-## Active
+## Work Units
 
-- [Work unit 1]
-- [Work unit 2]
+See individual `*.md` files in this directory. Each contains frontmatter with status, priority, and other metadata.
 
-## Backlog
+## Quick Ideas
 
-- [Deferred work]
+Ideas not yet promoted to work units:
 
-## Done
+- [Idea that doesn't need a file yet]
+- [Another idea]
+```
 
-- [Completed work]
+### _template.md
+
+```markdown
+---
+title: "Work Unit Title"
+status: idea
+description: "One-line summary of what this accomplishes"
+tags: []
+priority: medium
+created: YYYY-MM-DD
+updated: YYYY-MM-DD
+---
+
+# Work Unit Title
+
+## Problem / Intent
+
+[Why this exists. What problem it solves.]
+
+## Constraints
+
+[Hard requirements or limitations.]
+
+## Proposed Approach
+
+[High-level solution direction.]
+
+## Open Questions
+
+[Unresolved decisions or unknowns.]
+
+## Notes
+
+[Design details, context, implementation notes as work progresses.]
 ```
 
 ### Rules
 
-- Single source of truth for project direction.
-- Keep short; use `roadmap/*.md` files for detailed work units.
-- Archive completed work to keep readable.
+- `roadmap/index.md` existence identifies a compatible project.
+- Every work unit file must have valid YAML frontmatter.
+- Status lives in frontmatter, not in prose.
+- Small ideas can live as bullets in index.md; promote to files when they need detail.
+- When a work unit reaches `done` or `dropped`, move the file to `archived/`.
+- Update the `updated` field whenever you modify a work unit.
+- Use consistent tag prefixes: `area/`, `type/`, `tech/` for discoverability.
 
 ---
 
@@ -171,9 +264,18 @@ Canonical project direction lives in `roadmap/README.md`.
 
 Use for high-impact or irreversible decisions, or when revisiting the same decision.
 
-### Markdown Format
+### Structure
 
-Store in `.decisions/<name>.md`:
+Every decision has a markdown file. Optionally add a JSON file for matrix visualization.
+
+```
+.decisions/
+├── database-choice.md       # Required: the decision record
+├── database-choice.json     # Optional: matrix-reloaded format
+└── auth-strategy.md
+```
+
+### Markdown Format (required)
 
 ```markdown
 # Decision: [Title]
@@ -204,9 +306,9 @@ Store in `.decisions/<name>.md`:
 [What changes. What to watch for.]
 ```
 
-### Decision Matrices
+### Decision Matrix (optional)
 
-For structured comparison, use `matrix-reloaded`. Store JSON files in `.decisions/<name>.json`. Run `matrix-reloaded --instructions` for format details. Check project `AGENTS.md` for project-specific decision tooling.
+For structured comparison, add a `.json` file using `matrix-reloaded` format. Run `matrix-reloaded --instructions` for schema details. The JSON provides visualization; the markdown remains the authoritative record.
 
 ---
 
@@ -214,9 +316,9 @@ For structured comparison, use `matrix-reloaded`. Store JSON files in `.decision
 
 Optional audit trail of agent activity. Store in `.logs/`.
 
-### Session Log
+### Format
 
-One file per session: `.logs/YYYY-MM-DD.md`
+One file per day: `.logs/YYYY-MM-DD.md`
 
 ```markdown
 # YYYY-MM-DD
@@ -244,4 +346,17 @@ One file per session: `.logs/YYYY-MM-DD.md`
 - Before ending with incomplete work
 - When making decisions the user should be able to review later
 
-Skip for trivial tasks. Goal is auditability, not bureaucracy.
+Skip for trivial tasks. Goal is auditability, not bureaucracy. Logs should correlate with git history by date.
+
+---
+
+## Design System
+
+For projects with visual UI, use `DESIGN_SYSTEM_GUIDE.md` to establish consistent interface patterns.
+
+If this project requires visual design and no design system exists:
+1. Ask the user if they want to establish a design system.
+2. If yes, copy `DESIGN_SYSTEM_GUIDE.md` into the project.
+3. Follow its workflow to capture decisions in `.interface-design/system.md`.
+
+Skip for CLI tools, libraries, backends, or other non-visual projects.
