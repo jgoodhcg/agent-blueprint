@@ -1,5 +1,5 @@
 ---
-version: "1.0.0"
+version: "1.1.0"
 ---
 
 # Agent Blueprint
@@ -65,6 +65,7 @@ Work through the validation hierarchy. Escalate only when lower levels pass.
 - Run validation after changes.
 - If a command is not on the allowlist, ask.
 - Keep changes minimal and focused; avoid unrelated improvements.
+- Suggest other improvements briefly if warranted.
 
 ---
 
@@ -73,15 +74,44 @@ Work through the validation hierarchy. Escalate only when lower levels pass.
 ### New Project
 
 1. Create `AGENTS.md` using the template below.
-2. Copy this file as `AGENT_BLUEPRINT.md`.
-3. Add project-specific rules to `AGENTS.md`.
-4. Initialize `roadmap/README.md`.
+2. Create agent specific files like `CLAUDE.md` and `GEMINI.md` that point to `AGENTS.md`. Keep them short and include only agent-specific configuration.
+3. Optionally create a private local file for personal overrides, then add it to `.gitignore`: `.agents/local.md`.
+4. Copy this file as `AGENT_BLUEPRINT.md`.
+5. Add project-specific rules to `AGENTS.md`.
+6. Initialize `roadmap/index.md`.
 
 ### Existing Project
 
 1. Ask before adding agent policy files.
 2. If legacy agent docs exist (`CLAUDE.md`, `AI.md`), summarize overlaps/conflicts for user.
-3. Merge or replace per user preference.
+3. Update other agent files like `CLAUDE.md` and `GEMINI.md` to point to `AGENTS.md`. Keep them short and include only agent-specific configuration.
+4. Optionally create a private local file for personal overrides, then add it to `.gitignore`: `.agents/local.md`.
+5. Merge or replace per user preference.
+
+---
+
+## Instruction Layout
+
+### Single Source of Truth
+
+- `AGENTS.md` is the canonical project policy. Other agent files should reference it, not duplicate it.
+- Agent-specific files (e.g., `CLAUDE.md`, `GEMINI.md`) should be short and only include configuration that is unique to that agent.
+
+### Local Overrides (Private)
+
+- Use `.agents/local.md` for personal preferences, editor/terminal quirks, or local tooling.
+- Add `.agents/local.md` to `.gitignore`.
+- Keep it additive. Do not override project rules from `AGENTS.md`.
+
+### Tailor to Stack
+
+- Make `AGENTS.md` concrete for the stack: include the real dev/build/test commands, key directories, and 3-5 non-obvious conventions or gotchas.
+- If you need examples, find a similar-stack `AGENTS.md` and adapt the structure, but keep the project rules in `AGENTS.md` as the single source of truth.
+
+### Keep It Lean
+
+- Prefer references over inlining docs: "For X, see docs/Y.md."
+- Avoid duplicating rules across files.
 
 ---
 
@@ -95,6 +125,13 @@ Follows AGENT_BLUEPRINT.md
 ## Project Overview
 
 [One paragraph: what this is, language/framework, key domains.]
+
+## Stack
+
+- [Language + version]
+- [Framework/runtime]
+- [Database]
+- [Infra/deploy target]
 
 ## Validation Commands
 
@@ -120,6 +157,10 @@ Follows AGENT_BLUEPRINT.md
 ## Project-Specific Rules
 
 - [constraints, data sensitivity, architectural boundaries]
+
+## References
+
+- For [topic], see `[doc path]`
 
 ## Key Files
 

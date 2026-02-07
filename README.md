@@ -26,7 +26,7 @@ The blueprint covers:
 |------|---------|
 | `AGENT_BLUEPRINT.md` | The blueprint — copy this to all projects |
 | `DESIGN_SYSTEM_GUIDE.md` | UI design system guide — copy to projects with visual interfaces |
-| `collect_agents.sh` | Utility to gather AGENTS.md files from multiple projects |
+| `collect-project-docs.sh` | Utility to gather AGENTS.md files from multiple projects |
 
 ## Versioning
 
