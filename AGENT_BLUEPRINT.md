@@ -1,5 +1,5 @@
 ---
-version: "1.2.0"
+version: "1.2.1"
 ---
 
 # Agent Blueprint
@@ -41,6 +41,17 @@ Work through the validation hierarchy. Escalate only when lower levels pass.
 - If a command is not on the allowlist, ask.
 - Keep changes minimal and focused; avoid unrelated improvements.
 - For critical logic changes, review `git diff` before declaring completion.
+
+### Commits
+
+- Commit only after user approval.
+- Before committing, present: proposed commit message, files included, and validation results.
+- Ask the user for preferred AI co-author name/email before first commit in a repo.
+- If no preference is provided, use default trailer identity: `AI Assistant <ai@example.com>`.
+- Include trailers when committing:
+  - `Co-authored-by: [AI name] <[AI email]>`
+  - `AI-Tool: [tool name]`
+  - `AI-Model: [model name]`
 
 ---
 
