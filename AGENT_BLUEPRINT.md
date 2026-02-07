@@ -1,5 +1,5 @@
 ---
-version: "1.2.1"
+version: "1.3.0"
 ---
 
 # Agent Blueprint
@@ -8,15 +8,34 @@ Immutable reference for consistent agent behavior across projects. Copy into any
 
 ---
 
-## Safety
+## Core Invariants
+
+Use these IDs in alignment reports for deterministic, machine-checkable outcomes.
+
+**MUST**
+- `BP-CORE-01` `AGENTS.md` exists and references `AGENT_BLUEPRINT.md`.
+- `BP-CORE-02` `roadmap/index.md` exists.
+- `BP-CORE-03` Work in progress lives in `roadmap/*.md` with valid frontmatter.
+- `BP-CORE-04` Agents execute `ready` work units autonomously and self-validate before returning.
+- `BP-CORE-05` Commits happen only after explicit user approval.
+- `BP-CORE-06` Alignment responses use the required report format in this blueprint.
+- `BP-CORE-09` `AGENTS.md` stores a commit trailer template (placeholders), not concrete co-author/provider/model values.
+
+**SHOULD**
+- `BP-CORE-07` Keep policy lean; prefer references over duplicated rules.
+- `BP-CORE-08` Capture AI commit identity once per repo in `AGENTS.md` to avoid repeated prompts.
+
+---
+
+## Safety [BP-SAFE]
 
 Confirm before running destructive commands, installing dependencies, or taking actions outside the repo.
 
 ---
 
-## Workflow
+## Workflow [BP-WF]
 
-### Operating Model
+### Operating Model [BP-WF-OPS]
 
 1. **Take direction** from a `roadmap/*.md` work unit, issue, or user request.
 2. **If input is a brain dump**, create a draft work unit and clarify until scope and validation are concrete.
@@ -24,7 +43,7 @@ Confirm before running destructive commands, installing dependencies, or taking 
 4. **Self-validate end-to-end** before returning: run required checks, create missing tests when needed, and run E2E for UI changes.
 5. **Return to the user only when** done and validated, stuck, or blocked on an irreversible/high-impact decision.
 
-### Validation
+### Validation [BP-WF-VAL]
 
 Projects define validation commands in `AGENTS.md`. Run them liberally:
 
@@ -35,27 +54,35 @@ Projects define validation commands in `AGENTS.md`. Run them liberally:
 
 Work through the validation hierarchy. Escalate only when lower levels pass.
 
-### Guardrails
+### Guardrails [BP-WF-GUARD]
 
 - Run validation after changes.
 - If a command is not on the allowlist, ask.
 - Keep changes minimal and focused; avoid unrelated improvements.
 - For critical logic changes, review `git diff` before declaring completion.
 
-### Commits
+### Commits [BP-WF-COMMIT]
 
 - Commit only after user approval.
 - Before committing, present: proposed commit message, files included, and validation results.
-- Ask the user for preferred AI co-author name/email before first commit in a repo.
-- If no preference is provided, use default trailer identity: `AI Assistant <ai@example.com>`.
+- Read the commit trailer template from `AGENTS.md`.
+- If missing, ask once before first commit in a repo.
+- Never hardcode runtime values (`Co-authored-by`, `AI-Provider`, `AI-Product`, `AI-Model`) in `AGENTS.md`.
+- Use product-line contributor identities for `Co-authored-by`:
+  - `codex`: Codex or ChatGPT coding agent sessions
+  - `claude`: Claude sessions
+  - `gemini`: Gemini sessions
+  - `opencode`: OpenCode sessions (even when provider/model vary, including z.ai)
+- Derive `AI-Provider` and `AI-Model` from runtime context at commit time.
 - Include trailers when committing:
-  - `Co-authored-by: [AI name] <[AI email]>`
-  - `AI-Tool: [tool name]`
-  - `AI-Model: [model name]`
+  - `Co-authored-by: [runtime product identity] <[runtime product email]>`
+  - `AI-Provider: [runtime provider name]` (optional; include only if known)
+  - `AI-Product: [runtime product line]` (optional; include only if known)
+  - `AI-Model: [runtime model name]` (optional; include only if known)
 
 ---
 
-## Adoption
+## Adoption [BP-ADOPT]
 
 1. Copy this file as `AGENT_BLUEPRINT.md`.
 2. Create `AGENTS.md` using the template below.
@@ -65,7 +92,7 @@ Agent-specific files (`CLAUDE.md`, `GEMINI.md`, etc.) are optional and should be
 
 ---
 
-## Alignment Contract
+## Alignment Contract [BP-ALIGN]
 
 - `AGENTS.md` is the project policy entrypoint and references this blueprint.
 - `roadmap/` is the canonical place for scoped work units and execution prompts.
@@ -80,9 +107,38 @@ When asked to align a project:
 3. Apply focused edits and run project validation commands.
 4. Return with completed changes plus any remaining questions.
 
+### Required Alignment Report Format [BP-ALIGN-REPORT]
+
+Use this format exactly:
+
+```markdown
+# Alignment Report
+
+## Blueprint
+- Version: [e.g. 1.3.0]
+
+## Rule Check
+| Rule ID | Status (PASS/FAIL) | Evidence | Action |
+|---|---|---|---|
+| BP-CORE-01 | PASS | `AGENTS.md` references blueprint | n/a |
+
+## Patch Plan
+1. [minimal change]
+2. [minimal change]
+
+## Applied Changes
+- `[file path]`: [what changed]
+
+## Validation
+- `[command]`: [pass/fail + brief output]
+
+## Open Questions
+- [only unresolved decisions]
+```
+
 ---
 
-## AGENTS.md Template
+## AGENTS.md Template [BP-AGENTS-TPL]
 
 ```markdown
 # AGENTS
@@ -99,6 +155,28 @@ Follows AGENT_BLUEPRINT.md
 - [Framework/runtime]
 - [Database]
 - [Infra/deploy target]
+
+## Commit Trailer Template
+
+Store a template, not concrete runtime values.
+
+```text
+Co-authored-by: [AI_PRODUCT_NAME] <[AI_PRODUCT_EMAIL]>
+AI-Provider: [AI_PROVIDER]
+AI-Product: [AI_PRODUCT_LINE]
+AI-Model: [AI_MODEL]
+```
+
+Template rules:
+- `AI_PRODUCT_LINE` must be one of: `codex|claude|gemini|opencode`.
+- Determine `AI_PRODUCT_LINE` from current session:
+  - Codex or ChatGPT coding agent -> `codex`
+  - Claude -> `claude`
+  - Gemini -> `gemini`
+  - OpenCode -> `opencode` (regardless underlying provider/model, including z.ai)
+- Determine `AI_PROVIDER` and `AI_MODEL` from runtime model metadata.
+- `AI_PRODUCT_EMAIL` may follow a project pattern such as `[AI_PRODUCT_LINE]@ai.example.com`.
+- Fill this template at commit time; do not persist filled values in `AGENTS.md`.
 
 ## Validation Commands
 
@@ -136,7 +214,7 @@ Follows AGENT_BLUEPRINT.md
 
 ---
 
-## Roadmap
+## Roadmap [BP-RM]
 
 This is the core execution model. Work units are prompts for autonomous agent work.
 
@@ -150,7 +228,7 @@ roadmap/
 └── archived/      # Completed or dropped work units
 ```
 
-### Work Unit Frontmatter
+### Work Unit Frontmatter [BP-RM-FRONTMATTER]
 
 Every work unit file **must** begin with YAML frontmatter for machine parsing:
 
@@ -184,6 +262,30 @@ priority: medium                      # high | medium | low
 | `active` | Currently being worked on | In Progress |
 | `done` | Shipped and working | Done |
 | `dropped` | Decided not to pursue | (hidden) |
+
+### Legacy Status Migration [BP-RM-MIGRATION]
+
+When aligning older projects:
+
+| Legacy Status | New Status | Migration Rule |
+|---|---|---|
+| `idea` | `draft` | Keep open questions in `Open Questions`. |
+| `planned` | `ready` | Ensure Definition of Ready checklist passes. |
+| `paused` | `active` | Keep status `active` and add blocked context in `Context`. |
+| `done` | `done` | No change. |
+| `dropped` | `dropped` | No change. |
+
+### Definition of Ready [BP-RM-DOR]
+
+A work unit can be marked `ready` only if all are true:
+- `Intent` states what and why.
+- `Specification` is concrete and testable.
+- `Validation` includes concrete checks (tests/e2e/visual as relevant).
+- `Scope` explicitly defines boundaries.
+- `Context` points to key files/constraints.
+- `Open Questions` is empty or removed.
+
+If any item is missing, status must remain `draft`.
 
 ### index.md Template
 
@@ -274,7 +376,7 @@ When creating a new work unit from a brain dump:
 
 ---
 
-## Decision Artifacts
+## Decision Artifacts [BP-DECISIONS]
 
 Optional. Use for high-impact or irreversible decisions, or when revisiting the same decision.
 
@@ -326,7 +428,7 @@ For structured comparison, add a `.json` file using `matrix-reloaded` format. Ru
 
 ---
 
-## Design System
+## Design System [BP-DESIGN]
 
 For projects with visual UI, use `DESIGN_SYSTEM_GUIDE.md` to establish consistent interface patterns.
 The guide should use concrete, testable values (tokens/patterns), not only subjective descriptions.

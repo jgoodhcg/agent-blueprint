@@ -1,34 +1,54 @@
 # Agent Blueprint
 
-An immutable single-file reference for consistent agent behavior across projects.
+Lightweight, reusable operating standard for AI-assisted software projects.
 
-## Usage
+## Purpose
 
-1. Copy `AGENT_BLUEPRINT.md` into your project root
-2. Create an `AGENTS.md` that references it (template included in the blueprint)
-3. Create `roadmap/index.md` and use roadmap work units as execution prompts
-4. Customize `AGENTS.md` with project-specific commands and rules
-5. For UI projects, optionally copy `DESIGN_SYSTEM_GUIDE.md` as well
+This repository is the source for a portable blueprint you can copy into any project and tell agents to align to.
+It is optimized for consistency, autonomous execution, and low process overhead.
 
-## What's Included
+## What To Copy Into Projects
 
-The blueprint covers:
-- Minimal safety boundary for high-risk actions
-- Autonomous workflow model (brain dump -> draft -> ready -> execute -> validate)
-- Validation hierarchy patterns
-- Roadmap-first execution structure (`roadmap/`)
-- Alignment contract for "align this project with the blueprint"
-- Optional decision artifacts (`.decisions/`)
-- Design system reference (for UI projects)
+- `AGENT_BLUEPRINT.md` (required)
+- `DESIGN_SYSTEM_GUIDE.md` (optional, UI projects only)
 
-## Files
+## What This Solves
 
-| File | Purpose |
-|------|---------|
-| `AGENT_BLUEPRINT.md` | The blueprint — copy this to all projects |
-| `DESIGN_SYSTEM_GUIDE.md` | UI design system guide — copy to projects with visual interfaces |
-| `collect-project-docs.sh` | Utility to gather AGENTS.md files from multiple projects |
+- Inconsistent agent behavior across repositories
+- Weak task definition before autonomous execution
+- Missing validation discipline before completion
+- Ambiguous commit and audit expectations
+
+## Quick Adoption
+
+1. Copy `AGENT_BLUEPRINT.md` to the project root.
+2. Create `AGENTS.md` that references the blueprint (template is in the blueprint).
+3. Create `roadmap/index.md`.
+4. Add project-specific commands and constraints in `AGENTS.md`.
+5. For UI work, copy `DESIGN_SYSTEM_GUIDE.md`.
+
+## Fit
+
+Good fit:
+- You want one immutable reference agents can follow everywhere.
+- You use roadmap files as executable prompts.
+- You prefer simple conventions over heavy tooling.
+
+Not a fit:
+- You want a different process per project.
+- You need strict org-level governance workflows beyond markdown standards.
 
 ## Versioning
 
-The blueprint has a `version` field in its frontmatter. When updating the blueprint in a project, check the version and review changes.
+- The canonical version is the frontmatter version in `AGENT_BLUEPRINT.md`.
+- When upgrading, run an alignment pass in each project.
+- Upgrade to `1.3.0` includes roadmap status migration:
+  - `idea` -> `draft`
+  - `planned` -> `ready`
+  - `paused` -> `active` (capture blocked details in `Context`)
+
+## Repository Files
+
+- `AGENT_BLUEPRINT.md`: canonical project standard
+- `DESIGN_SYSTEM_GUIDE.md`: optional UI system companion
+- `collect-project-docs.sh`: maintainer audit helper for multi-project checks

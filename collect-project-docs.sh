@@ -1,6 +1,7 @@
 #!/usr/bin/env bash
 set -euo pipefail
 
+# Maintainer utility for this repo.
 # Collects AGENTS.md and roadmap/index.md files from projects
 # for alignment checking against AGENT_BLUEPRINT.md
 
@@ -29,6 +30,9 @@ Usage: collect-project-docs.sh [options] [dir...]
 
 Collects AGENTS.md and roadmap files from projects for alignment checking
 against AGENT_BLUEPRINT.md.
+
+This script is for maintainers auditing multiple projects. It is not required
+for projects that simply adopt the blueprint.
 
 Options:
   -o, --output FILE         Output file for AGENTS.md collection (default: agents-file-reference.md)
