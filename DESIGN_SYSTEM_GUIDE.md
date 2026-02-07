@@ -41,6 +41,13 @@ Once the user agrees, state the key choices you will apply consistently:
 
 This reduces drift across components and sessions.
 
+### C1. Make decisions agent-evaluable
+Document concrete, testable values rather than subjective language.
+- Good: "Button height is 36px"
+- Good: "Use `--accent: blue-600`"
+- Avoid: "Buttons should feel balanced"
+- Avoid: "Use modern spacing"
+
 ### D. Save the system
 When the direction is accepted, propose saving the system so it loads automatically in future sessions:
 - File location: `.interface-design/system.md`
@@ -133,6 +140,7 @@ Full examples live in:
 - Decisions compound. A single spacing value becomes a system.
 - Consistency beats perfection. Coherence outperforms scattered "correct" values.
 - Memory enables iteration. Log decisions to evolve intentionally.
+- Concrete values beat subjective descriptions when agents are implementing or auditing UI.
 
 ### Common drift to avoid
 - Spacing that is not on a single base grid

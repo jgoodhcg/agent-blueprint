@@ -2,7 +2,7 @@
 set -euo pipefail
 
 # Collects AGENTS.md and roadmap/index.md files from projects
-# for conformance checking against AGENT_BLUEPRINT.md
+# for alignment checking against AGENT_BLUEPRINT.md
 
 output_file="agents-file-reference.md"
 include_roadmaps=0
@@ -27,7 +27,7 @@ while [ "$#" -gt 0 ]; do
       cat <<'EOF'
 Usage: collect-project-docs.sh [options] [dir...]
 
-Collects AGENTS.md and roadmap files from projects for conformance checking
+Collects AGENTS.md and roadmap files from projects for alignment checking
 against AGENT_BLUEPRINT.md.
 
 Options:
@@ -56,7 +56,7 @@ fi
 cat > "${output_file}" <<'EOF'
 <!-- GENERATED FILE - DO NOT EDIT -->
 <!-- Run collect-project-docs.sh to regenerate -->
-<!-- Purpose: Reference for checking project conformance to AGENT_BLUEPRINT.md -->
+<!-- Purpose: Reference for checking project alignment to AGENT_BLUEPRINT.md -->
 
 EOF
 
@@ -68,7 +68,7 @@ if [ "${include_roadmaps}" -eq 1 ]; then
   cat > "${roadmap_output_file}" <<'EOF'
 <!-- GENERATED FILE - DO NOT EDIT -->
 <!-- Run collect-project-docs.sh -r to regenerate -->
-<!-- Purpose: Reference for checking roadmap conformance to AGENT_BLUEPRINT.md -->
+<!-- Purpose: Reference for checking roadmap alignment to AGENT_BLUEPRINT.md -->
 
 EOF
 fi
