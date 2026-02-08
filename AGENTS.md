@@ -59,6 +59,7 @@ Template rules:
 
 - `git reset --hard` — destructive history rewrite
 - `rm -rf` — destructive deletion
+- `matrix-reloaded` — disallowed in agent sessions; use provided instructions/schema instead
 - Edits outside repo root — out of scope
 
 ## Project-Specific Rules
@@ -69,9 +70,18 @@ Template rules:
 - Preserve one-file portability of the blueprint across projects.
 - Keep language concise and deterministic; avoid unnecessary ceremony.
 
+## Decision Artifacts
+
+- For high-impact or irreversible decisions, create `.decisions/[name].json`.
+- Use `matrix-reloaded` format for structured comparison.
+- Do not run `matrix-reloaded` CLI commands; use project-provided instructions/schema only.
+- Optional: add `.decisions/[name].md` for human-readable narrative context.
+- Treat JSON decision matrices as the authoritative record.
+
 ## References
 
 - For operating rules, see `AGENT_BLUEPRINT.md`
+- For decision artifacts and matrix format, see `AGENT_BLUEPRINT.md` section `Decision Artifacts [BP-DECISIONS]`
 - For UI system workflows, see `DESIGN_SYSTEM_GUIDE.md`
 - For cross-project audit collection, see `collect-project-docs.sh`
 
