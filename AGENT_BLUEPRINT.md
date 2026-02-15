@@ -1,5 +1,5 @@
 ---
-version: "1.3.0"
+version: "1.3.1"
 ---
 
 # Agent Blueprint
@@ -68,11 +68,11 @@ Work through the validation hierarchy. Escalate only when lower levels pass.
 - Read the commit trailer template from `AGENTS.md`.
 - If missing, ask once before first commit in a repo.
 - Never hardcode runtime values (`Co-authored-by`, `AI-Provider`, `AI-Product`, `AI-Model`) in `AGENTS.md`.
-- Use product-line contributor identities for `Co-authored-by`:
-  - `codex`: Codex or ChatGPT coding agent sessions
-  - `claude`: Claude sessions
-  - `gemini`: Gemini sessions
-  - `opencode`: OpenCode sessions (even when provider/model vary, including z.ai)
+- Use product-line contributor identities and emails for `Co-authored-by`:
+  - `codex`: `codex@openai.com`
+  - `claude`: `noreply@anthropic.com`
+  - `gemini`: `gemini@google.com`
+  - `opencode`: `[product]@[provider-tld]` (e.g., `glm@z.ai`)
 - Derive `AI-Provider` and `AI-Model` from runtime context at commit time.
 - Include trailers when committing:
   - `Co-authored-by: [runtime product identity] <[runtime product email]>`
@@ -143,7 +143,7 @@ Use this format exactly:
 ```markdown
 # AGENTS
 
-Follows AGENT_BLUEPRINT.md
+Follows `AGENT_BLUEPRINT.md` (version: [BLUEPRINT_VERSION])
 
 ## Project Overview
 
@@ -175,7 +175,11 @@ Template rules:
   - Gemini -> `gemini`
   - OpenCode -> `opencode` (regardless underlying provider/model, including z.ai)
 - Determine `AI_PROVIDER` and `AI_MODEL` from runtime model metadata.
-- `AI_PRODUCT_EMAIL` may follow a project pattern such as `[AI_PRODUCT_LINE]@ai.example.com`.
+- `AI_PRODUCT_EMAIL` must follow the provider's TLD or established address:
+  - `codex` -> `codex@openai.com`
+  - `claude` -> `noreply@anthropic.com`
+  - `gemini` -> `gemini@google.com`
+  - `opencode` -> `[product]@[provider-tld]` (e.g., `glm@z.ai`)
 - Fill this template at commit time; do not persist filled values in `AGENTS.md`.
 
 ## Validation Commands

@@ -1,6 +1,6 @@
 # AGENTS
 
-Follows AGENT_BLUEPRINT.md
+Follows `AGENT_BLUEPRINT.md` (version: 1.3.1)
 
 ## Project Overview
 
@@ -30,7 +30,11 @@ Template rules:
   - Gemini -> `gemini`
   - OpenCode -> `opencode` (regardless underlying provider/model, including z.ai)
 - `AI_PROVIDER` and `AI_MODEL`: runtime-derived at commit time
-- `AI_PRODUCT_EMAIL`: use project pattern `[AI_PRODUCT_LINE]@ai.example.com` unless overridden
+- `AI_PRODUCT_EMAIL`: follow the provider's TLD or established address:
+  - `codex` -> `codex@openai.com`
+  - `claude` -> `noreply@anthropic.com`
+  - `gemini` -> `gemini@google.com`
+  - `opencode` -> `[product]@[provider-tld]` (e.g., `glm@z.ai`)
 - Do not store filled runtime values in this file
 
 ## Validation Commands
