@@ -1,54 +1,47 @@
 # Agent Blueprint
 
-Lightweight, reusable operating standard for AI-assisted software projects.
+Portable operating standard for AI-assisted software projects.
 
-## Purpose
+Copy one file, run alignment, answer a few prompts, and your repo gets a consistent operating model for planning, execution, validation, and commit hygiene.
 
-This repository is the source for a portable blueprint you can copy into any project and tell agents to align to.
-It is optimized for consistency, autonomous execution, and low process overhead.
+## What This Repository Is
 
-## What To Copy Into Projects
+This is a docs-and-workflow repository, not a runtime application.
 
-- `AGENT_BLUEPRINT.md` (required)
-- `DESIGN_SYSTEM_GUIDE.md` (optional, UI projects only)
+It defines a reusable blueprint you can copy into any codebase so human + agent collaboration follows the same rules each time.
 
-## What This Solves
+## Core Files
 
-- Inconsistent agent behavior across repositories
-- Weak task definition before autonomous execution
-- Missing validation discipline before completion
-- Ambiguous commit and audit expectations
+- `AGENT_BLUEPRINT.md` (the main spec)
+- `DESIGN_SYSTEM_GUIDE.md` (optional, for UI-heavy projects)
 
-## Quick Adoption
+## Quick Start
 
-1. Copy `AGENT_BLUEPRINT.md` to the project root.
-2. Create `AGENTS.md` that references the blueprint (template is in the blueprint).
-3. Create `roadmap/index.md`.
-4. Add project-specific commands and constraints in `AGENTS.md`.
-5. For UI work, copy `DESIGN_SYSTEM_GUIDE.md`.
+1. Copy `AGENT_BLUEPRINT.md` and optionally `DESIGN_SYSTEM_GUIDE.md` to your project root.
+2. Ask your coding agent: "Align this project with AGENT_BLUEPRINT.md".
+3. Answer any prompts the agent provides.
 
-## Fit
+## How It Works In Practice
+
+1. `AGENT_BLUEPRINT.md` is the immutable operating contract.
+2. During alignment, the agent creates or updates `AGENTS.md` and `roadmap/index.md`.
+3. `roadmap/*.md` files become executable work units (`draft -> ready -> active -> done`).
+4. `AGENTS.md` captures project-specific conventions for allowed commands, validation flow, and commit behavior.
+5. The workflow enforces commit approval, self-validation before handoff, and commit trailer handling.
+
+## Who This Fits
 
 Good fit:
-- You want one immutable reference agents can follow everywhere.
-- You use roadmap files as executable prompts.
-- You prefer simple conventions over heavy tooling.
+- You want one portable standard across many repos.
+- You like markdown-first workflows and low process overhead.
+- You want agents to execute ready work autonomously, with validation.
 
 Not a fit:
-- You want a different process per project.
-- You need strict org-level governance workflows beyond markdown standards.
+- You want a different process in every project.
+- You need a heavy governance platform beyond markdown standards.
 
 ## Versioning
 
-- The canonical version is the frontmatter version in `AGENT_BLUEPRINT.md`.
-- When upgrading, run an alignment pass in each project.
-- Upgrade to `1.3.0` includes roadmap status migration:
-  - `idea` -> `draft`
-  - `planned` -> `ready`
-  - `paused` -> `active` (capture blocked details in `Context`)
-
-## Repository Files
-
-- `AGENT_BLUEPRINT.md`: canonical project standard
-- `DESIGN_SYSTEM_GUIDE.md`: optional UI system companion
-- `collect-project-docs.sh`: maintainer audit helper for multi-project checks
+- The source of truth is the frontmatter version in `AGENT_BLUEPRINT.md`.
+- Current blueprint version in this repo: `1.4.4`.
+- After upgrading in downstream projects, run an alignment pass.
