@@ -1,5 +1,5 @@
 ---
-version: "1.3.1"
+version: "1.4.0"
 ---
 
 # Agent Blueprint
@@ -24,6 +24,7 @@ Use these IDs in alignment reports for deterministic, machine-checkable outcomes
 **SHOULD**
 - `BP-CORE-07` Keep policy lean; prefer references over duplicated rules.
 - `BP-CORE-08` Capture AI commit identity once per repo in `AGENTS.md` to avoid repeated prompts.
+- `BP-CORE-10` Capture user interaction profile in `AGENTS.md` on project init or alignment.
 
 ---
 
@@ -79,6 +80,40 @@ Work through the validation hierarchy. Escalate only when lower levels pass.
   - `AI-Provider: [runtime provider name]` (optional; include only if known)
   - `AI-Product: [runtime product line]` (optional; include only if known)
   - `AI-Model: [runtime model name]` (optional; include only if known)
+
+### User Profile [BP-WF-PROFILE]
+
+Calibrate agent interactions based on user context. Store in a git-ignored file (e.g., `.agent-profile.md`) referenced from `AGENTS.md`.
+
+**Prompting conditions:**
+1. **No profile exists** → Prompt to create one
+2. **Profile exists but incomplete** (missing fields from current blueprint guidance) → Prompt to fill gaps
+3. **Profile complete** → Ask if user wants to update
+
+**Profile dimensions:**
+- Experience level (beginner/intermediate/advanced per domain)
+- Familiar languages/frameworks
+- Explanation preference (brief/standard/thorough; explain unknowns/ask first)
+- Communication style (code-focused/narrative/casual/formal; high-level vs drill-down)
+- Team context (solo/collaborative; target audience if relevant)
+
+**Sample questions:**
+- "What's your experience level with [project's primary domain]?"
+- "Which languages/frameworks are you comfortable with?"
+- "Do you prefer brief confirmations or detailed explanations?"
+- "Should I explain things you may not know, or ask first?"
+- "Any communication preferences (formal/casual, code vs prose, high-level first)?"
+- "Is this solo work or a team project?"
+
+**Calibration:**
+- Explain more for beginners; assume familiarity for experts
+- Match explanation depth to stated preference
+- Adapt communication style to user's preference
+- Consider team context for commit/message conventions
+
+**When to check:**
+- Project initialization
+- Alignment/compliance requests when blueprint is re-applied
 
 ---
 
@@ -223,6 +258,10 @@ Template rules:
 ## Key Files
 
 - `[path]` — [purpose]
+
+## User Profile (optional)
+
+See `.agent-profile.md` (git-ignored) for interaction preferences. Create on project init or alignment.
 ```
 
 ---

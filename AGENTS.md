@@ -1,6 +1,6 @@
 # AGENTS
 
-Follows `AGENT_BLUEPRINT.md` (version: 1.3.1)
+Follows `AGENT_BLUEPRINT.md` (version: 1.4.0)
 
 ## Project Overview
 
@@ -96,3 +96,7 @@ Template rules:
 - `README.md` — human adoption guide
 - `DESIGN_SYSTEM_GUIDE.md` — optional UI design system guide
 - `collect-project-docs.sh` — multi-project reference collector
+
+## User Profile
+
+See `.agent-profile.md` (git-ignored) for interaction preferences.
