@@ -1,6 +1,6 @@
 # AGENTS
 
-Follows `AGENT_BLUEPRINT.md` (version: 1.4.2)
+Follows `AGENT_BLUEPRINT.md` (version: 1.4.3)
 
 ## Project Overview
 
@@ -34,7 +34,7 @@ Template rules:
   - `codex` -> `Codex <codex@users.noreply.github.com>`
   - `claude` -> `Claude <claude@users.noreply.github.com>`
   - `gemini` -> `Gemini <google-gemini@users.noreply.github.com>`
-  - `opencode` -> `[Product] <[product]@[provider-tld]>` (e.g., `GLM <glm@z.ai>`)
+  - `opencode` -> `GLM <zai-org@users.noreply.github.com>`
 - Do not store filled runtime values in this file
 
 ## Validation Commands

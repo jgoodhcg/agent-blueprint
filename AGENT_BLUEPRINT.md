@@ -1,5 +1,5 @@
 ---
-version: "1.4.2"
+version: "1.4.3"
 ---
 
 # Agent Blueprint
@@ -73,7 +73,7 @@ Work through the validation hierarchy. Escalate only when lower levels pass.
   - `codex`: `Codex <codex@users.noreply.github.com>`
   - `claude`: `Claude <claude@users.noreply.github.com>`
   - `gemini`: `Gemini <google-gemini@users.noreply.github.com>`
-  - `opencode`: `[Product] <[product]@[provider-tld]>` (e.g., `GLM <glm@z.ai>`)
+  - `opencode`: `GLM <zai-org@users.noreply.github.com>`
 - Derive `AI-Provider` and `AI-Model` from runtime context at commit time.
 - Include trailers when committing:
   - `Co-authored-by: [runtime product identity] <[runtime product email]>`
@@ -215,7 +215,7 @@ Template rules:
   - `codex` -> `Codex <codex@users.noreply.github.com>`
   - `claude` -> `Claude <claude@users.noreply.github.com>`
   - `gemini` -> `Gemini <google-gemini@users.noreply.github.com>`
-  - `opencode` -> `[Product] <[product]@[provider-tld]>` (e.g., `GLM <glm@z.ai>`)
+  - `opencode` -> `GLM <zai-org@users.noreply.github.com>`
 - Fill this template at commit time; do not persist filled values in `AGENTS.md`.
 
 ## Validation Commands
