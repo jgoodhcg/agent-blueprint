@@ -1,5 +1,5 @@
 ---
-version: "1.4.1"
+version: "1.4.2"
 ---
 
 # Agent Blueprint
@@ -69,11 +69,11 @@ Work through the validation hierarchy. Escalate only when lower levels pass.
 - Read the commit trailer template from `AGENTS.md`.
 - If missing, ask once before first commit in a repo.
 - Never hardcode runtime values (`Co-authored-by`, `AI-Provider`, `AI-Product`, `AI-Model`) in `AGENTS.md`.
-- Use product-line contributor identities and emails for `Co-authored-by`:
-  - `codex`: `codex@openai.com`
-  - `claude`: `noreply@anthropic.com`
-  - `gemini`: `gemini@google.com`
-  - `opencode`: `[product]@[provider-tld]` (e.g., `glm@z.ai`)
+- Use product-line contributor identities for `Co-authored-by`:
+  - `codex`: `Codex <codex@users.noreply.github.com>`
+  - `claude`: `Claude <claude@users.noreply.github.com>`
+  - `gemini`: `Gemini <google-gemini@users.noreply.github.com>`
+  - `opencode`: `[Product] <[product]@[provider-tld]>` (e.g., `GLM <glm@z.ai>`)
 - Derive `AI-Provider` and `AI-Model` from runtime context at commit time.
 - Include trailers when committing:
   - `Co-authored-by: [runtime product identity] <[runtime product email]>`
@@ -211,11 +211,11 @@ Template rules:
   - Gemini -> `gemini`
   - OpenCode -> `opencode` (regardless underlying provider/model, including z.ai)
 - Determine `AI_PROVIDER` and `AI_MODEL` from runtime model metadata.
-- `AI_PRODUCT_EMAIL` must follow the provider's TLD or established address:
-  - `codex` -> `codex@openai.com`
-  - `claude` -> `noreply@anthropic.com`
-  - `gemini` -> `gemini@google.com`
-  - `opencode` -> `[product]@[provider-tld]` (e.g., `glm@z.ai`)
+- `AI_PRODUCT_NAME` and `AI_PRODUCT_EMAIL` format:
+  - `codex` -> `Codex <codex@users.noreply.github.com>`
+  - `claude` -> `Claude <claude@users.noreply.github.com>`
+  - `gemini` -> `Gemini <google-gemini@users.noreply.github.com>`
+  - `opencode` -> `[Product] <[product]@[provider-tld]>` (e.g., `GLM <glm@z.ai>`)
 - Fill this template at commit time; do not persist filled values in `AGENTS.md`.
 
 ## Validation Commands
