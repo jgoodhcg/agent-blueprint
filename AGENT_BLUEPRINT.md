@@ -1,5 +1,5 @@
 ---
-version: "1.4.3"
+version: "1.4.4"
 ---
 
 # Agent Blueprint
@@ -497,6 +497,60 @@ For each decision, add a `.json` file using `matrix-reloaded` format. Do not exe
 
 [What changes. What to watch for.]
 ```
+
+---
+
+## Knowledge Base Integration [BP-KB]
+
+Optional. For projects where AI-generated summaries should be captured in external knowledge tools (Roam Research, Obsidian, Notion, etc.).
+
+### Enable in AGENTS.md
+
+Add a `## Knowledge Base` section to `AGENTS.md` with tool-specific conventions. When present, agents generate structured output ready to paste into the user's knowledge base.
+
+### Thread Summary Format
+
+All AI-generated content must be nested under a parent attribution block:
+
+1. **Tool** — e.g., `[[opencode]]`, `[[claude-code]]`, `[[gemini-cli]]`, `[[codex-cli]]`
+2. **Model** — the exact model that generated the content
+3. **Thread marker** — `[[ai-thread]]`
+4. **Project tag** — e.g., `[[project-name]]`
+
+### Roam Research Example
+
+Store in `AGENTS.md`:
+
+```markdown
+## Knowledge Base
+
+Tool: Roam Research
+
+When asked to generate a Roam summary or thread:
+- Parent block: `- [[<tool>]] [[<model-id>]] [[ai-thread]] [[<project-name>]]`
+- Tool names: `opencode` | `claude-code` | `gemini-cli` | `codex-cli`
+- Page refs: only include `[[Page Name]]` if explicitly instructed
+- Sections: ask user what they want (chronological, functional, Q&A)
+```
+
+Output structure:
+
+```
+- [[opencode]] [[glm-5]] [[ai-thread]] [[agent-blueprint]]
+    - Summary
+        - Investigated stale cache issue in `src/cache.ts:142`
+    - Files Changed
+        - `src/cache.ts` - added TTL validation
+    - Next Steps
+        - Consider integration tests for cache invalidation
+```
+
+### Other Tools
+
+Adapt the format for tool conventions:
+- **Obsidian**: Use `#tags` and `[[wikilinks]]` with YAML frontmatter if desired
+- **Notion**: Use nested bullet structure with database-compatible formatting
+- **Logseq**: Similar to Roam with `[[bracket]]` syntax
 
 ---
 
