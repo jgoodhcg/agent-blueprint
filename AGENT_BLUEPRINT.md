@@ -1,5 +1,5 @@
 ---
-version: "1.4.0"
+version: "1.4.1"
 ---
 
 # Agent Blueprint
@@ -122,6 +122,7 @@ Calibrate agent interactions based on user context. Store in a git-ignored file 
 1. Copy this file as `AGENT_BLUEPRINT.md`.
 2. Create `AGENTS.md` using the template below.
 3. Create `roadmap/index.md`.
+4. Optionally create agent-specific wrappers (`CLAUDE.md`, `GEMINI.md`, etc.) using the wrapper template.
 
 Agent-specific files (`CLAUDE.md`, `GEMINI.md`, etc.) are optional and should be thin pointers to `AGENTS.md`.
 
@@ -263,6 +264,25 @@ Template rules:
 
 See `.agent-profile.md` (git-ignored) for interaction preferences. Create on project init or alignment.
 ```
+
+---
+
+## Agent-Specific Wrapper Template [BP-AGENT-WRAPPER]
+
+Optional. Create thin pointers for agent-specific entrypoints (`CLAUDE.md`, `GEMINI.md`, etc.):
+
+```markdown
+# [Agent Name]
+
+See `AGENTS.md` for project policies and operating rules.
+
+## Agent-Specific Instructions
+
+- [Instruction specific to this agent, if any]
+- [e.g., tool preferences, model-specific behavior, constraints]
+```
+
+Keep minimal. Defer to `AGENTS.md` for all shared policy.
 
 ---
 
