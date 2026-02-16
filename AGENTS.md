@@ -97,6 +97,16 @@ Template rules:
 - `DESIGN_SYSTEM_GUIDE.md` — optional UI design system guide
 - `collect-project-docs.sh` — multi-project reference collector
 
+## Knowledge Base
+
+Tool: Roam Research
+
+When asked to generate a Roam summary or thread:
+- Parent block: `- [[<tool>]] [[<model-id>]] [[ai-thread]] [[agent-blueprint]]`
+- Tool names: `opencode` | `claude-code` | `gemini-cli` | `codex-cli`
+- Page refs: only include `[[Page Name]]` if explicitly instructed
+- Sections: ask user what they want (chronological, functional, Q&A)
+
 ## User Profile
 
 See `.agent-profile.md` (git-ignored) for interaction preferences.
