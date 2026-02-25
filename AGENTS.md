@@ -1,6 +1,6 @@
 # AGENTS
 
-Follows `AGENT_BLUEPRINT.md` (version: 1.4.4)
+Follows `AGENT_BLUEPRINT.md` (version: 1.4.5)
 
 ## Project Overview
 
@@ -73,6 +73,17 @@ Template rules:
 - Keep `CLAUDE.md` and `GEMINI.md` as thin pointers to this file.
 - Preserve one-file portability of the blueprint across projects.
 - Keep language concise and deterministic; avoid unnecessary ceremony.
+
+## Reality Check
+
+Before implementing, briefly consider:
+
+- [ ] **Simpler path?** — Is complexity justified by value?
+- [ ] **Existing solution?** — Am I reinventing or missing a library/pattern?
+- [ ] **Right problem?** — Is the framing sound, or am I treating symptoms?
+- [ ] **Known pitfalls?** — Are there anti-patterns or failure modes to avoid?
+
+If any answer gives pause, flag it before proceeding.
 
 ## Decision Artifacts
 
