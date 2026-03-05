@@ -1,5 +1,5 @@
 ---
-version: "1.1.0"
+version: "1.1.1"
 ---
 
 # Design System Guide
@@ -41,7 +41,7 @@ Save the resolved design system so it loads automatically in future sessions:
 
 - File location: `.interface-design/system.md`
 - This is the single source of truth for tokens, patterns, and decisions
-- See section 11 for the full template
+- See the Template section `[DS-TEMPLATE]` for the full template
 
 ---
 

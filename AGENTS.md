@@ -1,6 +1,6 @@
 # AGENTS
 
-Follows `AGENT_BLUEPRINT.md` (version: 1.4.5)
+Follows `AGENT_BLUEPRINT.md` (version: 1.4.6)
 
 ## Project Overview
 
@@ -26,15 +26,25 @@ Template rules:
 - `AI_PRODUCT_LINE`: `codex|claude|gemini|opencode`
 - Product-line derivation:
   - Codex or ChatGPT coding agent -> `codex`
-  - Claude -> `claude`
-  - Gemini -> `gemini`
-  - OpenCode -> `opencode` (regardless underlying provider/model, including z.ai)
+  - Claude Code -> `claude`
+  - Gemini CLI -> `gemini`
+  - OpenCode -> `opencode` (regardless of underlying provider/model, including z.ai)
 - `AI_PROVIDER` and `AI_MODEL`: runtime-derived at commit time
-- `AI_PRODUCT_NAME` and `AI_PRODUCT_EMAIL` format:
-  - `codex` -> `Codex <codex@users.noreply.github.com>`
-  - `claude` -> `Claude <claude@users.noreply.github.com>`
-  - `gemini` -> `Gemini <google-gemini@users.noreply.github.com>`
-  - `opencode` -> `GLM <zai-org@users.noreply.github.com>`
+- `AI_PRODUCT_NAME` and `AI_PRODUCT_EMAIL`: resolved from **model name** using tiered lookup (see `AGENT_BLUEPRINT.md` `[BP-WF-COMMIT]`):
+  1. **Brand match** (case-insensitive against model name):
+     - `codex` → `Codex <codex@users.noreply.github.com>`
+     - `claude` → `Claude <claude@users.noreply.github.com>`
+     - `gemini` → `Gemini <google-gemini@users.noreply.github.com>`
+     - `glm` → `GLM <zai-org@users.noreply.github.com>`
+  2. **Provider fallback** (no brand match — use provider's GitHub org):
+     - OpenAI → `OpenAI <openai@users.noreply.github.com>`
+     - Anthropic → `Anthropic <anthropics@users.noreply.github.com>`
+     - Google → `Google <google-gemini@users.noreply.github.com>`
+     - Zhipu → `Zhipu <zai-org@users.noreply.github.com>`
+     - Mistral → `Mistral <mistralai@users.noreply.github.com>`
+     - Meta → `Meta <meta-llama@users.noreply.github.com>`
+     - DeepSeek → `DeepSeek <deepseek-ai@users.noreply.github.com>`
+  3. **Unknown**: `{Provider Name} <{github-org}@users.noreply.github.com>` or `AI Agent <noreply@users.noreply.github.com>`
 - Do not store filled runtime values in this file
 
 ## Validation Commands
@@ -96,6 +106,7 @@ If any answer gives pause, flag it before proceeding.
 ## References
 
 - For operating rules, see `AGENT_BLUEPRINT.md`
+- For active work units and execution prompts, see `roadmap/`
 - For decision artifacts and matrix format, see `AGENT_BLUEPRINT.md` section `Decision Artifacts [BP-DECISIONS]`
 - For UI system workflows, see `DESIGN_SYSTEM_GUIDE.md`
 - For cross-project audit collection, see `collect-project-docs.sh`
@@ -107,6 +118,8 @@ If any answer gives pause, flag it before proceeding.
 - `README.md` — human adoption guide
 - `DESIGN_SYSTEM_GUIDE.md` — optional UI design system guide
 - `collect-project-docs.sh` — multi-project reference collector
+- `roadmap/index.md` — project roadmap and work unit directory
+- `.decisions/` — decision artifacts (matrix-reloaded JSON records)
 
 ## Knowledge Base
 

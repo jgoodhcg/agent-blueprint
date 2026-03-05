@@ -14,6 +14,7 @@ It defines a reusable blueprint you can copy into any codebase so human + agent 
 
 - `AGENT_BLUEPRINT.md` (the main spec)
 - `DESIGN_SYSTEM_GUIDE.md` (optional, for UI-heavy projects)
+- `roadmap/index.md` (execution roadmap, created during alignment)
 
 ## Quick Start
 
@@ -43,5 +44,5 @@ Not a fit:
 ## Versioning
 
 - The source of truth is the frontmatter version in `AGENT_BLUEPRINT.md`.
-- Current blueprint version in this repo: `1.4.4`.
+- Current blueprint version in this repo: `1.4.6`.
 - After upgrading in downstream projects, run an alignment pass.
