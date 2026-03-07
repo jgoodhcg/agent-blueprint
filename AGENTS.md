@@ -1,6 +1,6 @@
 # AGENTS
 
-Follows `AGENT_BLUEPRINT.md` (version: 1.4.6)
+Follows `AGENT_BLUEPRINT.md` (version: 1.4.7)
 
 ## Project Overview
 
@@ -12,6 +12,13 @@ This repository defines and maintains a portable agent operating standard. The p
 - Bash scripting (`collect-project-docs.sh`)
 - Git-based workflow
 - No runtime application/database in this repo
+
+## Environment
+
+- Version manager: n/a (no runtime application)
+- Version file: n/a
+- Lockfile: n/a
+- Setup: n/a
 
 ## Commit Trailer Template
 

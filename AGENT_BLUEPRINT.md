@@ -1,5 +1,5 @@
 ---
-version: "1.4.6"
+version: "1.4.7"
 ---
 
 # Agent Blueprint
@@ -31,6 +31,38 @@ Use these IDs in alignment reports for deterministic, machine-checkable outcomes
 ## Safety [BP-SAFE]
 
 Confirm before running destructive commands, installing dependencies, or taking actions outside the repo.
+
+---
+
+## Environment [BP-ENV]
+
+Reproducible environments prevent "works on my machine" failures. Pin versions, commit lockfiles, and document setup.
+
+### Version Pinning [BP-ENV-PIN]
+
+If the project uses a language runtime, pin the version in a file committed to the repo. Use a format that version managers read automatically:
+
+| Ecosystem | Version file | Manager(s) |
+|-----------|-------------|------------|
+| Node | `.nvmrc` or `.node-version` | nvm, fnm, volta, mise |
+| Python | `.python-version` or `pyproject.toml` `[project.requires-python]` | uv, pyenv, mise |
+| Rust | `rust-toolchain.toml` | rustup |
+| Go | `go.mod` (`go` directive) | built-in |
+| Clojure | `deps.edn` (`:deps` versions) | Clojure CLI |
+| Bun | `package.json` `engines.bun` | bun |
+| Multi-language | `.tool-versions` | mise, asdf |
+
+### Lockfiles [BP-ENV-LOCK]
+
+Commit lockfiles. They make dependency resolution deterministic across machines and CI.
+
+Common lockfiles: `package-lock.json` / `bun.lockb` / `yarn.lock`, `uv.lock` / `poetry.lock`, `Cargo.lock`, `go.sum`, `deps-lock.json` (Deno).
+
+If the ecosystem has a lockfile, commit it. When installing dependencies, use the lockfile-respecting command (e.g. `npm ci` not `npm install`, `uv sync` not `uv pip install`).
+
+### Setup Command [BP-ENV-SETUP]
+
+Document a single command (or short sequence) that bootstraps the environment from scratch. Store it in the `## Environment` section of `AGENTS.md` so agents can self-bootstrap.
 
 ---
 
@@ -201,6 +233,13 @@ Follows `AGENT_BLUEPRINT.md` (version: [BLUEPRINT_VERSION])
 - [Framework/runtime]
 - [Database]
 - [Infra/deploy target]
+
+## Environment
+
+- Version manager: [e.g. uv, nvm, mise, rustup, or "built-in"]
+- Version file: [e.g. `.python-version`, `.nvmrc`, `rust-toolchain.toml`]
+- Lockfile: [e.g. `uv.lock`, `package-lock.json`, `Cargo.lock`]
+- Setup: `[single bootstrap command, e.g. "uv sync", "npm ci", "cargo build"]`
 
 ## Commit Trailer Template
 
