@@ -1,5 +1,5 @@
 ---
-version: "1.5.0"
+version: "2026-03-07"
 ---
 
 # Agent Blueprint
@@ -217,6 +217,32 @@ Agent-specific files (`CLAUDE.md`, `GEMINI.md`, etc.) are optional and should be
 
 ---
 
+## Versioning [BP-VERSION]
+
+Use date-based versions, not semantic versioning.
+
+**Format:** `YYYY-MM-DD` with an optional `.N` suffix for same-day releases.
+
+```
+2026-03-07        ← first release of the day
+2026-03-07.1      ← second release same day
+2026-03-07.2      ← third, etc.
+```
+
+**Rationale:**
+- A version number should tell you **when**, not make a speculative promise about compatibility.
+- Semver encodes intent ("this is a breaking change") but that intent is unreliable — accidental breakage ships as patches, and major bumps happen for trivial reasons.
+- Date versions are honest, monotonically increasing, and require zero decision overhead. There is no debate about whether a change is "major" or "minor."
+- This aligns with the approach used by Babashka, several Clojure libraries, and other projects that favor simplicity over ceremony.
+
+**Rules:**
+- The frontmatter `version` field in this blueprint and companion documents uses this scheme.
+- `AGENTS.md` and other files that reference the blueprint version should reflect the same date string.
+- When adopting this blueprint in a new project, date-based versioning is the recommended default. Teams with existing conventions may keep them, but should document the choice.
+- Agents should not spend time debating version bumps. Update the date, move on.
+
+---
+
 ## Alignment Contract [BP-ALIGN]
 
 - `AGENTS.md` is the project policy entrypoint and references this blueprint.
@@ -240,7 +266,7 @@ Use this format exactly:
 # Alignment Report
 
 ## Blueprint
-- Version: [e.g. 1.3.0]
+- Version: [e.g. 2026-03-07]
 
 ## Rule Check
 | Rule ID | Status (PASS/FAIL) | Evidence | Action |

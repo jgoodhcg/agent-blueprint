@@ -1,5 +1,5 @@
 ---
-version: "1.1.1"
+version: "2026-03-07"
 ---
 
 # Design System Guide
@@ -518,7 +518,7 @@ Use this format exactly:
 # Design Alignment Report
 
 ## System
-- Guide version: [e.g. 1.1.0]
+- Guide version: [e.g. 2026-03-07]
 - Preset: [e.g. Precision & Density (with overrides)]
 - System file: [path or "not found"]
 

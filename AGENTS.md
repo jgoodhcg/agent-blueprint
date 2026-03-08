@@ -1,6 +1,6 @@
 # AGENTS
 
-Follows `AGENT_BLUEPRINT.md` (version: 1.5.0)
+Follows `AGENT_BLUEPRINT.md` (version: 2026-03-07)
 
 ## Project Overview
 

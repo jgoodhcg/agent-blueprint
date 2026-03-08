@@ -7,8 +7,8 @@ goal: "Maintain and evolve a portable agent operating standard for AI-assisted s
 
 ## Current Focus
 
-- Blueprint version: `1.5.0`
-- Design System Guide version: `1.1.1`
+- Blueprint version: `2026-03-07`
+- Design System Guide version: `2026-03-07`
 
 ## Work Units
 
