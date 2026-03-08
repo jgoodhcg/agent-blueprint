@@ -1,5 +1,5 @@
 ---
-version: "1.4.7"
+version: "1.5.0"
 ---
 
 # Agent Blueprint
@@ -122,6 +122,53 @@ Work through the validation hierarchy. Escalate only when lower levels pass.
   - `AI-Provider: [runtime provider name]` (optional; include only if known)
   - `AI-Product: [runtime product line]` (optional; include only if known)
   - `AI-Model: [runtime model name]` (optional; include only if known)
+
+#### Multi-Model Attribution [BP-WF-COMMIT-MULTI]
+
+When more than one AI model contributed to the work being committed, attribute all participating models.
+
+**Trigger — user-initiated:**
+- The user may request multi-model attribution in natural language. Interpret any statement that conveys "also credit model X" as a trigger — there is no required phrase. Examples:
+  - "also attribute gemini"
+  - "include claude in the attribution"
+  - "credit sonnet too, it helped earlier"
+  - "gemini helped with part of this"
+- When triggered, ask the user to confirm which model(s) to add if not already specified by name.
+
+**Trigger — agent-suggested:**
+- If the agent has evidence of a model switch during the current session (e.g., session metadata, tool context, or the user mentioning prior work with another model), the agent **may** ask:
+  > "It looks like [other model] also contributed to this work. Want me to include it in the commit attribution?"
+- Do **not** auto-add additional attribution without user confirmation.
+
+**Resolution rules:**
+- Resolve each additional model's `Co-authored-by` using the same tiered lookup (Tier 1 → 2 → 3) defined above.
+- Each attributed model gets its own `Co-authored-by` line.
+- The **primary model** (the one performing the commit) is always listed first.
+
+**Trailer format (multi-model):**
+
+```text
+Co-authored-by: Primary <primary@users.noreply.github.com>
+Co-authored-by: Secondary <secondary@users.noreply.github.com>
+AI-Provider: primary-provider, secondary-provider
+AI-Product: primary-product, secondary-product
+AI-Model: primary-model, secondary-model
+```
+
+- `AI-Provider`, `AI-Product`, and `AI-Model` are comma-separated, primary model first.
+- Deduplicate values within each trailer (e.g., if both models share a provider, list it once).
+
+**Example** — committing from OpenCode (claude-opus-4-6) after also using Gemini 2.5 Pro:
+
+```text
+Co-authored-by: Claude <claude@users.noreply.github.com>
+Co-authored-by: Gemini <google-gemini@users.noreply.github.com>
+AI-Provider: Anthropic, Google
+AI-Product: opencode, opencode
+AI-Model: claude-opus-4-6, gemini-2.5-pro
+```
+
+Note: `AI-Product` reflects the **tool**, not the model. If both models were used within OpenCode, both entries are `opencode`.
 
 ### User Profile [BP-WF-PROFILE]
 
@@ -262,6 +309,7 @@ Template rules:
 - Determine `AI_PROVIDER` and `AI_MODEL` from runtime model metadata.
 - Resolve `AI_PRODUCT_NAME` and `AI_PRODUCT_EMAIL` from the **model name** using the tiered resolution order defined in `[BP-WF-COMMIT]`.
 - Fill this template at commit time; do not persist filled values in `AGENTS.md`.
+- For multi-model commits, see `[BP-WF-COMMIT-MULTI]` — add one `Co-authored-by` line per model and comma-separate the other trailers.
 
 ## Validation Commands
 

@@ -1,6 +1,6 @@
 # AGENTS
 
-Follows `AGENT_BLUEPRINT.md` (version: 1.4.7)
+Follows `AGENT_BLUEPRINT.md` (version: 1.5.0)
 
 ## Project Overview
 
@@ -53,6 +53,7 @@ Template rules:
      - DeepSeek → `DeepSeek <deepseek-ai@users.noreply.github.com>`
   3. **Unknown**: `{Provider Name} <{github-org}@users.noreply.github.com>` or `AI Agent <noreply@users.noreply.github.com>`
 - Do not store filled runtime values in this file
+- For multi-model commits, see `AGENT_BLUEPRINT.md` `[BP-WF-COMMIT-MULTI]` — add one `Co-authored-by` line per contributing model and comma-separate the other trailers
 
 ## Validation Commands
 
