@@ -46,3 +46,10 @@ Not a fit:
 - The source of truth is the frontmatter version in `AGENT_BLUEPRINT.md`.
 - Current blueprint version in this repo: `2026-03-07`.
 - After upgrading in downstream projects, run an alignment pass.
+
+## Experimental GitHub Automation
+
+- `.github/workflows/opencode-hello.yml` provides a minimal OpenCode GitHub Actions proof of concept.
+- Add an `ANTHROPIC_API_KEY` repository secret and adjust the workflow model if you want to use a different provider.
+- Create a GitHub issue and comment `/opencode hello` or `/oc hello` to trigger the workflow.
+- The workflow should reply with a short hello comment only; it does not modify files or open a PR.
