@@ -9,10 +9,13 @@ goal: "Maintain and evolve a portable agent operating standard for AI-assisted s
 
 - Blueprint version: `2026-03-07`
 - Design System Guide version: `2026-03-07`
+- GitHub automation pilot: comment-triggered OpenCode workflow in this repo, using GitHub Issues as the remote execution surface
 
 ## Work Units
 
 See individual `*.md` files in this directory. Use `draft` while clarifying and `ready` when autonomous execution can begin.
+
+- `github-opencode-pilot.md` - dogfood the GitHub Actions pilot before standardizing adoption guidance in the blueprint
 
 ## Quick Ideas
 
