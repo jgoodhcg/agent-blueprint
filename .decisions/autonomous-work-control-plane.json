@@ -1,0 +1,211 @@
+{
+  "decision": {
+    "statement": "What should be the canonical planning surface and remote trigger model for autonomous AI development loops?",
+    "description": "The system should keep planning durable and reviewable, allow remote autonomous execution, feed real validation back into the loop through tests and GitHub Actions, and preserve provider flexibility so lower-cost models such as GLM can handle longer unsupervised work."
+  },
+  "options": [
+    {
+      "label": "GitHub Issues Primary",
+      "description": "Store work definitions in issues and comments, and trigger runs directly from issue comments or labels."
+    },
+    {
+      "label": "Roadmap Canonical + GitHub Triggers",
+      "description": "Keep work units in roadmap files, then trigger runs from GitHub by referencing a roadmap work unit."
+    },
+    {
+      "label": "External PM Primary",
+      "description": "Use another project-management system for the canonical plan and sync enough state into GitHub for execution."
+    },
+    {
+      "label": "PR-Only Control Plane",
+      "description": "Use pull requests and PR events as the main place to start, iterate on, and validate autonomous work."
+    }
+  ],
+  "criteria": [
+    {
+      "name": "Versioned Planning State",
+      "cells": {
+        "GitHub Issues Primary": {
+          "text": "Planning lives outside the repo and is not versioned with code.",
+          "color": "red"
+        },
+        "Roadmap Canonical + GitHub Triggers": {
+          "text": "Work units live in the repo and are versioned with implementation history.",
+          "color": "green"
+        },
+        "External PM Primary": {
+          "text": "Usually outside the repo and depends on separate backups and export discipline.",
+          "color": "yellow"
+        },
+        "PR-Only Control Plane": {
+          "text": "Some execution history is versioned, but planning only exists after work has already started.",
+          "color": "yellow"
+        }
+      }
+    },
+    {
+      "name": "Remote Trigger Ergonomics",
+      "cells": {
+        "GitHub Issues Primary": {
+          "text": "Very convenient because comments and labels are already the operator surface.",
+          "color": "green"
+        },
+        "Roadmap Canonical + GitHub Triggers": {
+          "text": "Good if GitHub comments or CLI commands trigger runs by roadmap slug or id.",
+          "color": "green"
+        },
+        "External PM Primary": {
+          "text": "Usually requires sync glue or secondary GitHub triggers.",
+          "color": "yellow"
+        },
+        "PR-Only Control Plane": {
+          "text": "Works after a PR exists, but is awkward as the first step.",
+          "color": "yellow"
+        }
+      }
+    },
+    {
+      "name": "Validation Loop Quality",
+      "cells": {
+        "GitHub Issues Primary": {
+          "text": "Can connect well to Actions, but planning and validation context can drift apart.",
+          "color": "yellow"
+        },
+        "Roadmap Canonical + GitHub Triggers": {
+          "text": "Strong fit: roadmap defines scope, GitHub runs tests, PRs, and checks feed results back.",
+          "color": "green"
+        },
+        "External PM Primary": {
+          "text": "Validation stays in GitHub, but planning context is one system removed.",
+          "color": "yellow"
+        },
+        "PR-Only Control Plane": {
+          "text": "Excellent for validation once code exists in a branch or PR.",
+          "color": "green"
+        }
+      }
+    },
+    {
+      "name": "Provider Flexibility",
+      "cells": {
+        "GitHub Issues Primary": {
+          "text": "Compatible with OpenCode and custom providers if the workflow is designed that way."
+        },
+        "Roadmap Canonical + GitHub Triggers": {
+          "text": "Best fit for a provider-agnostic execution layer with OpenCode plus custom model routing.",
+          "color": "green"
+        },
+        "External PM Primary": {
+          "text": "Possible, but extra integration layers add friction.",
+          "color": "yellow"
+        },
+        "PR-Only Control Plane": {
+          "text": "Often pushes toward vendor-specific PR agents unless designed carefully.",
+          "color": "yellow"
+        }
+      }
+    },
+    {
+      "name": "Auditability",
+      "cells": {
+        "GitHub Issues Primary": {
+          "text": "Discussion and runs are visible, but canonical scope can drift in long issue threads.",
+          "color": "yellow"
+        },
+        "Roadmap Canonical + GitHub Triggers": {
+          "text": "Scope is versioned in repo and runs are visible in GitHub history, checks, and PRs.",
+          "color": "green"
+        },
+        "External PM Primary": {
+          "text": "Audit trail is split across tools and harder to reconstruct.",
+          "color": "red"
+        },
+        "PR-Only Control Plane": {
+          "text": "Execution history is clear, but pre-PR planning decisions are weaker.",
+          "color": "yellow"
+        }
+      }
+    },
+    {
+      "name": "Operator Familiarity",
+      "cells": {
+        "GitHub Issues Primary": {
+          "text": "Very familiar and integrated with current habits.",
+          "color": "green"
+        },
+        "Roadmap Canonical + GitHub Triggers": {
+          "text": "Mostly familiar if GitHub remains the operator surface and roadmap stays repo-local."
+        },
+        "External PM Primary": {
+          "text": "Depends on adopting another planning system and workflow.",
+          "color": "yellow"
+        },
+        "PR-Only Control Plane": {
+          "text": "Familiar for code review and CI flows.",
+          "color": "green"
+        }
+      }
+    },
+    {
+      "name": "Implementation Cost",
+      "cells": {
+        "GitHub Issues Primary": {
+          "text": "Low implementation cost because GitHub comments and labels already exist.",
+          "color": "green"
+        },
+        "Roadmap Canonical + GitHub Triggers": {
+          "text": "Moderate cost: add a roadmap selector or slug resolver, but no major platform dependency."
+        },
+        "External PM Primary": {
+          "text": "Highest cost because it requires sync, identity, and drift management.",
+          "color": "red"
+        },
+        "PR-Only Control Plane": {
+          "text": "Moderate cost if limited to PR automation, but it does not solve planning cleanly."
+        }
+      }
+    },
+    {
+      "name": "Cost Discipline for Unsupervised Runs",
+      "cells": {
+        "GitHub Issues Primary": {
+          "text": "Possible, but ad hoc issue prompts make it easier for runs to sprawl.",
+          "color": "yellow"
+        },
+        "Roadmap Canonical + GitHub Triggers": {
+          "text": "Best fit because scoped roadmap work units constrain runs and preserve cheap-model defaults.",
+          "color": "green"
+        },
+        "External PM Primary": {
+          "text": "Depends on sync quality and process discipline rather than repo-local constraints.",
+          "color": "yellow"
+        },
+        "PR-Only Control Plane": {
+          "text": "Validation costs are clear, but initiation still tends to be heavier and later in the loop.",
+          "color": "yellow"
+        }
+      }
+    },
+    {
+      "name": "Recommended Fit for Current Goals",
+      "cells": {
+        "GitHub Issues Primary": {
+          "text": "Good operator UX, but not strong enough as the canonical planning store.",
+          "color": "yellow"
+        },
+        "Roadmap Canonical + GitHub Triggers": {
+          "text": "Recommended: keep roadmap files canonical and trigger execution from GitHub using a roadmap slug, id, or path.",
+          "color": "green"
+        },
+        "External PM Primary": {
+          "text": "Not recommended unless an external stakeholder workflow becomes mandatory.",
+          "color": "red"
+        },
+        "PR-Only Control Plane": {
+          "text": "Useful as a validation stage, but not sufficient as the main control plane.",
+          "color": "yellow"
+        }
+      }
+    }
+  ]
+}
