@@ -16,6 +16,7 @@ goal: "Maintain and evolve a portable agent operating standard for AI-assisted s
 See individual `*.md` files in this directory. Use `draft` while clarifying and `ready` when autonomous execution can begin.
 
 - `github-opencode-pilot.md` - dogfood the GitHub Actions pilot before standardizing adoption guidance in the blueprint
+- `readme-once-over.md` - tighten the README for maintainer quick reference and clearer GitHub-repo orientation
 
 ## Quick Ideas
 
