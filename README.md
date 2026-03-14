@@ -49,7 +49,13 @@ Not a fit:
 
 ## Experimental GitHub Automation
 
-- `.github/workflows/opencode-hello.yml` provides a minimal OpenCode GitHub Actions proof of concept.
-- Add an `ANTHROPIC_API_KEY` repository secret and adjust the workflow model if you want to use a different provider.
-- Create a GitHub issue and comment `/opencode hello` or `/oc hello` to trigger the workflow.
-- The workflow should reply with a short hello comment only; it does not modify files or open a PR.
+- `.github/workflows/opencode-hello.yml` provides a minimal manual smoke test for OpenCode in GitHub Actions.
+- `.github/workflows/opencode-implement.yml` is the roadmap-driven execution workflow.
+- `opencode.json` commits the provider routing and default model for the workflow.
+- Add a `ZAI_CODING_PLAN_API_KEY` repository secret in GitHub Actions.
+- Both workflows are pinned to `zai-plan/glm-5`, where `zai-plan` is a custom OpenCode provider configured to use the Z.AI Coding Plan endpoint.
+- Local smoke test: run `ZAI_CODING_PLAN_API_KEY=... bash ./opencode-hello-local.sh` to verify the pinned provider route without GitHub.
+- Optional local config dump: add `OPENCODE_SHOW_CONFIG=1` when running the local smoke test.
+- Run the hello smoke test from the Actions UI or with `gh workflow run opencode-hello.yml`.
+- Run roadmap execution from the Actions UI or with `gh workflow run opencode-implement.yml -f roadmap_path=roadmap/github-opencode-pilot.md`.
+- The roadmap work unit is the canonical execution brief; GitHub only supplies the trigger and the `roadmap_path`.

@@ -1,25 +1,14 @@
 name: OpenCode Hello
 
 on:
-  issue_comment:
-    types: [created]
+  workflow_dispatch:
 
 jobs:
   hello:
-    if: >-
-      github.event.issue.pull_request == null &&
-      github.actor != 'github-actions[bot]' &&
-      github.actor != 'opencode-agent[bot]' &&
-      (
-        contains(github.event.comment.body, '/opencode hello') ||
-        contains(github.event.comment.body, '/oc hello')
-      )
     runs-on: ubuntu-latest
     permissions:
       id-token: write
       contents: read
-      issues: write
-      pull-requests: write
     steps:
       - name: Check out repository
         uses: actions/checkout@v6
@@ -30,12 +19,15 @@ jobs:
       - name: Run OpenCode hello responder
         uses: anomalyco/opencode/github@latest
         env:
-          ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          ZAI_CODING_PLAN_API_KEY: ${{ secrets.ZAI_CODING_PLAN_API_KEY }}
         with:
-          model: anthropic/claude-sonnet-4-20250514
-          token: ${{ github.token }}
+          model: zai-plan/glm-5
+          use_github_token: true
           prompt: |
-            Reply to the triggering GitHub issue with a single short comment that says hello from OpenCode running in GitHub Actions.
+            Produce a single short hello-world response for a manually dispatched GitHub Actions smoke test.
+            Mention the exact model you used: `zai-plan/glm-5`.
+            Mention that this workflow is pinned to the committed project config and the Z.AI Coding Plan endpoint.
 
             Constraints:
             - Do not edit any files.

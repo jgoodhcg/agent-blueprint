@@ -4,3 +4,7 @@ agents-file-reference.md
 roadmap-file-reference.md
 
 .agent-profile.md
+
+.env.local
+
+.decisions/*.xlsx

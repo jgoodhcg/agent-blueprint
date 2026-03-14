@@ -1,0 +1,81 @@
+name: OpenCode Implement
+
+on:
+  workflow_dispatch:
+    inputs:
+      roadmap_path:
+        description: Path to the roadmap work unit under roadmap/
+        required: true
+        type: string
+
+jobs:
+  implement:
+    runs-on: ubuntu-latest
+    permissions:
+      id-token: write
+      contents: write
+      pull-requests: write
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v6
+        with:
+          fetch-depth: 1
+          persist-credentials: false
+
+      - name: Validate roadmap input
+        id: roadmap
+        shell: bash
+        run: |
+          set -euo pipefail
+
+          roadmap_path="${{ inputs.roadmap_path }}"
+
+          case "${roadmap_path}" in
+            roadmap/*.md) ;;
+            *)
+              echo "roadmap_path must point to a markdown file under roadmap/" >&2
+              exit 1
+              ;;
+          esac
+
+          if [[ ! -f "${roadmap_path}" ]]; then
+            echo "roadmap file not found: ${roadmap_path}" >&2
+            exit 1
+          fi
+
+          status="$(sed -n '1,20p' "${roadmap_path}" | sed -n 's/^status: //p' | head -n 1)"
+
+          case "${status}" in
+            ready|active) ;;
+            *)
+              echo "roadmap file must be in ready or active status, found: ${status:-missing}" >&2
+              exit 1
+              ;;
+          esac
+
+          printf 'roadmap_path=%s\n' "${roadmap_path}" >> "${GITHUB_OUTPUT}"
+          printf 'roadmap_status=%s\n' "${status}" >> "${GITHUB_OUTPUT}"
+
+      - name: Run OpenCode roadmap implementation
+        uses: anomalyco/opencode/github@latest
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          ZAI_CODING_PLAN_API_KEY: ${{ secrets.ZAI_CODING_PLAN_API_KEY }}
+        with:
+          model: zai-plan/glm-5
+          use_github_token: true
+          prompt: |
+            Implement the roadmap work unit at `${{ steps.roadmap.outputs.roadmap_path }}`.
+
+            Execution contract:
+            - Treat that roadmap file as the canonical source of scope.
+            - Read `AGENTS.md` and the roadmap file before making changes.
+            - Use the committed project config and pinned model route `zai-plan/glm-5`.
+            - Run the repository validation commands listed in `AGENTS.md` before finishing.
+            - If implementation changes are required, create a branch and open a pull request.
+            - Reference the roadmap path `${{ steps.roadmap.outputs.roadmap_path }}` in the final PR summary.
+
+            Constraints:
+            - Do not use GitHub issue text as the canonical task definition.
+            - Do not execute work outside the requested roadmap unit unless required for correctness.
+            - Do not ask follow-up questions unless blocked on a true ambiguity in the roadmap file.
