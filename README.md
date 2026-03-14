@@ -2,60 +2,59 @@
 
 Portable operating standard for AI-assisted software projects.
 
-Copy one file, run alignment, answer a few prompts, and your repo gets a consistent operating model for planning, execution, validation, and commit hygiene.
+## Quick Reference
 
-## What This Repository Is
+| File | Purpose |
+|------|---------|
+| `AGENT_BLUEPRINT.md` | Canonical operating spec (copy to your repo) |
+| `AGENTS.md` | Project-specific agent config (generated during alignment) |
+| `roadmap/index.md` | Work unit backlog and execution status |
+| `DESIGN_SYSTEM_GUIDE.md` | Optional UI design system companion |
+| `collect-project-docs.sh` | Multi-project audit collection utility |
 
-This is a docs-and-workflow repository, not a runtime application.
+Validation: `bash -n collect-project-docs.sh` (after script changes)
 
-It defines a reusable blueprint you can copy into any codebase so human + agent collaboration follows the same rules each time.
+## What This Is
 
-## Core Files
-
-- `AGENT_BLUEPRINT.md` (the main spec)
-- `DESIGN_SYSTEM_GUIDE.md` (optional, for UI-heavy projects)
-- `roadmap/index.md` (execution roadmap, created during alignment)
+A docs-and-workflow repository, not a runtime application. Copy one file into any codebase to get a consistent operating model for planning, execution, validation, and commit hygiene.
 
 ## Quick Start
 
-1. Copy `AGENT_BLUEPRINT.md` and optionally `DESIGN_SYSTEM_GUIDE.md` to your project root.
-2. Ask your coding agent: "Align this project with AGENT_BLUEPRINT.md".
-3. Answer any prompts the agent provides.
+1. Copy `AGENT_BLUEPRINT.md` to your project root.
+2. Optionally copy `DESIGN_SYSTEM_GUIDE.md` for UI-heavy projects.
+3. Ask your coding agent: "Align this project with AGENT_BLUEPRINT.md".
+4. Answer prompts; the agent creates `AGENTS.md` and `roadmap/index.md`.
 
-## How It Works In Practice
+## Workflow Model
 
-1. `AGENT_BLUEPRINT.md` is the immutable operating contract.
-2. During alignment, the agent creates or updates `AGENTS.md` and `roadmap/index.md`.
-3. `roadmap/*.md` files become executable work units (`draft -> ready -> active -> done`).
-4. `AGENTS.md` captures project-specific conventions for allowed commands, validation flow, and commit behavior.
-5. The workflow enforces commit approval, self-validation before handoff, and commit trailer handling.
-
-## Who This Fits
-
-Good fit:
-- You want one portable standard across many repos.
-- You like markdown-first workflows and low process overhead.
-- You want agents to execute ready work autonomously, with validation.
-
-Not a fit:
-- You want a different process in every project.
-- You need a heavy governance platform beyond markdown standards.
-
-## Versioning
-
-- The source of truth is the frontmatter version in `AGENT_BLUEPRINT.md`.
-- Current blueprint version in this repo: `2026-03-07`.
-- After upgrading in downstream projects, run an alignment pass.
+1. **Blueprint is immutable** — `AGENT_BLUEPRINT.md` defines the operating contract.
+2. **Alignment generates config** — `AGENTS.md` captures project-specific rules (commands, validation, commit behavior).
+3. **Roadmap drives execution** — `roadmap/*.md` files are work units with status (`draft → ready → active → done`).
+4. **Validation before handoff** — agents run specified checks and request commit approval.
 
 ## Experimental GitHub Automation
 
-- `.github/workflows/opencode-hello.yml` provides a minimal manual smoke test for OpenCode in GitHub Actions.
-- `.github/workflows/opencode-implement.yml` is the roadmap-driven execution workflow.
-- `opencode.json` commits the provider routing and default model for the workflow.
-- Add a `ZAI_CODING_PLAN_API_KEY` repository secret in GitHub Actions.
-- Both workflows are pinned to `zai-plan/glm-5`, where `zai-plan` is a custom OpenCode provider configured to use the Z.AI Coding Plan endpoint.
-- Local smoke test: run `ZAI_CODING_PLAN_API_KEY=... bash ./opencode-hello-local.sh` to verify the pinned provider route without GitHub.
-- Optional local config dump: add `OPENCODE_SHOW_CONFIG=1` when running the local smoke test.
-- Run the hello smoke test from the Actions UI or with `gh workflow run opencode-hello.yml`.
-- Run roadmap execution from the Actions UI or with `gh workflow run opencode-implement.yml -f roadmap_path=roadmap/github-opencode-pilot.md`.
-- The roadmap work unit is the canonical execution brief; GitHub only supplies the trigger and the `roadmap_path`.
+This repo pilots roadmap-driven execution via GitHub Actions:
+
+- `opencode-hello.yml` — manual smoke test for OpenCode in Actions
+- `opencode-implement.yml` — roadmap work unit execution workflow
+- `opencode.json` — pins provider routing (`zai-plan/glm-5`)
+
+**Setup:**
+1. Add `ZAI_CODING_PLAN_API_KEY` as a repository secret.
+2. Run hello test: `gh workflow run opencode-hello.yml`
+3. Run roadmap execution: `gh workflow run opencode-implement.yml -f roadmap_path=roadmap/some-unit.md`
+
+**Local testing:** `ZAI_CODING_PLAN_API_KEY=... bash ./opencode-hello-local.sh`
+
+The roadmap work unit is the canonical execution brief; GitHub only supplies the trigger and path.
+
+## Versioning
+
+Blueprint version is in `AGENT_BLUEPRINT.md` frontmatter. Current: `2026-03-07`. After upgrading downstream, run an alignment pass.
+
+## Who This Fits
+
+**Good fit:** One portable standard across many repos, markdown-first workflows, autonomous agent execution with validation.
+
+**Not a fit:** Different process per project, heavy governance platforms beyond markdown standards.
