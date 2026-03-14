@@ -1,5 +1,5 @@
 ---
-version: "2026-03-14"
+version: "2026-03-14.1"
 ---
 
 # Agent Blueprint
@@ -246,6 +246,20 @@ Recommended default:
 - GitHub Actions is the remote trigger surface.
 - Workflow input is a path to a `roadmap/*.md` work unit.
 - A local smoke test exists for provider/config verification without GitHub.
+
+### Reference Files [BP-ADOPT-AUTO-REF]
+
+When aligning another repo, the agent may fetch concrete reference guidance and example files from this source repository.
+
+Prefer a version-matched tag or commit ref when one exists. If no pinned ref is available, use the current paths below as the best-effort source of truth:
+
+- Guide: [https://raw.githubusercontent.com/jgoodhcg/agent-blueprint/main/guides/autonomous-github-actions.md](https://raw.githubusercontent.com/jgoodhcg/agent-blueprint/main/guides/autonomous-github-actions.md)
+- Smoke test workflow: [https://raw.githubusercontent.com/jgoodhcg/agent-blueprint/main/guides/examples/opencode-hello.yml](https://raw.githubusercontent.com/jgoodhcg/agent-blueprint/main/guides/examples/opencode-hello.yml)
+- Implement workflow: [https://raw.githubusercontent.com/jgoodhcg/agent-blueprint/main/guides/examples/opencode-implement.yml](https://raw.githubusercontent.com/jgoodhcg/agent-blueprint/main/guides/examples/opencode-implement.yml)
+- Provider config: [https://raw.githubusercontent.com/jgoodhcg/agent-blueprint/main/guides/examples/opencode.json](https://raw.githubusercontent.com/jgoodhcg/agent-blueprint/main/guides/examples/opencode.json)
+- Local smoke test: [https://raw.githubusercontent.com/jgoodhcg/agent-blueprint/main/guides/examples/opencode-hello-local.sh](https://raw.githubusercontent.com/jgoodhcg/agent-blueprint/main/guides/examples/opencode-hello-local.sh)
+
+These files are reference artifacts, not core invariants. Agents should adapt them to the target repo while preserving the blueprint rules above.
 
 ---
 
