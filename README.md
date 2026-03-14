@@ -44,7 +44,7 @@ Not a fit:
 ## Versioning
 
 - The source of truth is the frontmatter version in `AGENT_BLUEPRINT.md`.
-- Current blueprint version in this repo: `2026-03-07`.
+- Current blueprint version in this repo: `2026-03-14`.
 - After upgrading in downstream projects, run an alignment pass.
 
 ## Experimental GitHub Automation

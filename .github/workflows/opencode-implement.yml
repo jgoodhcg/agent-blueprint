@@ -70,6 +70,7 @@ jobs:
             Execution contract:
             - Treat that roadmap file as the canonical source of scope.
             - Read `AGENTS.md` and the roadmap file before making changes.
+            - Apply the `Runtime: Autonomous GitHub Actions` policy in `AGENTS.md`.
             - Use the committed project config and pinned model route `zai-plan/glm-5`.
             - Run the repository validation commands listed in `AGENTS.md` before finishing.
             - If implementation changes are required, create a branch and open a pull request.

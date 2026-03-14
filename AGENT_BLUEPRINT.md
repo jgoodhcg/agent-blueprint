@@ -1,5 +1,5 @@
 ---
-version: "2026-03-07"
+version: "2026-03-14"
 ---
 
 # Agent Blueprint
@@ -90,9 +90,23 @@ Work through the validation hierarchy. Escalate only when lower levels pass.
 ### Guardrails [BP-WF-GUARD]
 
 - Run validation after changes.
-- If a command is not on the allowlist, ask.
+- Follow the runtime-specific execution policy defined in `AGENTS.md`; interactive sessions and autonomous workflow runs may have different command and confirmation rules.
 - Keep changes minimal and focused; avoid unrelated improvements.
 - For critical logic changes, review `git diff` before declaring completion.
+
+### Autonomous GitHub Actions Pattern [BP-WF-AUTO]
+
+When a project supports autonomous remote execution, prefer this pattern:
+
+1. Keep `roadmap/` as the canonical planning surface.
+2. Use a manually dispatched workflow (`workflow_dispatch` or equivalent CLI/API dispatch), not issue comments, as the primary remote trigger.
+3. Pass a single scoped execution handle such as `roadmap_path`; do not use free-form trigger prose as the canonical task definition.
+4. Validate that the referenced roadmap file exists under `roadmap/` and is in an executable state such as `ready` or `active`.
+5. Instruct the remote agent to apply the autonomous runtime policy from `AGENTS.md`.
+6. Store provider credentials in workflow secrets and keep provider routing/model defaults in committed repo config.
+7. Maintain a separate smoke-test workflow for validating remote runtime wiring before relying on the full implementation workflow.
+
+This keeps scope versioned with the repo, makes remote execution reproducible, and prevents trigger-time drift.
 
 ### Commits [BP-WF-COMMIT]
 
@@ -214,6 +228,24 @@ Calibrate agent interactions based on user context. Store in a git-ignored file 
 4. Optionally create agent-specific wrappers (`CLAUDE.md`, `GEMINI.md`, etc.) using the wrapper template.
 
 Agent-specific files (`CLAUDE.md`, `GEMINI.md`, etc.) are optional and should be thin pointers to `AGENTS.md`.
+
+### Optional: Autonomous GitHub Actions Setup [BP-ADOPT-AUTO]
+
+If the project should support roadmap-driven autonomous execution in GitHub Actions:
+
+1. Add runtime-specific policy to `AGENTS.md` for both interactive local work and autonomous workflow runs.
+2. Commit any provider/model routing config the remote runtime should use.
+3. Add a manual smoke-test workflow for validating secrets and remote agent wiring.
+4. Add a `workflow_dispatch` implementation workflow with a required input such as `roadmap_path`.
+5. Validate `roadmap_path` before invoking the agent.
+6. Treat the referenced roadmap file as the canonical execution brief.
+7. Store remote provider credentials in repository or environment secrets, never in local-only config.
+
+Recommended default:
+- `roadmap/` remains canonical.
+- GitHub Actions is the remote trigger surface.
+- Workflow input is a path to a `roadmap/*.md` work unit.
+- A local smoke test exists for provider/config verification without GitHub.
 
 ---
 
@@ -346,13 +378,28 @@ Template rules:
 | 3 | `[test]` | Before completing work |
 | 4 | `[e2e]` | After UI changes |
 
-## Allowed Commands
+## Execution Modes
 
-- `[command]` — [what it does]
+Use one policy file for both paired local work and autonomous workflow runs. Shared repo rules always apply; runtime-specific rules override only where they differ.
 
-## Require Confirmation
+### Shared Rules
 
-- `[command]` — [why]
+- `roadmap/` is the canonical planning surface.
+- Validation commands are defined above and applied when relevant.
+- Keep changes minimal and scoped to the requested work unit.
+
+### Runtime: Interactive Local
+
+- Require user confirmation before `git commit`.
+- Require user confirmation before installs, upgrades, or network calls with external side effects.
+- It is acceptable to stop for clarification when scope is ambiguous.
+
+### Runtime: Autonomous Workflow
+
+- The workflow input identifies the work unit; the referenced roadmap file is the canonical brief.
+- `git commit`, branch creation, push, PR creation, and network access are allowed when required to complete the scoped work unit.
+- Use workflow secrets and committed repo config; do not depend on local machine state.
+- Fail clearly when blocked by a true ambiguity or missing prerequisite rather than inventing scope.
 
 ## Never Run
 

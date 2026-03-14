@@ -1,6 +1,6 @@
 # AGENTS
 
-Follows `AGENT_BLUEPRINT.md` (version: 2026-03-07)
+Follows `AGENT_BLUEPRINT.md` (version: 2026-03-14)
 
 ## Project Overview
 
@@ -64,18 +64,38 @@ Template rules:
 | 3 | `rg -n "BP-CORE-01|BP-ALIGN-REPORT|BP-RM-DOR" AGENT_BLUEPRINT.md` | Before completing blueprint changes |
 | 4 | `echo "N/A: no UI/e2e in this repository"` | Always |
 
-## Allowed Commands
+## Execution Modes
 
-- `rg`, `sed`, `cat`, `nl`, `wc` — inspect and validate docs/scripts
-- `bash -n collect-project-docs.sh` — shell syntax validation
-- `git status`, `git diff` — change review
+Use one policy file for both paired local work and autonomous GitHub Actions runs. Shared repo rules always apply; runtime-specific rules override only where they differ.
 
-## Require Confirmation
+### Shared Rules
 
-- `git commit` — user approves message and scope first
-- Any dependency install/upgrade — modifies environment
-- Network calls — external side effects
-- Destructive commands — potential data loss
+- Canonical planning surface is `roadmap/`; treat the referenced work unit as the source of scope.
+- Use the validation commands above when their trigger conditions apply.
+- Keep changes minimal and focused on the requested work unit.
+- `git status` and `git diff` are always allowed for change review.
+- `rg`, `sed`, `cat`, `nl`, and `wc` are always allowed for inspecting docs and scripts.
+- `bash -n collect-project-docs.sh` is allowed after script changes.
+
+### Runtime: Interactive Local
+
+- Default mode when working directly with the user in a local agent session.
+- Require user confirmation before `git commit`.
+- Require user confirmation before dependency install or upgrade.
+- Require user confirmation before network calls or other external side effects.
+- Ask before destructive actions or anything not clearly covered by the allowlist.
+- It is acceptable to stop for clarification when scope is ambiguous.
+
+### Runtime: Autonomous GitHub Actions
+
+- Applies to workflow-driven agent runs such as roadmap execution in GitHub Actions.
+- The workflow input, especially `roadmap_path`, identifies the work unit; the referenced roadmap file is the canonical brief.
+- `git commit`, branch creation, push, and PR creation are allowed when required to complete the referenced roadmap work unit.
+- Network access is allowed when required for task execution, including GitHub operations, model-provider calls, package downloads, and task-scoped documentation lookup.
+- Use GitHub Actions secrets and committed repo config; do not depend on local machine state.
+- Do not pause for human confirmation steps that cannot occur inside the workflow.
+- Do not browse or perform open-ended research unless the work unit requires it.
+- If blocked by a true ambiguity or missing prerequisite, fail clearly in logs rather than inventing scope.
 
 ## Never Run
 

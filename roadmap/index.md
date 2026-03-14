@@ -7,7 +7,7 @@ goal: "Maintain and evolve a portable agent operating standard for AI-assisted s
 
 ## Current Focus
 
-- Blueprint version: `2026-03-07`
+- Blueprint version: `2026-03-14`
 - Design System Guide version: `2026-03-07`
 - GitHub automation pilot: roadmap-canonical OpenCode workflows in this repo, triggered through GitHub Actions UI or `gh workflow run`
 
