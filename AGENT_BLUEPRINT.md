@@ -1,5 +1,5 @@
 ---
-version: "2026-03-14.1"
+version: "2026-03-16"
 ---
 
 # Agent Blueprint
@@ -15,7 +15,7 @@ Use these IDs in alignment reports for deterministic, machine-checkable outcomes
 **MUST**
 - `BP-CORE-01` `AGENTS.md` exists and references `AGENT_BLUEPRINT.md`.
 - `BP-CORE-02` `roadmap/index.md` exists.
-- `BP-CORE-03` Work in progress lives in `roadmap/*.md` with valid frontmatter.
+- `BP-CORE-03` Work in progress lives in `roadmap/` work unit files with valid frontmatter.
 - `BP-CORE-04` Agents execute `ready` work units autonomously and self-validate before returning.
 - `BP-CORE-05` Commits happen only after explicit user approval.
 - `BP-CORE-06` Alignment responses use the required report format in this blueprint.
@@ -70,7 +70,7 @@ Document a single command (or short sequence) that bootstraps the environment fr
 
 ### Operating Model [BP-WF-OPS]
 
-1. **Take direction** from a `roadmap/*.md` work unit, issue, or user request.
+1. **Take direction** from a `roadmap/` work unit file, issue, or user request.
 2. **If input is a brain dump**, create a draft work unit and clarify until scope and validation are concrete.
 3. **Execute autonomously** once scope is clear; do not stop after each small step.
 4. **Self-validate end-to-end** before returning: run required checks, create missing tests when needed, and run E2E for UI changes.
@@ -244,7 +244,7 @@ If the project should support roadmap-driven autonomous execution in GitHub Acti
 Recommended default:
 - `roadmap/` remains canonical.
 - GitHub Actions is the remote trigger surface.
-- Workflow input is a path to a `roadmap/*.md` work unit.
+- Workflow input is a path to a `roadmap/[ID]-[slug].md` work unit.
 - A local smoke test exists for provider/config verification without GitHub.
 
 ### Reference Files [BP-ADOPT-AUTO-REF]
@@ -399,6 +399,7 @@ Use one policy file for both paired local work and autonomous workflow runs. Sha
 ### Shared Rules
 
 - `roadmap/` is the canonical planning surface.
+- If roadmap work unit files use numeric IDs, document the digit width used by this repo in `AGENTS.md` (blueprint default: 3).
 - Validation commands are defined above and applied when relevant.
 - Keep changes minimal and scoped to the requested work unit.
 
@@ -476,9 +477,32 @@ This is the core execution model. Work units are prompts for autonomous agent wo
 roadmap/
 ├── index.md       # Project overview and directory of work units
 ├── _template.md   # Starting point for new work units
-├── *.md           # Individual work unit files (with frontmatter)
+├── [ID]-[slug].md # Individual work unit files (with frontmatter)
 └── archived/      # Completed or dropped work units
 ```
+
+Non-work-unit helper files such as `index.md` and `_template.md` remain unnumbered.
+
+### Work Unit Filenames [BP-RM-FILES]
+
+Roadmap work unit files should use `[ID]-[slug].md`.
+
+- `ID` is a stable numeric identifier used for reference and sorting only.
+- Assign IDs sequentially and never change them once assigned.
+- IDs do not encode priority, status, or anything beyond initial creation-order assignment.
+- Zero-padding is required for lexical sorting.
+- Default width is 3 digits.
+- Repos may choose a different digit width and should document it in `AGENTS.md`.
+
+### Numbering Alignment Guidance [BP-RM-FILES-ALIGN]
+
+When adopting numbered work unit filenames in an existing repo:
+
+1. Assign IDs by `created` date when present.
+2. If `created` is missing, preserve the current logical or file order.
+3. Rename work unit files in both `roadmap/` and `roadmap/archived/`.
+4. Update internal references after renaming.
+5. Do not renumber existing work units after IDs are assigned.
 
 ### Work Unit Frontmatter [BP-RM-FRONTMATTER]
 
@@ -555,7 +579,7 @@ goal: "One sentence: what this project exists to achieve."
 
 ## Work Units
 
-See individual `*.md` files in this directory. Use `draft` while clarifying and `ready` when autonomous execution can begin.
+See individual `[ID]-[slug].md` files in this directory. Use `draft` while clarifying and `ready` when autonomous execution can begin.
 
 ## Quick Ideas
 

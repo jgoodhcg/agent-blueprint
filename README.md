@@ -26,7 +26,7 @@ It defines a reusable blueprint you can copy into any codebase so human + agent 
 
 1. `AGENT_BLUEPRINT.md` is the immutable operating contract.
 2. During alignment, the agent creates or updates `AGENTS.md` and `roadmap/index.md`.
-3. `roadmap/*.md` files become executable work units (`draft -> ready -> active -> done`).
+3. `roadmap/[ID]-[slug].md` files become executable work units (`draft -> ready -> active -> done`).
 4. `AGENTS.md` captures project-specific conventions for allowed commands, validation flow, and commit behavior.
 5. The workflow enforces commit approval, self-validation before handoff, and commit trailer handling.
 
@@ -44,18 +44,20 @@ Not a fit:
 ## Versioning
 
 - The source of truth is the frontmatter version in `AGENT_BLUEPRINT.md`.
-- Current blueprint version in this repo: `2026-03-14.1`.
+- Current blueprint version in this repo: `2026-03-16`.
 - After upgrading in downstream projects, run an alignment pass.
 
 ## Experimental GitHub Automation
 
 - `.github/workflows/opencode-hello.yml` provides a minimal manual smoke test for OpenCode in GitHub Actions.
-- `.github/workflows/opencode-implement.yml` is the roadmap-driven execution workflow.
+- `.github/workflows/opencode-implement.yml` is the roadmap-driven execution and review workflow.
 - `opencode.json` commits the provider routing and default model for the workflow.
-- Add a `ZAI_CODING_PLAN_API_KEY` repository secret in GitHub Actions.
-- Both workflows are pinned to `zai-plan/glm-5`, where `zai-plan` is a custom OpenCode provider configured to use the Z.AI Coding Plan endpoint.
+- Add `ZAI_CODING_PLAN_API_KEY` and `OPENCODE_API_KEY` repository secrets in GitHub Actions.
+- Implementation runs use `zai-plan/glm-5`, where `zai-plan` is a custom OpenCode provider configured to use the Z.AI Coding Plan endpoint.
+- Review runs use OpenCode Zen with an allowlist of `opencode/claude-opus-4-6`, `opencode/gpt-5.4`, and `opencode/gemini-3.1-pro`.
 - Local smoke test: run `ZAI_CODING_PLAN_API_KEY=... bash ./opencode-hello-local.sh` to verify the pinned provider route without GitHub.
 - Optional local config dump: add `OPENCODE_SHOW_CONFIG=1` when running the local smoke test.
 - Run the hello smoke test from the Actions UI or with `gh workflow run opencode-hello.yml`.
-- Run roadmap execution from the Actions UI or with `gh workflow run opencode-implement.yml -f roadmap_path=roadmap/github-opencode-pilot.md`.
+- Run roadmap implementation from the Actions UI or with `gh workflow run opencode-implement.yml -f mode=implement -f roadmap_path=roadmap/002-readme-once-over.md`.
+- Run roadmap review from the Actions UI or with `gh workflow run opencode-implement.yml -f mode=review -f roadmap_path=roadmap/002-readme-once-over.md -f pr_number=123 -f review_model=opencode/claude-opus-4-6`.
 - The roadmap work unit is the canonical execution brief; GitHub only supplies the trigger and the `roadmap_path`.

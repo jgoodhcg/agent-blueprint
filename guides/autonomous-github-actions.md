@@ -19,7 +19,7 @@ Use this guide when a project wants:
 - `AGENT_BLUEPRINT.md`
 - `AGENTS.md`
 - `roadmap/index.md`
-- `roadmap/*.md` work units
+- `roadmap/[ID]-[slug].md` work units
 - committed runtime config such as `opencode.json`
 - GitHub Actions secrets for the selected provider
 

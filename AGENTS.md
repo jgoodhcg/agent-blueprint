@@ -1,6 +1,6 @@
 # AGENTS
 
-Follows `AGENT_BLUEPRINT.md` (version: 2026-03-14.1)
+Follows `AGENT_BLUEPRINT.md` (version: 2026-03-16)
 
 ## Project Overview
 
@@ -71,6 +71,7 @@ Use one policy file for both paired local work and autonomous GitHub Actions run
 ### Shared Rules
 
 - Canonical planning surface is `roadmap/`; treat the referenced work unit as the source of scope.
+- Roadmap work unit filenames use 3-digit IDs in this repo: `[ID]-[slug].md`.
 - Use the validation commands above when their trigger conditions apply.
 - Keep changes minimal and focused on the requested work unit.
 - `git status` and `git diff` are always allowed for change review.

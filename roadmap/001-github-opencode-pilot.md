@@ -19,15 +19,17 @@ Validate a GitHub-native autonomous workflow in this repo so future blueprint gu
 - Current baseline: `.github/workflows/opencode-hello.yml` exists as a manually dispatched smoke test.
 - The hello workflow should use the built-in GitHub Actions token path (`use_github_token: true`) instead of assuming local OpenCode auth state.
 - Remote execution should be pinned by committed project config instead of request-time model arguments.
-- `opencode.json` should define a custom provider that targets the Z.AI Coding Plan endpoint and sets the default model to `zai-plan/glm-5`.
-- The only required provider credential for the hello and implement workflows should be `ZAI_CODING_PLAN_API_KEY` from GitHub Actions secrets.
-- The canonical execution workflow should be manually dispatched with a required `roadmap_path` input, either from the Actions UI or via `gh workflow run`.
-- The workflow should validate that `roadmap_path` points to a real `roadmap/*.md` work unit in `ready` or `active` status before handing execution to OpenCode.
+- `opencode.json` should define both the `zai-plan` provider for implementation and the `opencode` provider for Zen-based review.
+- The required provider credentials should be `ZAI_CODING_PLAN_API_KEY` for implementation and `OPENCODE_API_KEY` for Zen review.
+- The canonical execution workflow should be manually dispatched with a required `roadmap_path` input plus an explicit execution `mode`.
+- The workflow should validate that `roadmap_path` points to a real `roadmap/[ID]-[slug].md` work unit in `ready` or `active` status before handing execution to OpenCode.
+- Review runs should use an allowlisted Zen frontier model rather than arbitrary model strings.
+- Review runs should require an explicit PR target such as `pr_number`.
 - The next context should:
   1. rerun the hello workflow until it succeeds as a manual smoke test
   2. validate the roadmap-driven implement workflow with a real `roadmap_path`
-  3. verify branch and PR creation behavior from the roadmap-driven path
-  4. only after that, standardize the pattern in the blueprint
+  3. validate Zen-backed review mode with an allowlisted frontier model
+  4. decide how many times review feedback may be applied automatically, if at all
 - MVP trigger model is `workflow_dispatch`, invoked manually in the Actions UI or through `gh workflow run`. GitHub Projects can be used for planning and overview, but they are not the direct execution trigger in the pilot.
 
 ## Acceptance Criteria
@@ -37,12 +39,13 @@ Validate a GitHub-native autonomous workflow in this repo so future blueprint gu
 - [ ] Provider credentials for remote execution come from GitHub Actions secrets, not local machine state.
 - [ ] The workflow is pinned to the committed `zai-plan/glm-5` model route and uses the Z.AI Coding Plan endpoint.
 - [ ] The implement workflow accepts a `roadmap_path`, validates it, and treats the referenced roadmap file as the canonical execution brief.
-- [ ] Branch and PR creation are validated from the roadmap-driven workflow path.
+- [ ] Review mode accepts an allowlisted Zen model and produces review output without mutating code.
+- [ ] Branch and PR creation are validated from the roadmap-driven implementation path.
 
 ## Notes
 
 - Trigger surface: GitHub Actions UI or `gh workflow run`.
 - No runtime model-selection arguments are needed for the smoke test; the workflow should use the committed project config.
-- Runtime execution input should be limited to `roadmap_path` for the roadmap-driven workflow.
+- Runtime execution input should be limited to `roadmap_path`, `mode`, and explicit review inputs such as `pr_number` plus an allowlisted review model.
 - Validation for repo changes should continue to use the commands listed in `AGENTS.md`.
 - `roadmap/` is the canonical planning surface; GitHub provides the remote trigger and execution history.
