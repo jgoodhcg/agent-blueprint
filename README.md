@@ -61,3 +61,9 @@ Not a fit:
 - Run roadmap implementation from the Actions UI or with `gh workflow run opencode-implement.yml -f mode=implement -f roadmap_path=roadmap/002-readme-once-over.md`.
 - Run roadmap review from the Actions UI or with `gh workflow run opencode-implement.yml -f mode=review -f roadmap_path=roadmap/002-readme-once-over.md -f pr_number=123 -f review_model=opencode/claude-opus-4-6`.
 - The roadmap work unit is the canonical execution brief; GitHub only supplies the trigger and the `roadmap_path`.
+- Recommended pilot proof order:
+  1. Run the local smoke test.
+  2. Run `opencode-hello.yml` and confirm the workflow summary reports a successful OpenCode action outcome.
+  3. Run `opencode-implement.yml` in `implement` mode against a safe `ready` roadmap work unit and confirm it creates or updates the expected branch/PR.
+  4. Run `opencode-implement.yml` in `review` mode against that PR and confirm the workflow summary captures the selected review model and target PR.
+  5. Update the acceptance checklist in `roadmap/001-github-opencode-pilot.md` only after the corresponding GitHub evidence exists.

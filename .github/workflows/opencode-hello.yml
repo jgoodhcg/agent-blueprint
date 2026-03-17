@@ -1,4 +1,5 @@
 name: OpenCode Hello
+run-name: OpenCode Hello
 
 on:
   workflow_dispatch:
@@ -17,6 +18,7 @@ jobs:
           persist-credentials: false
 
       - name: Run OpenCode hello responder
+        id: opencode
         uses: anomalyco/opencode/github@latest
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
@@ -35,3 +37,16 @@ jobs:
             - Do not open a pull request.
             - Do not ask follow-up questions.
             - Mention that this is the hello-world workflow.
+
+      - name: Write workflow summary
+        if: always()
+        shell: bash
+        run: |
+          {
+            echo "## OpenCode Hello"
+            echo
+            echo "- Workflow: \`opencode-hello.yml\`"
+            echo "- Model: \`zai-plan/glm-5\`"
+            echo "- Expected side effects: none"
+            echo "- OpenCode action outcome: \`${{ steps.opencode.outcome }}\`"
+          } >> "${GITHUB_STEP_SUMMARY}"

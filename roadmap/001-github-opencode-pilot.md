@@ -3,7 +3,7 @@ title: "Pilot GitHub-Triggered OpenCode Automation"
 status: ready
 description: "Dogfood roadmap-canonical OpenCode GitHub Actions workflows in this repo before standardizing the pattern."
 created: 2026-03-10
-updated: 2026-03-13
+updated: 2026-03-17
 tags: [automation, github-actions, opencode]
 priority: high
 ---
@@ -34,13 +34,26 @@ Validate a GitHub-native autonomous workflow in this repo so future blueprint gu
 
 ## Acceptance Criteria
 
-- [ ] The hello workflow succeeds as a manual GitHub Actions smoke test.
-- [ ] The workflow uses the supported GitHub token configuration and does not depend on local OpenCode auth state.
-- [ ] Provider credentials for remote execution come from GitHub Actions secrets, not local machine state.
-- [ ] The workflow is pinned to the committed `zai-plan/glm-5` model route and uses the Z.AI Coding Plan endpoint.
+- [x] The hello workflow succeeds as a manual GitHub Actions smoke test.
+- [x] The workflow uses the supported GitHub token configuration and does not depend on local OpenCode auth state.
+- [x] Provider credentials for remote execution come from GitHub Actions secrets, not local machine state.
+- [x] The workflow is pinned to the committed `zai-plan/glm-5` model route and uses the Z.AI Coding Plan endpoint.
 - [ ] The implement workflow accepts a `roadmap_path`, validates it, and treats the referenced roadmap file as the canonical execution brief.
 - [ ] Review mode accepts an allowlisted Zen model and produces review output without mutating code.
 - [ ] Branch and PR creation are validated from the roadmap-driven implementation path.
+
+## Validation Procedure
+
+1. Run `bash ./opencode-hello-local.sh` with `ZAI_CODING_PLAN_API_KEY` set and confirm the pinned `zai-plan/glm-5` route works outside GitHub.
+2. Run `.github/workflows/opencode-hello.yml` from the Actions UI or `gh workflow run` and confirm the workflow summary shows a successful OpenCode action outcome.
+3. Run `.github/workflows/opencode-implement.yml` with `mode=implement` and a safe `ready` roadmap path, then confirm branch and PR creation or update.
+4. Run `.github/workflows/opencode-implement.yml` with `mode=review`, the same roadmap path, a real `pr_number`, and an allowlisted `review_model`, then confirm the workflow summary records the selected model and PR target.
+5. Check off acceptance criteria only after the corresponding GitHub workflow run or PR artifact exists.
+
+## Evidence
+
+- 2026-03-17 local smoke test succeeded via `bash ./opencode-hello-local.sh`, returning the expected `zai-plan/glm-5` hello response.
+- 2026-03-17 GitHub Actions run `23202499958` (`OpenCode Hello`) completed successfully: <https://github.com/jgoodhcg/agent-blueprint/actions/runs/23202499958>
 
 ## Notes
 

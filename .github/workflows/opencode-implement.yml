@@ -1,4 +1,5 @@
 name: OpenCode Implement
+run-name: OpenCode ${{ inputs.mode }} / ${{ inputs.roadmap_path }}
 
 on:
   workflow_dispatch:
@@ -114,6 +115,7 @@ jobs:
           esac
 
       - name: Run OpenCode roadmap action
+        id: opencode
         uses: anomalyco/opencode/github@latest
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
@@ -145,3 +147,23 @@ jobs:
             - Review `${{ steps.review.outputs.target_ref }}` against the roadmap work unit.
             - Produce review feedback only; do not implement fixes in this run.
             - Do not open additional pull requests.
+
+      - name: Write workflow summary
+        if: always()
+        shell: bash
+        run: |
+          target_ref="${{ steps.review.outputs.target_ref }}"
+          if [[ -z "${target_ref}" ]]; then
+            target_ref="n/a"
+          fi
+
+          {
+            echo "## OpenCode Implement"
+            echo
+            echo "- Mode: \`${{ inputs.mode }}\`"
+            echo "- Roadmap path: \`${{ steps.roadmap.outputs.roadmap_path }}\`"
+            echo "- Roadmap status: \`${{ steps.roadmap.outputs.roadmap_status }}\`"
+            echo "- Resolved model: \`${{ steps.review.outputs.model }}\`"
+            echo "- Review target: \`${target_ref}\`"
+            echo "- OpenCode action outcome: \`${{ steps.opencode.outcome }}\`"
+          } >> "${GITHUB_STEP_SUMMARY}"
