@@ -61,6 +61,7 @@ Not a fit:
 - Run roadmap implementation from the Actions UI or with `gh workflow run opencode-implement.yml -f mode=implement -f roadmap_path=roadmap/002-readme-once-over.md`.
 - Run roadmap review from the Actions UI or with `gh workflow run opencode-implement.yml -f mode=review -f roadmap_path=roadmap/002-readme-once-over.md -f pr_number=123 -f review_model=opencode/claude-opus-4-6`.
 - The roadmap work unit is the canonical execution brief; GitHub only supplies the trigger and the `roadmap_path`.
+- Autonomous GitHub Actions commits use `github-actions[bot]` as the git author/committer, while model attribution remains in `Co-authored-by` and `AI-*` commit trailers.
 - Recommended pilot proof order:
   1. Run the local smoke test.
   2. Run `opencode-hello.yml` and confirm the workflow summary reports a successful OpenCode action outcome.
