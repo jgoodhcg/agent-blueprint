@@ -38,9 +38,9 @@ Validate a GitHub-native autonomous workflow in this repo so future blueprint gu
 - [x] The workflow uses the supported GitHub token configuration and does not depend on local OpenCode auth state.
 - [x] Provider credentials for remote execution come from GitHub Actions secrets, not local machine state.
 - [x] The workflow is pinned to the committed `zai-plan/glm-5` model route and uses the Z.AI Coding Plan endpoint.
-- [ ] The implement workflow accepts a `roadmap_path`, validates it, and treats the referenced roadmap file as the canonical execution brief.
+- [x] The implement workflow accepts a `roadmap_path`, validates it, and treats the referenced roadmap file as the canonical execution brief.
 - [ ] Review mode accepts an allowlisted Zen model and produces review output without mutating code.
-- [ ] Branch and PR creation are validated from the roadmap-driven implementation path.
+- [x] Branch and PR creation are validated from the roadmap-driven implementation path.
 
 ## Validation Procedure
 
@@ -54,6 +54,9 @@ Validate a GitHub-native autonomous workflow in this repo so future blueprint gu
 
 - 2026-03-17 local smoke test succeeded via `bash ./opencode-hello-local.sh`, returning the expected `zai-plan/glm-5` hello response.
 - 2026-03-17 GitHub Actions run `23202499958` (`OpenCode Hello`) completed successfully: <https://github.com/jgoodhcg/agent-blueprint/actions/runs/23202499958>
+- 2026-03-17 GitHub Actions run `23207254714` (`OpenCode Implement`) completed successfully against `roadmap/002-readme-once-over.md`: <https://github.com/jgoodhcg/agent-blueprint/actions/runs/23207254714>
+- 2026-03-17 implement run created branch `readme-once-over-002`, pushed commit `1e1b1a7`, and reported PR creation blocked by repository settings for GitHub Actions. Manual PR URL from the run: <https://github.com/jgoodhcg/agent-blueprint/pull/new/readme-once-over-002>
+- 2026-03-17 after enabling GitHub Actions PR permissions, rerun `23222054491` (`OpenCode Implement`) completed successfully and opened PR `#2` (`README Once-Over`): <https://github.com/jgoodhcg/agent-blueprint/actions/runs/23222054491>, <https://github.com/jgoodhcg/agent-blueprint/pull/2>
 
 ## Notes
 

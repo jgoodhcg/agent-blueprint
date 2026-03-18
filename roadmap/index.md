@@ -17,6 +17,7 @@ See individual `[ID]-[slug].md` files in this directory. Use `draft` while clari
 
 - `001-github-opencode-pilot.md` - dogfood the GitHub Actions pilot before standardizing adoption guidance in the blueprint
 - `002-readme-once-over.md` - tighten the README for maintainer quick reference and clearer GitHub-repo orientation
+- `003-actions-commit-identity-smoke.md` - validate neutral GitHub Actions commit identity on a fresh automated branch/PR
 
 ## Quick Ideas
 

@@ -114,6 +114,15 @@ jobs:
               ;;
           esac
 
+      - name: Resolve git identity
+        id: git_identity
+        shell: bash
+        run: |
+          set -euo pipefail
+
+          printf 'author_name=%s\n' 'github-actions[bot]' >> "${GITHUB_OUTPUT}"
+          printf 'author_email=%s\n' '41898282+github-actions[bot]@users.noreply.github.com' >> "${GITHUB_OUTPUT}"
+
       - name: Run OpenCode roadmap action
         id: opencode
         uses: anomalyco/opencode/github@latest
@@ -121,6 +130,10 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           ZAI_CODING_PLAN_API_KEY: ${{ secrets.ZAI_CODING_PLAN_API_KEY }}
           OPENCODE_API_KEY: ${{ secrets.OPENCODE_API_KEY }}
+          GIT_AUTHOR_NAME: ${{ steps.git_identity.outputs.author_name }}
+          GIT_AUTHOR_EMAIL: ${{ steps.git_identity.outputs.author_email }}
+          GIT_COMMITTER_NAME: ${{ steps.git_identity.outputs.author_name }}
+          GIT_COMMITTER_EMAIL: ${{ steps.git_identity.outputs.author_email }}
         with:
           model: ${{ steps.review.outputs.model }}
           use_github_token: true
@@ -136,6 +149,7 @@ jobs:
             - Do not use GitHub issue text as the canonical task definition.
             - Do not execute work outside the requested roadmap unit unless required for correctness.
             - Do not ask follow-up questions unless blocked on a true ambiguity in the roadmap file.
+            - If you create commits, keep the git author/committer identity provided by the workflow environment and use normal `Co-authored-by` plus AI trailer attribution for the model.
 
             If mode is `implement`:
             - Use `zai-plan/glm-5`.
@@ -164,6 +178,7 @@ jobs:
             echo "- Roadmap path: \`${{ steps.roadmap.outputs.roadmap_path }}\`"
             echo "- Roadmap status: \`${{ steps.roadmap.outputs.roadmap_status }}\`"
             echo "- Resolved model: \`${{ steps.review.outputs.model }}\`"
+            echo "- Git commit identity: \`${{ steps.git_identity.outputs.author_name }} <${{ steps.git_identity.outputs.author_email }}>\`"
             echo "- Review target: \`${target_ref}\`"
             echo "- OpenCode action outcome: \`${{ steps.opencode.outcome }}\`"
           } >> "${GITHUB_STEP_SUMMARY}"
