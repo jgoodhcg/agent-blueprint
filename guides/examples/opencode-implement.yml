@@ -15,15 +15,10 @@ on:
         options:
           - implement
           - review
-      review_model:
-        description: Zen review model to use when mode=review
+      model:
+        description: Optional provider/model override for implement or review
         required: false
-        default: opencode/random-frontier
-        type: choice
-        options:
-          - opencode/random-frontier
-          - opencode/gpt-5.4
-          - opencode/gemini-3.1-pro-preview
+        type: string
       pr_number:
         description: Pull request number to review when mode=review
         required: false
@@ -77,44 +72,27 @@ jobs:
           printf 'roadmap_path=%s\n' "${roadmap_path}" >> "${GITHUB_OUTPUT}"
           printf 'roadmap_status=%s\n' "${status}" >> "${GITHUB_OUTPUT}"
 
-      - name: Resolve review model
-        id: review
+      - name: Resolve model
+        id: model
         shell: bash
         run: |
           set -euo pipefail
 
           mode="${{ inputs.mode }}"
-          review_model="${{ inputs.review_model }}"
+          requested_model="${{ inputs.model }}"
           pr_number="${{ inputs.pr_number }}"
 
           case "${mode}" in
             implement)
-              printf 'model=zai-plan/glm-5\n' >> "${GITHUB_OUTPUT}"
-              printf 'requested_model=\n' >> "${GITHUB_OUTPUT}"
+              resolved_model="${requested_model:-zai-coding-plan/glm-5}"
               printf 'target_ref=\n' >> "${GITHUB_OUTPUT}"
               ;;
             review)
-              case "${review_model}" in
-                opencode/random-frontier|opencode/gpt-5.4|opencode/gemini-3.1-pro-preview) ;;
-                *)
-                  echo "unsupported review model: ${review_model}" >&2
-                  exit 1
-                  ;;
-              esac
               if [[ -z "${pr_number}" ]]; then
                 echo "pr_number is required when mode=review" >&2
                 exit 1
               fi
-              resolved_model="${review_model}"
-              if [[ "${review_model}" == "opencode/random-frontier" ]]; then
-                if (( RANDOM % 2 )); then
-                  resolved_model="opencode/gpt-5.4"
-                else
-                  resolved_model="opencode/gemini-3.1-pro-preview"
-                fi
-              fi
-              printf 'requested_model=%s\n' "${review_model}" >> "${GITHUB_OUTPUT}"
-              printf 'model=%s\n' "${resolved_model}" >> "${GITHUB_OUTPUT}"
+              resolved_model="${requested_model:-opencode/gpt-5.4}"
               printf 'target_ref=PR #%s\n' "${pr_number}" >> "${GITHUB_OUTPUT}"
               ;;
             *)
@@ -122,6 +100,21 @@ jobs:
               exit 1
               ;;
           esac
+
+          case "${resolved_model}" in
+            opencode/*|zai-coding-plan/*) ;;
+            *)
+              echo "model must use an allowed provider prefix: opencode/<model-id> or zai-coding-plan/<model-id>" >&2
+              exit 1
+              ;;
+          esac
+
+          if [[ "${resolved_model}" == */ ]]; then
+            echo "model must include a model id after the provider prefix" >&2
+            exit 1
+          fi
+
+          printf 'model=%s\n' "${resolved_model}" >> "${GITHUB_OUTPUT}"
 
       - name: Resolve git identity
         id: git_identity
@@ -144,7 +137,7 @@ jobs:
           GIT_COMMITTER_NAME: ${{ steps.git_identity.outputs.author_name }}
           GIT_COMMITTER_EMAIL: ${{ steps.git_identity.outputs.author_email }}
         with:
-          model: ${{ steps.review.outputs.model }}
+          model: ${{ steps.model.outputs.model }}
           use_github_token: true
           prompt: |
             `${{ inputs.mode }}` mode for roadmap work unit `${{ steps.roadmap.outputs.roadmap_path }}`.
@@ -161,13 +154,13 @@ jobs:
             - If you create commits, keep the git author/committer identity provided by the workflow environment and use normal `Co-authored-by` plus AI trailer attribution for the model.
 
             If mode is `implement`:
-            - Use `zai-plan/glm-5`.
+            - Use `${{ steps.model.outputs.model }}`.
             - Implement the roadmap work unit directly.
             - If implementation changes are required, create a branch and open a pull request.
 
             If mode is `review`:
-            - Use `${{ steps.review.outputs.model }}` through OpenCode Zen.
-            - Review `${{ steps.review.outputs.target_ref }}` against the roadmap work unit.
+            - Use `${{ steps.model.outputs.model }}`.
+            - Review `${{ steps.model.outputs.target_ref }}` against the roadmap work unit.
             - Produce review feedback only; do not implement fixes in this run.
             - Do not open additional pull requests.
 
@@ -175,13 +168,9 @@ jobs:
         if: always()
         shell: bash
         run: |
-          target_ref="${{ steps.review.outputs.target_ref }}"
-          requested_model="${{ steps.review.outputs.requested_model }}"
+          target_ref="${{ steps.model.outputs.target_ref }}"
           if [[ -z "${target_ref}" ]]; then
             target_ref="n/a"
-          fi
-          if [[ -z "${requested_model}" ]]; then
-            requested_model="n/a"
           fi
 
           {
@@ -190,8 +179,7 @@ jobs:
             echo "- Mode: \`${{ inputs.mode }}\`"
             echo "- Roadmap path: \`${{ steps.roadmap.outputs.roadmap_path }}\`"
             echo "- Roadmap status: \`${{ steps.roadmap.outputs.roadmap_status }}\`"
-            echo "- Requested review model: \`${requested_model}\`"
-            echo "- Resolved model: \`${{ steps.review.outputs.model }}\`"
+            echo "- Resolved model: \`${{ steps.model.outputs.model }}\`"
             echo "- Git commit identity: \`${{ steps.git_identity.outputs.author_name }} <${{ steps.git_identity.outputs.author_email }}>\`"
             echo "- Review target: \`${target_ref}\`"
             echo "- OpenCode action outcome: \`${{ steps.opencode.outcome }}\`"

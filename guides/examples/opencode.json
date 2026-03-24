@@ -1,35 +1,16 @@
 {
   "$schema": "https://opencode.ai/config.json",
-  "enabled_providers": ["zai-plan", "opencode"],
-  "model": "zai-plan/glm-5",
+  "enabled_providers": ["zai-coding-plan", "opencode"],
+  "model": "zai-coding-plan/glm-5",
   "provider": {
-    "zai-plan": {
-      "npm": "@ai-sdk/openai-compatible",
-      "name": "Z.AI Coding Plan",
+    "zai-coding-plan": {
       "options": {
-        "baseURL": "https://api.z.ai/api/coding/paas/v4",
         "apiKey": "{env:ZAI_CODING_PLAN_API_KEY}"
-      },
-      "models": {
-        "glm-5": {
-          "name": "GLM-5"
-        }
       }
     },
     "opencode": {
-      "npm": "@ai-sdk/openai-compatible",
-      "name": "OpenCode Zen",
       "options": {
-        "baseURL": "https://api.opencode.ai/v1",
         "apiKey": "{env:OPENCODE_API_KEY}"
-      },
-      "models": {
-        "gpt-5.4": {
-          "name": "GPT-5.4"
-        },
-        "gemini-3.1-pro-preview": {
-          "name": "Gemini 3.1 Pro Preview"
-        }
       }
     }
   }

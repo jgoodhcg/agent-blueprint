@@ -22,11 +22,11 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           ZAI_CODING_PLAN_API_KEY: ${{ secrets.ZAI_CODING_PLAN_API_KEY }}
         with:
-          model: zai-plan/glm-5
+          model: zai-coding-plan/glm-5
           use_github_token: true
           prompt: |
             Produce a single short hello-world response for a manually dispatched GitHub Actions smoke test.
-            Mention the exact model you used: `zai-plan/glm-5`.
+            Mention the exact model you used: `zai-coding-plan/glm-5`.
             Mention that this workflow is pinned to the committed project config and the Z.AI Coding Plan endpoint.
 
             Constraints:

@@ -2,7 +2,7 @@
 
 set -euo pipefail
 
-MODEL="zai-plan/glm-5"
+MODEL="zai-coding-plan/glm-5"
 REPO_ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")/../.." && pwd)"
 SHOW_CONFIG="${OPENCODE_SHOW_CONFIG:-0}"
 
@@ -29,7 +29,7 @@ mkdir -p "${XDG_DATA_HOME}" "${XDG_STATE_HOME}" "${XDG_CACHE_HOME}"
 
 prompt="$(cat <<'EOF'
 Reply with exactly one sentence:
-Hello from OpenCode running with zai-plan/glm-5 on the Z.AI Coding Plan endpoint.
+Hello from OpenCode running with zai-coding-plan/glm-5 on the Z.AI Coding Plan endpoint.
 
 Constraints:
 - Do not call any tools.
