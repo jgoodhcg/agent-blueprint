@@ -54,12 +54,12 @@ Not a fit:
 - `opencode.json` commits the provider routing and default model for the workflow.
 - Add `ZAI_CODING_PLAN_API_KEY` and `OPENCODE_API_KEY` repository secrets in GitHub Actions.
 - Implementation runs use `zai-plan/glm-5`, where `zai-plan` is a custom OpenCode provider configured to use the Z.AI Coding Plan endpoint.
-- Review runs use OpenCode Zen with an allowlist of `opencode/claude-opus-4-6`, `opencode/gpt-5.4`, and `opencode/gemini-3.1-pro`.
+- Review runs use OpenCode Zen with `opencode/random-frontier` by default, resolving to either `opencode/gpt-5.4` or `opencode/gemini-3.1-pro-preview`.
 - Local smoke test: run `ZAI_CODING_PLAN_API_KEY=... bash ./opencode-hello-local.sh` to verify the pinned provider route without GitHub.
 - Optional local config dump: add `OPENCODE_SHOW_CONFIG=1` when running the local smoke test.
 - Run the hello smoke test from the Actions UI or with `gh workflow run opencode-hello.yml`.
 - Run roadmap implementation from the Actions UI or with `gh workflow run opencode-implement.yml -f mode=implement -f roadmap_path=roadmap/002-readme-once-over.md`.
-- Run roadmap review from the Actions UI or with `gh workflow run opencode-implement.yml -f mode=review -f roadmap_path=roadmap/002-readme-once-over.md -f pr_number=123 -f review_model=opencode/claude-opus-4-6`.
+- Run roadmap review from the Actions UI or with `gh workflow run opencode-implement.yml -f mode=review -f roadmap_path=roadmap/002-readme-once-over.md -f pr_number=123 -f review_model=opencode/random-frontier`.
 - The roadmap work unit is the canonical execution brief; GitHub only supplies the trigger and the `roadmap_path`.
 - Recommended pilot proof order:
   1. Run the local smoke test.

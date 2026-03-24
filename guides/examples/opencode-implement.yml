@@ -1,4 +1,4 @@
-name: OpenCode Implement
+name: OpenCode Roadmap
 
 on:
   workflow_dispatch:
@@ -18,19 +18,19 @@ on:
       review_model:
         description: Zen review model to use when mode=review
         required: false
-        default: opencode/claude-opus-4-6
+        default: opencode/random-frontier
         type: choice
         options:
-          - opencode/claude-opus-4-6
+          - opencode/random-frontier
           - opencode/gpt-5.4
-          - opencode/gemini-3.1-pro
+          - opencode/gemini-3.1-pro-preview
       pr_number:
         description: Pull request number to review when mode=review
         required: false
         type: string
 
 jobs:
-  implement:
+  roadmap:
     runs-on: ubuntu-latest
     permissions:
       id-token: write
@@ -90,11 +90,12 @@ jobs:
           case "${mode}" in
             implement)
               printf 'model=zai-plan/glm-5\n' >> "${GITHUB_OUTPUT}"
+              printf 'requested_model=\n' >> "${GITHUB_OUTPUT}"
               printf 'target_ref=\n' >> "${GITHUB_OUTPUT}"
               ;;
             review)
               case "${review_model}" in
-                opencode/claude-opus-4-6|opencode/gpt-5.4|opencode/gemini-3.1-pro) ;;
+                opencode/random-frontier|opencode/gpt-5.4|opencode/gemini-3.1-pro-preview) ;;
                 *)
                   echo "unsupported review model: ${review_model}" >&2
                   exit 1
@@ -104,7 +105,16 @@ jobs:
                 echo "pr_number is required when mode=review" >&2
                 exit 1
               fi
-              printf 'model=%s\n' "${review_model}" >> "${GITHUB_OUTPUT}"
+              resolved_model="${review_model}"
+              if [[ "${review_model}" == "opencode/random-frontier" ]]; then
+                if (( RANDOM % 2 )); then
+                  resolved_model="opencode/gpt-5.4"
+                else
+                  resolved_model="opencode/gemini-3.1-pro-preview"
+                fi
+              fi
+              printf 'requested_model=%s\n' "${review_model}" >> "${GITHUB_OUTPUT}"
+              printf 'model=%s\n' "${resolved_model}" >> "${GITHUB_OUTPUT}"
               printf 'target_ref=PR #%s\n' "${pr_number}" >> "${GITHUB_OUTPUT}"
               ;;
             *)
@@ -166,16 +176,21 @@ jobs:
         shell: bash
         run: |
           target_ref="${{ steps.review.outputs.target_ref }}"
+          requested_model="${{ steps.review.outputs.requested_model }}"
           if [[ -z "${target_ref}" ]]; then
             target_ref="n/a"
           fi
+          if [[ -z "${requested_model}" ]]; then
+            requested_model="n/a"
+          fi
 
           {
-            echo "## OpenCode Implement"
+            echo "## OpenCode Roadmap"
             echo
             echo "- Mode: \`${{ inputs.mode }}\`"
             echo "- Roadmap path: \`${{ steps.roadmap.outputs.roadmap_path }}\`"
             echo "- Roadmap status: \`${{ steps.roadmap.outputs.roadmap_status }}\`"
+            echo "- Requested review model: \`${requested_model}\`"
             echo "- Resolved model: \`${{ steps.review.outputs.model }}\`"
             echo "- Git commit identity: \`${{ steps.git_identity.outputs.author_name }} <${{ steps.git_identity.outputs.author_email }}>\`"
             echo "- Review target: \`${target_ref}\`"
