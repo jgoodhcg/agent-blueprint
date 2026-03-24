@@ -31,6 +31,8 @@ Use this guide when a project wants:
 4. Validate that the roadmap file exists and is executable before invoking the remote agent.
 5. Instruct the agent to follow the autonomous runtime policy from `AGENTS.md`.
 6. Treat the referenced roadmap file as the canonical execution brief.
+7. Run fast validation in the implementation stage and heavier validation in a separate PR workflow.
+8. If remote review is enabled, publish a PR-visible review artifact instead of leaving review output only in workflow logs.
 
 ## Reference Files
 
@@ -39,6 +41,7 @@ These files are intentionally fetchable as raw GitHub artifacts.
 - Guide: `guides/autonomous-github-actions.md`
 - Smoke test workflow: `guides/examples/opencode-hello.yml`
 - Implement workflow: `guides/examples/opencode-implement.yml`
+- PR validation workflow: `guides/examples/pr-validation.yml`
 - Provider config: `guides/examples/opencode.json`
 - Local smoke test: `guides/examples/opencode-hello-local.sh`
 
@@ -51,10 +54,13 @@ These files are intentionally fetchable as raw GitHub artifacts.
 5. Run the local smoke test.
 6. Run the remote hello workflow.
 7. Run the implementation workflow against a safe `ready` roadmap work unit.
+8. Confirm the PR validation workflow runs automatically on the resulting PR.
+9. Run the review workflow against that PR and confirm it publishes a PR review.
 
 ## Notes
 
 - This guide uses OpenCode examples because that is the current dogfood setup in this repo.
 - The operating pattern is more important than the specific tool.
 - Keep the smoke test and implementation workflow separate.
+- Keep PR validation separate from roadmap implementation.
 - Do not let issue comments become the canonical work definition if the roadmap is supposed to be canonical.

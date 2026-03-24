@@ -116,6 +116,15 @@ jobs:
 
           printf 'model=%s\n' "${resolved_model}" >> "${GITHUB_OUTPUT}"
 
+      - name: Resolve review artifact paths
+        id: review_artifacts
+        shell: bash
+        run: |
+          set -euo pipefail
+
+          printf 'body_path=%s/opencode-review.md\n' "${RUNNER_TEMP}" >> "${GITHUB_OUTPUT}"
+          printf 'decision_path=%s/opencode-review-decision.txt\n' "${RUNNER_TEMP}" >> "${GITHUB_OUTPUT}"
+
       - name: Resolve git identity
         id: git_identity
         shell: bash
@@ -163,6 +172,59 @@ jobs:
             - Review `${{ steps.model.outputs.target_ref }}` against the roadmap work unit.
             - Produce review feedback only; do not implement fixes in this run.
             - Do not open additional pull requests.
+            - Use the autonomous review rubric in `AGENTS.md`.
+            - Write the final PR review body to `${{ steps.review_artifacts.outputs.body_path }}`.
+            - Write exactly one final review decision token to `${{ steps.review_artifacts.outputs.decision_path }}`: `approve`, `request-changes`, or `comment`.
+            - Keep the review body concise and structured with:
+              1. `Summary`
+              2. `Blocking Findings`
+              3. `Non-Blocking Suggestions`
+              4. `Validation Notes`
+            - Always reference the roadmap path and PR number in the review body.
+
+      - name: Publish PR review
+        id: publish_review
+        if: ${{ inputs.mode == 'review' && steps.opencode.outcome == 'success' }}
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        shell: bash
+        run: |
+          set -euo pipefail
+
+          pr_number="${{ inputs.pr_number }}"
+          body_path="${{ steps.review_artifacts.outputs.body_path }}"
+          decision_path="${{ steps.review_artifacts.outputs.decision_path }}"
+
+          if [[ ! -s "${body_path}" ]]; then
+            echo "review body was not written to ${body_path}" >&2
+            exit 1
+          fi
+
+          if [[ ! -s "${decision_path}" ]]; then
+            echo "review decision was not written to ${decision_path}" >&2
+            exit 1
+          fi
+
+          decision="$(tr '[:upper:]' '[:lower:]' < "${decision_path}" | tr -d '[:space:]')"
+
+          case "${decision}" in
+            approve)
+              gh pr review "${pr_number}" --approve --body-file "${body_path}"
+              ;;
+            request-changes|request_changes|requestchanges)
+              gh pr review "${pr_number}" --request-changes --body-file "${body_path}"
+              decision="request-changes"
+              ;;
+            comment)
+              gh pr review "${pr_number}" --comment --body-file "${body_path}"
+              ;;
+            *)
+              echo "unsupported review decision: ${decision}" >&2
+              exit 1
+              ;;
+          esac
+
+          printf 'decision=%s\n' "${decision}" >> "${GITHUB_OUTPUT}"
 
       - name: Write workflow summary
         if: always()
@@ -183,4 +245,6 @@ jobs:
             echo "- Git commit identity: \`${{ steps.git_identity.outputs.author_name }} <${{ steps.git_identity.outputs.author_email }}>\`"
             echo "- Review target: \`${target_ref}\`"
             echo "- OpenCode action outcome: \`${{ steps.opencode.outcome }}\`"
+            echo "- Review publish outcome: \`${{ steps.publish_review.outcome || 'n/a' }}\`"
+            echo "- Review decision: \`${{ steps.publish_review.outputs.decision || 'n/a' }}\`"
           } >> "${GITHUB_STEP_SUMMARY}"
