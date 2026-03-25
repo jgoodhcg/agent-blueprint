@@ -66,6 +66,7 @@ Not a fit:
 - Review mode now expects the agent to write a structured review artifact that the workflow publishes as a real PR review.
 - The roadmap work unit is the canonical execution brief; GitHub only supplies the trigger and the `roadmap_path`.
 - In this repo the automatic PR validation workflow is lightweight because there is no application runtime; in an app repo this is where lint, compile, unit, integration, and e2e checks would run.
+- Autonomous GitHub Actions commits use `github-actions[bot]` as the git author/committer; model attribution is preserved via `Co-authored-by` and `AI-*` commit trailers.
 - Recommended pilot proof order:
   1. Run the local smoke test.
   2. Run `opencode-hello.yml` and confirm the workflow summary reports a successful OpenCode action outcome.
