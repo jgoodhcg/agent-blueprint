@@ -1,5 +1,5 @@
 name: Pull Request Validation
-run-name: PR validation / #${{ github.event.pull_request.number }}
+run-name: PR validation / ${{ github.event.pull_request.number || inputs.pr_number || 'manual' }}
 
 on:
   pull_request:
@@ -20,7 +20,7 @@ on:
         type: string
 
 jobs:
-  validation:
+  repo-validation:
     runs-on: ubuntu-latest
     steps:
       - name: Resolve validation target
@@ -86,3 +86,49 @@ jobs:
       - name: Report repository validation scope
         shell: bash
         run: 'echo "N/A: no UI/e2e in this repository"'
+
+  mock-e2e-smoke:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Resolve validation target
+        id: target
+        shell: bash
+        run: |
+          set -euo pipefail
+
+          case "${GITHUB_EVENT_NAME}" in
+            pull_request)
+              pr_number="${{ github.event.pull_request.number }}"
+              pr_head_ref="${{ github.event.pull_request.head.ref }}"
+              ;;
+            workflow_dispatch)
+              pr_number="${{ inputs.pr_number }}"
+              pr_head_ref="${{ inputs.pr_head_ref }}"
+              ;;
+            *)
+              echo "unsupported event: ${GITHUB_EVENT_NAME}" >&2
+              exit 1
+              ;;
+          esac
+
+          if [[ -z "${pr_head_ref}" ]]; then
+            echo "pr_head_ref is required for validation target resolution" >&2
+            exit 1
+          fi
+
+          printf 'pr_number=%s\n' "${pr_number:-n/a}" >> "${GITHUB_OUTPUT}"
+          printf 'pr_head_ref=%s\n' "${pr_head_ref}" >> "${GITHUB_OUTPUT}"
+
+      - name: Check out repository
+        uses: actions/checkout@v6
+        with:
+          ref: ${{ steps.target.outputs.pr_head_ref }}
+
+      - name: Mock e2e smoke
+        shell: bash
+        run: |
+          set -euo pipefail
+
+          echo "Simulating e2e smoke for PR #${{ steps.target.outputs.pr_number }}"
+          grep -n "## Demo Flow Snapshot" README.md
+          grep -n "Implementation -> PR validation -> Review -> Human review" README.md
