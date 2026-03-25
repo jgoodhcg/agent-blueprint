@@ -67,11 +67,21 @@ jobs:
 
       - name: Validate blueprint version field
         shell: bash
-        run: rg -n "^version:" AGENT_BLUEPRINT.md
+        run: |
+          if command -v rg >/dev/null 2>&1; then
+            rg -n "^version:" AGENT_BLUEPRINT.md
+          else
+            grep -nE "^version:" AGENT_BLUEPRINT.md
+          fi
 
       - name: Validate blueprint anchor markers
         shell: bash
-        run: rg -n "BP-CORE-01|BP-ALIGN-REPORT|BP-RM-DOR" AGENT_BLUEPRINT.md
+        run: |
+          if command -v rg >/dev/null 2>&1; then
+            rg -n "BP-CORE-01|BP-ALIGN-REPORT|BP-RM-DOR" AGENT_BLUEPRINT.md
+          else
+            grep -nE "BP-CORE-01|BP-ALIGN-REPORT|BP-RM-DOR" AGENT_BLUEPRINT.md
+          fi
 
       - name: Report repository validation scope
         shell: bash
