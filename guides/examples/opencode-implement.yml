@@ -164,6 +164,7 @@ jobs:
             - Do not execute work outside the requested roadmap unit unless required for correctness.
             - Do not ask follow-up questions unless blocked on a true ambiguity in the roadmap file.
             - If you create commits, keep the git author/committer identity provided by the workflow environment and use normal `Co-authored-by` plus AI trailer attribution for the model.
+            - Do not run `gh workflow run`, `gh run`, or any downstream workflow-triggering command. Workflow orchestration is owned by the outer GitHub Actions job, not the model session.
 
             If mode is `implement`:
             - Use `${{ steps.model.outputs.model }}`.
@@ -171,6 +172,7 @@ jobs:
             - If implementation changes are required, create a branch and open a pull request.
             - After creating or updating the pull request, write the PR number to `${{ steps.artifacts.outputs.pr_number_path }}`.
             - After creating or updating the pull request, write the PR head ref to `${{ steps.artifacts.outputs.pr_head_ref_path }}`.
+            - Stop after the PR is created or updated and the PR metadata files are written. Do not trigger validation workflows yourself.
 
             If mode is `review`:
             - Use `${{ steps.model.outputs.model }}`.
