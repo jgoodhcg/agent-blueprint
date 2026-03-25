@@ -286,7 +286,7 @@ jobs:
           EOF
           )"
 
-          opencode --print-logs run \
+          opencode run \
             --model "${{ steps.model.outputs.model }}" \
             --agent build \
             -f "${{ steps.roadmap.outputs.roadmap_path }}" \
@@ -416,7 +416,7 @@ jobs:
           EOF
           )"
 
-          opencode --print-logs run \
+          opencode run \
             --model "${{ steps.model.outputs.model }}" \
             --agent build \
             -f "${{ steps.roadmap.outputs.roadmap_path }}" \
