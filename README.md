@@ -49,6 +49,7 @@ Not a fit:
 
 ## Experimental GitHub Automation
 
+- Autonomous GitHub Actions commits use `github-actions[bot]` as the git author/committer; model attribution is preserved in `Co-authored-by` and `AI-*` trailers.
 - `.github/workflows/opencode-hello.yml` provides a minimal manual smoke test for OpenCode in GitHub Actions.
 - `.github/workflows/opencode-implement.yml` is the roadmap-driven execution and review workflow.
 - `.github/workflows/pr-validation.yml` is the pull-request validation workflow for repository checks that should run automatically after PR updates.
