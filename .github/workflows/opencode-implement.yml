@@ -30,14 +30,22 @@ jobs:
     runs-on: ubuntu-latest
     permissions:
       actions: write
-      id-token: write
       contents: write
       pull-requests: write
+    env:
+      OPENCODE_CONFIG: ${{ github.workspace }}/opencode.json
+      OPENCODE_DISABLE_AUTOUPDATE: "1"
+      OPENCODE_DISABLE_PRUNE: "1"
+      OPENCODE_DISABLE_TERMINAL_TITLE: "1"
+      OPENCODE_PERMISSION: '{"*":"allow"}'
+      XDG_DATA_HOME: ${{ runner.temp }}/opencode/data
+      XDG_STATE_HOME: ${{ runner.temp }}/opencode/state
+      XDG_CACHE_HOME: ${{ runner.temp }}/opencode/cache
     steps:
       - name: Check out repository
         uses: actions/checkout@v6
         with:
-          fetch-depth: 1
+          fetch-depth: 0
           persist-credentials: false
 
       - name: Validate roadmap input
@@ -126,8 +134,11 @@ jobs:
 
           printf 'pr_number_path=%s/opencode-pr-number.txt\n' "${RUNNER_TEMP}" >> "${GITHUB_OUTPUT}"
           printf 'pr_head_ref_path=%s/opencode-pr-head-ref.txt\n' "${RUNNER_TEMP}" >> "${GITHUB_OUTPUT}"
+          printf 'pr_title_path=%s/opencode-pr-title.txt\n' "${RUNNER_TEMP}" >> "${GITHUB_OUTPUT}"
+          printf 'pr_body_path=%s/opencode-pr-body.md\n' "${RUNNER_TEMP}" >> "${GITHUB_OUTPUT}"
           printf 'body_path=%s/opencode-review.md\n' "${RUNNER_TEMP}" >> "${GITHUB_OUTPUT}"
           printf 'decision_path=%s/opencode-review-decision.txt\n' "${RUNNER_TEMP}" >> "${GITHUB_OUTPUT}"
+          printf 'diff_path=%s/opencode-pr.diff\n' "${RUNNER_TEMP}" >> "${GITHUB_OUTPUT}"
 
       - name: Resolve git identity
         id: git_identity
@@ -138,78 +149,286 @@ jobs:
           printf 'author_name=%s\n' 'github-actions[bot]' >> "${GITHUB_OUTPUT}"
           printf 'author_email=%s\n' '41898282+github-actions[bot]@users.noreply.github.com' >> "${GITHUB_OUTPUT}"
 
-      - name: Run OpenCode roadmap action
-        id: opencode
-        uses: anomalyco/opencode/github@latest
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-          ZAI_CODING_PLAN_API_KEY: ${{ secrets.ZAI_CODING_PLAN_API_KEY }}
-          OPENCODE_API_KEY: ${{ secrets.OPENCODE_API_KEY }}
-          GIT_AUTHOR_NAME: ${{ steps.git_identity.outputs.author_name }}
-          GIT_AUTHOR_EMAIL: ${{ steps.git_identity.outputs.author_email }}
-          GIT_COMMITTER_NAME: ${{ steps.git_identity.outputs.author_name }}
-          GIT_COMMITTER_EMAIL: ${{ steps.git_identity.outputs.author_email }}
-        with:
-          model: ${{ steps.model.outputs.model }}
-          use_github_token: true
-          prompt: |
-            `${{ inputs.mode }}` mode for roadmap work unit `${{ steps.roadmap.outputs.roadmap_path }}`.
+      - name: Resolve model attribution
+        id: attribution
+        shell: bash
+        run: |
+          set -euo pipefail
 
-            Shared execution contract:
-            - Treat that roadmap file as the canonical source of scope.
-            - Read `AGENTS.md` and the roadmap file before making changes.
-            - Apply the `Runtime: Autonomous GitHub Actions` policy in `AGENTS.md`.
-            - Run the repository validation commands listed in `AGENTS.md` before finishing.
-            - Reference the roadmap path `${{ steps.roadmap.outputs.roadmap_path }}` in the final PR summary or review summary.
-            - Do not use GitHub issue text as the canonical task definition.
-            - Do not execute work outside the requested roadmap unit unless required for correctness.
-            - Do not ask follow-up questions unless blocked on a true ambiguity in the roadmap file.
-            - If you create commits, keep the git author/committer identity provided by the workflow environment and use normal `Co-authored-by` plus AI trailer attribution for the model.
-            - Do not run `gh workflow run`, `gh run`, or any downstream workflow-triggering command. Workflow orchestration is owned by the outer GitHub Actions job, not the model session.
+          model_route="${{ steps.model.outputs.model }}"
+          provider_id="${model_route%%/*}"
+          model_id="${model_route#*/}"
+          model_lower="$(printf '%s' "${model_id}" | tr '[:upper:]' '[:lower:]')"
 
-            If mode is `implement`:
-            - Use `${{ steps.model.outputs.model }}`.
-            - Implement the roadmap work unit directly.
-            - If implementation changes are required, create a branch and open a pull request.
-            - After creating or updating the pull request, write the PR number to `${{ steps.artifacts.outputs.pr_number_path }}`.
-            - After creating or updating the pull request, write the PR head ref to `${{ steps.artifacts.outputs.pr_head_ref_path }}`.
-            - Stop after the PR is created or updated and the PR metadata files are written. Do not trigger validation workflows yourself.
+          coauthor_name="AI Agent"
+          coauthor_email="noreply@users.noreply.github.com"
 
-            If mode is `review`:
-            - Use `${{ steps.model.outputs.model }}`.
-            - Review `${{ steps.model.outputs.target_ref }}` against the roadmap work unit.
-            - Produce review feedback only; do not implement fixes in this run.
-            - Do not open additional pull requests.
-            - Use the autonomous review rubric in `AGENTS.md`.
-            - Write the final PR review body to `${{ steps.artifacts.outputs.body_path }}`.
-            - Write exactly one final review decision token to `${{ steps.artifacts.outputs.decision_path }}`: `approve`, `request-changes`, or `comment`.
-            - Keep the review body concise and structured with:
-              1. `Summary`
-              2. `Blocking Findings`
-              3. `Non-Blocking Suggestions`
-              4. `Validation Notes`
-            - Always reference the roadmap path and PR number in the review body.
+          case "${model_lower}" in
+            *glm*)
+              coauthor_name="GLM"
+              coauthor_email="zai-org@users.noreply.github.com"
+              ;;
+            *gemini*)
+              coauthor_name="Gemini"
+              coauthor_email="google-gemini@users.noreply.github.com"
+              ;;
+            *claude*)
+              coauthor_name="Claude"
+              coauthor_email="claude@users.noreply.github.com"
+              ;;
+            *gpt*|*codex*)
+              coauthor_name="Codex"
+              coauthor_email="codex@users.noreply.github.com"
+              ;;
+          esac
 
-      - name: Dispatch PR validation
-        id: dispatch_validation
-        if: ${{ inputs.mode == 'implement' && steps.opencode.outcome == 'success' }}
+          case "${provider_id}" in
+            zai-coding-plan) provider_label="Zhipu" ;;
+            opencode) provider_label="OpenCode Zen" ;;
+            *) provider_label="${provider_id}" ;;
+          esac
+
+          printf 'coauthor_name=%s\n' "${coauthor_name}" >> "${GITHUB_OUTPUT}"
+          printf 'coauthor_email=%s\n' "${coauthor_email}" >> "${GITHUB_OUTPUT}"
+          printf 'provider_label=%s\n' "${provider_label}" >> "${GITHUB_OUTPUT}"
+          printf 'product_label=%s\n' 'opencode' >> "${GITHUB_OUTPUT}"
+          printf 'model_label=%s\n' "${model_id}" >> "${GITHUB_OUTPUT}"
+
+      - name: Prepare OpenCode runtime
+        shell: bash
+        run: |
+          set -euo pipefail
+          mkdir -p "${XDG_DATA_HOME}" "${XDG_STATE_HOME}" "${XDG_CACHE_HOME}"
+
+      - name: Install OpenCode CLI
+        shell: bash
+        run: |
+          set -euo pipefail
+          curl -fsSL https://opencode.ai/install | bash
+          echo "${HOME}/.opencode/bin" >> "${GITHUB_PATH}"
+
+      - name: Prepare implement branch
+        id: implement_branch
+        if: ${{ inputs.mode == 'implement' }}
+        shell: bash
+        run: |
+          set -euo pipefail
+
+          roadmap_file="${{ steps.roadmap.outputs.roadmap_path }}"
+          branch_slug="${roadmap_file#roadmap/}"
+          branch_slug="${branch_slug%.md}"
+          branch_slug="${branch_slug#*-}"
+          branch_name="opencode/${branch_slug}-${GITHUB_RUN_ID}"
+          start_sha="$(git rev-parse HEAD)"
+          base_ref="${GITHUB_REF_NAME}"
+
+          git checkout -b "${branch_name}"
+
+          printf 'branch_name=%s\n' "${branch_name}" >> "${GITHUB_OUTPUT}"
+          printf 'base_ref=%s\n' "${base_ref}" >> "${GITHUB_OUTPUT}"
+          printf 'start_sha=%s\n' "${start_sha}" >> "${GITHUB_OUTPUT}"
+
+      - name: Prepare review target
+        id: review_target
+        if: ${{ inputs.mode == 'review' }}
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         shell: bash
         run: |
           set -euo pipefail
 
-          pr_number_path="${{ steps.artifacts.outputs.pr_number_path }}"
-          pr_head_ref_path="${{ steps.artifacts.outputs.pr_head_ref_path }}"
+          pr_number="${{ inputs.pr_number }}"
+          pr_json="$(gh pr view "${pr_number}" --json headRefName,baseRefName,url,title)"
+          head_ref="$(printf '%s' "${pr_json}" | python3 -c 'import json,sys; data=json.load(sys.stdin); print(data["headRefName"])')"
+          base_ref="$(printf '%s' "${pr_json}" | python3 -c 'import json,sys; data=json.load(sys.stdin); print(data["baseRefName"])')"
 
-          if [[ ! -s "${pr_number_path}" || ! -s "${pr_head_ref_path}" ]]; then
-            echo "No PR metadata artifact found; skipping validation dispatch."
-            printf 'dispatched=false\n' >> "${GITHUB_OUTPUT}"
+          git fetch origin "${base_ref}" "${head_ref}"
+          git checkout -B "${head_ref}" "origin/${head_ref}"
+          git diff --no-color "origin/${base_ref}...HEAD" > "${{ steps.artifacts.outputs.diff_path }}"
+
+          printf 'head_ref=%s\n' "${head_ref}" >> "${GITHUB_OUTPUT}"
+          printf 'base_ref=%s\n' "${base_ref}" >> "${GITHUB_OUTPUT}"
+
+      - name: Run OpenCode implement
+        id: opencode_implement
+        if: ${{ inputs.mode == 'implement' }}
+        env:
+          ZAI_CODING_PLAN_API_KEY: ${{ secrets.ZAI_CODING_PLAN_API_KEY }}
+          OPENCODE_API_KEY: ${{ secrets.OPENCODE_API_KEY }}
+          GIT_AUTHOR_NAME: ${{ steps.git_identity.outputs.author_name }}
+          GIT_AUTHOR_EMAIL: ${{ steps.git_identity.outputs.author_email }}
+          GIT_COMMITTER_NAME: ${{ steps.git_identity.outputs.author_name }}
+          GIT_COMMITTER_EMAIL: ${{ steps.git_identity.outputs.author_email }}
+        shell: bash
+        run: |
+          set -euo pipefail
+
+          prompt="$(cat <<EOF
+          \`implement\` mode for roadmap work unit \`${{ steps.roadmap.outputs.roadmap_path }}\`.
+
+          Shared execution contract:
+          - Treat that roadmap file as the canonical source of scope.
+          - Read \`AGENTS.md\` and the roadmap file before making changes.
+          - Apply the \`Runtime: Autonomous GitHub Actions\` policy in \`AGENTS.md\`.
+          - Run the repository validation commands listed in \`AGENTS.md\` before finishing.
+          - Reference the roadmap path \`${{ steps.roadmap.outputs.roadmap_path }}\` in the final commit message or PR body.
+          - Stay on the current branch \`${{ steps.implement_branch.outputs.branch_name }}\`; do not create or switch branches.
+          - Do not run \`gh\`, do not push, do not open pull requests, and do not dispatch downstream workflows.
+          - If implementation changes are required, commit them locally on the current branch using the workflow-provided git identity and normal AI trailers.
+          - After the implementation is complete, write the PR title to \`${{ steps.artifacts.outputs.pr_title_path }}\`.
+          - After the implementation is complete, write the PR body markdown to \`${{ steps.artifacts.outputs.pr_body_path }}\`.
+          - Stop after the local commit and PR metadata files are written.
+          EOF
+          )"
+
+          opencode --print-logs run \
+            --model "${{ steps.model.outputs.model }}" \
+            --agent build \
+            -f "${{ steps.roadmap.outputs.roadmap_path }}" \
+            -f AGENTS.md \
+            "${prompt}"
+
+      - name: Finalize implement commit
+        id: finalize_commit
+        if: ${{ inputs.mode == 'implement' && steps.opencode_implement.outcome == 'success' }}
+        shell: bash
+        run: |
+          set -euo pipefail
+
+          start_sha="${{ steps.implement_branch.outputs.start_sha }}"
+          current_sha="$(git rev-parse HEAD)"
+
+          if [[ "${current_sha}" != "${start_sha}" ]]; then
+            if [[ -n "$(git status --short)" ]]; then
+              echo "agent left additional uncommitted changes after creating a commit" >&2
+              exit 1
+            fi
+
+            printf 'commit_sha=%s\n' "${current_sha}" >> "${GITHUB_OUTPUT}"
+            printf 'changes_present=true\n' >> "${GITHUB_OUTPUT}"
             exit 0
           fi
 
-          pr_number="$(tr -d '[:space:]' < "${pr_number_path}")"
-          pr_head_ref="$(tr -d '[:space:]' < "${pr_head_ref_path}")"
+          if [[ -z "$(git status --short)" ]]; then
+            printf 'changes_present=false\n' >> "${GITHUB_OUTPUT}"
+            exit 0
+          fi
+
+          git add -A
+          git commit -m "Apply ${{ steps.roadmap.outputs.roadmap_path }}" \
+            -m "Co-authored-by: ${{ steps.attribution.outputs.coauthor_name }} <${{ steps.attribution.outputs.coauthor_email }}>" \
+            -m "AI-Provider: ${{ steps.attribution.outputs.provider_label }}" \
+            -m "AI-Product: ${{ steps.attribution.outputs.product_label }}" \
+            -m "AI-Model: ${{ steps.attribution.outputs.model_label }}"
+
+          printf 'commit_sha=%s\n' "$(git rev-parse HEAD)" >> "${GITHUB_OUTPUT}"
+          printf 'changes_present=true\n' >> "${GITHUB_OUTPUT}"
+
+      - name: Push implement branch
+        id: push_branch
+        if: ${{ inputs.mode == 'implement' && steps.finalize_commit.outputs.changes_present == 'true' }}
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        shell: bash
+        run: |
+          set -euo pipefail
+
+          branch_name="${{ steps.implement_branch.outputs.branch_name }}"
+          git remote set-url origin "https://x-access-token:${GITHUB_TOKEN}@github.com/${GITHUB_REPOSITORY}.git"
+          git push -u origin "${branch_name}"
+
+      - name: Create implement PR
+        id: create_pr
+        if: ${{ inputs.mode == 'implement' && steps.finalize_commit.outputs.changes_present == 'true' }}
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        shell: bash
+        run: |
+          set -euo pipefail
+
+          pr_title_path="${{ steps.artifacts.outputs.pr_title_path }}"
+          pr_body_path="${{ steps.artifacts.outputs.pr_body_path }}"
+
+          if [[ ! -s "${pr_title_path}" ]]; then
+            printf 'Apply %s\n' "${{ steps.roadmap.outputs.roadmap_path }}" > "${pr_title_path}"
+          fi
+
+          if [[ ! -s "${pr_body_path}" ]]; then
+            cat > "${pr_body_path}" <<EOF
+          ## Summary
+
+          - Apply the scoped roadmap work unit `${{ steps.roadmap.outputs.roadmap_path }}`
+
+          Roadmap: `${{ steps.roadmap.outputs.roadmap_path }}`
+          EOF
+          fi
+
+          pr_url="$(gh pr create \
+            --base "${{ steps.implement_branch.outputs.base_ref }}" \
+            --head "${{ steps.implement_branch.outputs.branch_name }}" \
+            --title "$(head -n 1 "${pr_title_path}")" \
+            --body-file "${pr_body_path}")"
+          pr_number="$(printf '%s' "${pr_url}" | sed -E 's#.*/pull/([0-9]+)$#\1#')"
+
+          printf '%s\n' "${pr_number}" > "${{ steps.artifacts.outputs.pr_number_path }}"
+          printf '%s\n' "${{ steps.implement_branch.outputs.branch_name }}" > "${{ steps.artifacts.outputs.pr_head_ref_path }}"
+          printf 'pr_number=%s\n' "${pr_number}" >> "${GITHUB_OUTPUT}"
+          printf 'pr_url=%s\n' "${pr_url}" >> "${GITHUB_OUTPUT}"
+
+      - name: Run OpenCode review
+        id: opencode_review
+        if: ${{ inputs.mode == 'review' }}
+        env:
+          ZAI_CODING_PLAN_API_KEY: ${{ secrets.ZAI_CODING_PLAN_API_KEY }}
+          OPENCODE_API_KEY: ${{ secrets.OPENCODE_API_KEY }}
+          GIT_AUTHOR_NAME: ${{ steps.git_identity.outputs.author_name }}
+          GIT_AUTHOR_EMAIL: ${{ steps.git_identity.outputs.author_email }}
+          GIT_COMMITTER_NAME: ${{ steps.git_identity.outputs.author_name }}
+          GIT_COMMITTER_EMAIL: ${{ steps.git_identity.outputs.author_email }}
+        shell: bash
+        run: |
+          set -euo pipefail
+
+          prompt="$(cat <<EOF
+          \`review\` mode for roadmap work unit \`${{ steps.roadmap.outputs.roadmap_path }}\`.
+
+          Shared execution contract:
+          - Treat that roadmap file as the canonical source of scope.
+          - Read \`AGENTS.md\`, the roadmap file, and the attached diff before deciding.
+          - Apply the \`Runtime: Autonomous GitHub Actions\` policy in \`AGENTS.md\`.
+          - Do not modify files, do not create commits, do not push, and do not run \`gh\`.
+          - Review \`PR #${{ inputs.pr_number }}\` from \`${{ steps.review_target.outputs.head_ref }}\` into \`${{ steps.review_target.outputs.base_ref }}\`.
+          - Use the autonomous review rubric in \`AGENTS.md\`.
+          - Write the final PR review body to \`${{ steps.artifacts.outputs.body_path }}\`.
+          - Write exactly one final review decision token to \`${{ steps.artifacts.outputs.decision_path }}\`: \`approve\`, \`request-changes\`, or \`comment\`.
+          - Keep the review body concise and structured with:
+            1. \`Summary\`
+            2. \`Blocking Findings\`
+            3. \`Non-Blocking Suggestions\`
+            4. \`Validation Notes\`
+          - Always reference the roadmap path and PR number in the review body.
+          EOF
+          )"
+
+          opencode --print-logs run \
+            --model "${{ steps.model.outputs.model }}" \
+            --agent build \
+            -f "${{ steps.roadmap.outputs.roadmap_path }}" \
+            -f AGENTS.md \
+            -f "${{ steps.artifacts.outputs.diff_path }}" \
+            "${prompt}"
+
+      - name: Dispatch PR validation
+        id: dispatch_validation
+        if: ${{ inputs.mode == 'implement' && steps.create_pr.outcome == 'success' }}
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        shell: bash
+        run: |
+          set -euo pipefail
+
+          pr_number="$(tr -d '[:space:]' < "${{ steps.artifacts.outputs.pr_number_path }}")"
+          pr_head_ref="$(tr -d '[:space:]' < "${{ steps.artifacts.outputs.pr_head_ref_path }}")"
 
           gh workflow run pr-validation.yml \
             -f pr_number="${pr_number}" \
@@ -221,7 +440,7 @@ jobs:
 
       - name: Publish PR review
         id: publish_review
-        if: ${{ inputs.mode == 'review' && steps.opencode.outcome == 'success' }}
+        if: ${{ inputs.mode == 'review' && steps.opencode_review.outcome == 'success' }}
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         shell: bash
@@ -281,7 +500,9 @@ jobs:
             echo "- Resolved model: \`${{ steps.model.outputs.model }}\`"
             echo "- Git commit identity: \`${{ steps.git_identity.outputs.author_name }} <${{ steps.git_identity.outputs.author_email }}>\`"
             echo "- Review target: \`${target_ref}\`"
-            echo "- OpenCode action outcome: \`${{ steps.opencode.outcome }}\`"
+            echo "- OpenCode implement outcome: \`${{ steps.opencode_implement.outcome || 'n/a' }}\`"
+            echo "- OpenCode review outcome: \`${{ steps.opencode_review.outcome || 'n/a' }}\`"
+            echo "- Created PR: \`#${{ steps.create_pr.outputs.pr_number || 'n/a' }}\`"
             echo "- Validation dispatch outcome: \`${{ steps.dispatch_validation.outcome || 'n/a' }}\`"
             echo "- Validation dispatch target: \`PR #${{ steps.dispatch_validation.outputs.pr_number || 'n/a' }} / ${{ steps.dispatch_validation.outputs.pr_head_ref || 'n/a' }}\`"
             echo "- Review publish outcome: \`${{ steps.publish_review.outcome || 'n/a' }}\`"
