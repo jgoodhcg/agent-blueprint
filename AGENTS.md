@@ -94,6 +94,7 @@ Use one policy file for both paired local work and autonomous GitHub Actions run
 - The workflow input, especially `roadmap_path`, identifies the work unit; the referenced roadmap file is the canonical brief.
 - `implement` runs should execute the fast validation commands that fit inside the agent runtime before updating a branch or PR.
 - Heavier validation such as full integration or e2e suites should run in separate PR workflows after the implementation PR is updated.
+- If a PR is created by `GITHUB_TOKEN`, downstream PR validation may need explicit workflow dispatch because GitHub does not recursively trigger every event from workflow-authored activity.
 - `git commit`, branch creation, push, and PR creation are allowed when required to complete the referenced roadmap work unit.
 - `review` runs should target an explicit PR, publish a GitHub PR review artifact, and avoid mutating code.
 - For the current POC, looping between implement and review may be manually triggered between workflow runs; do not assume an unbounded autonomous loop.

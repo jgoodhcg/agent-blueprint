@@ -63,4 +63,5 @@ These files are intentionally fetchable as raw GitHub artifacts.
 - The operating pattern is more important than the specific tool.
 - Keep the smoke test and implementation workflow separate.
 - Keep PR validation separate from roadmap implementation.
+- If the PR is created by `GITHUB_TOKEN`, explicitly dispatch PR validation or use alternate credentials; do not assume `pull_request` fan-out will happen automatically.
 - Do not let issue comments become the canonical work definition if the roadmap is supposed to be canonical.

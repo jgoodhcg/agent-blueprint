@@ -8,13 +8,54 @@ on:
       - synchronize
       - reopened
       - ready_for_review
+  workflow_dispatch:
+    inputs:
+      pr_number:
+        description: Pull request number when dispatching validation directly
+        required: false
+        type: string
+      pr_head_ref:
+        description: Pull request head ref when dispatching validation directly
+        required: false
+        type: string
 
 jobs:
   validation:
     runs-on: ubuntu-latest
     steps:
+      - name: Resolve validation target
+        id: target
+        shell: bash
+        run: |
+          set -euo pipefail
+
+          case "${GITHUB_EVENT_NAME}" in
+            pull_request)
+              pr_number="${{ github.event.pull_request.number }}"
+              pr_head_ref="${{ github.event.pull_request.head.ref }}"
+              ;;
+            workflow_dispatch)
+              pr_number="${{ inputs.pr_number }}"
+              pr_head_ref="${{ inputs.pr_head_ref }}"
+              ;;
+            *)
+              echo "unsupported event: ${GITHUB_EVENT_NAME}" >&2
+              exit 1
+              ;;
+          esac
+
+          if [[ -z "${pr_head_ref}" ]]; then
+            echo "pr_head_ref is required for validation target resolution" >&2
+            exit 1
+          fi
+
+          printf 'pr_number=%s\n' "${pr_number:-n/a}" >> "${GITHUB_OUTPUT}"
+          printf 'pr_head_ref=%s\n' "${pr_head_ref}" >> "${GITHUB_OUTPUT}"
+
       - name: Check out repository
         uses: actions/checkout@v6
+        with:
+          ref: ${{ steps.target.outputs.pr_head_ref }}
 
       - name: Check patch formatting
         shell: bash

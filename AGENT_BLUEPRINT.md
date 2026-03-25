@@ -106,6 +106,7 @@ When a project supports autonomous remote execution, prefer this pattern:
 7. Maintain a separate smoke-test workflow for validating remote runtime wiring before relying on the full implementation workflow.
 8. Split fast agent-run validation from heavier PR validation; let the implementation run do the fast checks and let normal PR workflows handle the full suite.
 9. Use a separate review stage that targets a specific PR and publishes a PR-visible review artifact.
+10. If implementation PRs are created with `GITHUB_TOKEN`, account for GitHub's event-recursion limits; use explicit workflow dispatch or alternate credentials when PR validation must run automatically.
 
 This keeps scope versioned with the repo, makes remote execution reproducible, and prevents trigger-time drift.
 
