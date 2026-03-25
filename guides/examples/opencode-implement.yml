@@ -405,14 +405,17 @@ jobs:
           - Do not modify files, do not create commits, do not push, and do not run \`gh\`.
           - Review \`PR #${{ inputs.pr_number }}\` from \`${{ steps.review_target.outputs.head_ref }}\` into \`${{ steps.review_target.outputs.base_ref }}\`.
           - Use the autonomous review rubric in \`AGENTS.md\`.
-          - Write the final PR review body to \`${{ steps.artifacts.outputs.body_path }}\`.
-          - Write exactly one final review decision token to \`${{ steps.artifacts.outputs.decision_path }}\`: \`approve\`, \`request-changes\`, or \`comment\`.
+          - You must create the review artifact files yourself with shell commands.
+          - Write the final PR review body to \`${{ steps.artifacts.outputs.body_path }}\` using a shell redirection command such as \`cat > file <<'EOF'\`.
+          - Write exactly one final review decision token to \`${{ steps.artifacts.outputs.decision_path }}\` using a shell command such as \`printf 'approve\n' > file\`.
+          - The decision token must be exactly one of: \`approve\`, \`request-changes\`, or \`comment\`.
           - Keep the review body concise and structured with:
             1. \`Summary\`
             2. \`Blocking Findings\`
             3. \`Non-Blocking Suggestions\`
             4. \`Validation Notes\`
           - Always reference the roadmap path and PR number in the review body.
+          - The final step of this run must be writing those two files. Do not stop after only printing the review in terminal output.
           EOF
           )"
 
