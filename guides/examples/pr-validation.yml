@@ -18,10 +18,17 @@ on:
         description: Pull request head ref when dispatching validation directly
         required: false
         type: string
+      pr_head_sha:
+        description: Pull request head SHA when dispatching validation directly
+        required: false
+        type: string
 
 jobs:
   repo-validation:
     runs-on: ubuntu-latest
+    permissions:
+      checks: write
+      contents: read
     steps:
       - name: Resolve validation target
         id: target
@@ -33,10 +40,12 @@ jobs:
             pull_request)
               pr_number="${{ github.event.pull_request.number }}"
               pr_head_ref="${{ github.event.pull_request.head.ref }}"
+              pr_head_sha="${{ github.event.pull_request.head.sha }}"
               ;;
             workflow_dispatch)
               pr_number="${{ inputs.pr_number }}"
               pr_head_ref="${{ inputs.pr_head_ref }}"
+              pr_head_sha="${{ inputs.pr_head_sha }}"
               ;;
             *)
               echo "unsupported event: ${GITHUB_EVENT_NAME}" >&2
@@ -49,8 +58,36 @@ jobs:
             exit 1
           fi
 
+          if [[ -z "${pr_head_sha}" ]]; then
+            echo "pr_head_sha is required for validation target resolution" >&2
+            exit 1
+          fi
+
           printf 'pr_number=%s\n' "${pr_number:-n/a}" >> "${GITHUB_OUTPUT}"
           printf 'pr_head_ref=%s\n' "${pr_head_ref}" >> "${GITHUB_OUTPUT}"
+          printf 'pr_head_sha=%s\n' "${pr_head_sha}" >> "${GITHUB_OUTPUT}"
+
+      - name: Start repo-validation check run
+        id: check_run
+        if: ${{ github.event_name == 'workflow_dispatch' }}
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        shell: bash
+        run: |
+          set -euo pipefail
+
+          check_json="$(
+            gh api \
+              --method POST \
+              repos/${GITHUB_REPOSITORY}/check-runs \
+              -f name='repo-validation' \
+              -f head_sha='${{ steps.target.outputs.pr_head_sha }}' \
+              -f status='in_progress' \
+              -f started_at="$(date -u +%Y-%m-%dT%H:%M:%SZ)"
+          )"
+
+          check_run_id="$(printf '%s' "${check_json}" | python3 -c 'import json,sys; print(json.load(sys.stdin)["id"])')"
+          printf 'id=%s\n' "${check_run_id}" >> "${GITHUB_OUTPUT}"
 
       - name: Check out repository
         uses: actions/checkout@v6
@@ -87,8 +124,38 @@ jobs:
         shell: bash
         run: 'echo "N/A: no UI/e2e in this repository"'
 
+      - name: Complete repo-validation check run
+        if: ${{ always() && github.event_name == 'workflow_dispatch' && steps.check_run.outputs.id != '' }}
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        shell: bash
+        run: |
+          set -euo pipefail
+
+          conclusion='success'
+          if [[ "${{ job.status }}" != 'success' ]]; then
+            conclusion='failure'
+          fi
+
+          summary='Repository validation completed.'
+          if [[ "${conclusion}" == 'failure' ]]; then
+            summary='Repository validation failed. See workflow logs for details.'
+          fi
+
+          gh api \
+            --method PATCH \
+            repos/${GITHUB_REPOSITORY}/check-runs/${{ steps.check_run.outputs.id }} \
+            -f status='completed' \
+            -f conclusion="${conclusion}" \
+            -f completed_at="$(date -u +%Y-%m-%dT%H:%M:%SZ)" \
+            -f output[title]='repo-validation' \
+            -f output[summary]="${summary}"
+
   mock-e2e-smoke:
     runs-on: ubuntu-latest
+    permissions:
+      checks: write
+      contents: read
     steps:
       - name: Resolve validation target
         id: target
@@ -100,10 +167,12 @@ jobs:
             pull_request)
               pr_number="${{ github.event.pull_request.number }}"
               pr_head_ref="${{ github.event.pull_request.head.ref }}"
+              pr_head_sha="${{ github.event.pull_request.head.sha }}"
               ;;
             workflow_dispatch)
               pr_number="${{ inputs.pr_number }}"
               pr_head_ref="${{ inputs.pr_head_ref }}"
+              pr_head_sha="${{ inputs.pr_head_sha }}"
               ;;
             *)
               echo "unsupported event: ${GITHUB_EVENT_NAME}" >&2
@@ -116,8 +185,36 @@ jobs:
             exit 1
           fi
 
+          if [[ -z "${pr_head_sha}" ]]; then
+            echo "pr_head_sha is required for validation target resolution" >&2
+            exit 1
+          fi
+
           printf 'pr_number=%s\n' "${pr_number:-n/a}" >> "${GITHUB_OUTPUT}"
           printf 'pr_head_ref=%s\n' "${pr_head_ref}" >> "${GITHUB_OUTPUT}"
+          printf 'pr_head_sha=%s\n' "${pr_head_sha}" >> "${GITHUB_OUTPUT}"
+
+      - name: Start mock-e2e-smoke check run
+        id: check_run
+        if: ${{ github.event_name == 'workflow_dispatch' }}
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        shell: bash
+        run: |
+          set -euo pipefail
+
+          check_json="$(
+            gh api \
+              --method POST \
+              repos/${GITHUB_REPOSITORY}/check-runs \
+              -f name='mock-e2e-smoke' \
+              -f head_sha='${{ steps.target.outputs.pr_head_sha }}' \
+              -f status='in_progress' \
+              -f started_at="$(date -u +%Y-%m-%dT%H:%M:%SZ)"
+          )"
+
+          check_run_id="$(printf '%s' "${check_json}" | python3 -c 'import json,sys; print(json.load(sys.stdin)["id"])')"
+          printf 'id=%s\n' "${check_run_id}" >> "${GITHUB_OUTPUT}"
 
       - name: Check out repository
         uses: actions/checkout@v6
@@ -132,3 +229,30 @@ jobs:
           echo "Simulating e2e smoke for PR #${{ steps.target.outputs.pr_number }}"
           grep -n "## Demo Flow Snapshot" README.md
           grep -n "Implementation -> PR validation -> Review -> Human review" README.md
+
+      - name: Complete mock-e2e-smoke check run
+        if: ${{ always() && github.event_name == 'workflow_dispatch' && steps.check_run.outputs.id != '' }}
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        shell: bash
+        run: |
+          set -euo pipefail
+
+          conclusion='success'
+          if [[ "${{ job.status }}" != 'success' ]]; then
+            conclusion='failure'
+          fi
+
+          summary='Mock e2e smoke completed.'
+          if [[ "${conclusion}" == 'failure' ]]; then
+            summary='Mock e2e smoke failed. See workflow logs for details.'
+          fi
+
+          gh api \
+            --method PATCH \
+            repos/${GITHUB_REPOSITORY}/check-runs/${{ steps.check_run.outputs.id }} \
+            -f status='completed' \
+            -f conclusion="${conclusion}" \
+            -f completed_at="$(date -u +%Y-%m-%dT%H:%M:%SZ)" \
+            -f output[title]='mock-e2e-smoke' \
+            -f output[summary]="${summary}"
