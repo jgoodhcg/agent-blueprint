@@ -495,14 +495,20 @@ jobs:
           fi
 
           decision="$(tr '[:upper:]' '[:lower:]' < "${decision_path}" | tr -d '[:space:]')"
+          pr_author_login="$(gh pr view "${pr_number}" --json author -q '.author.login')"
 
           case "${decision}" in
             approve)
               gh pr review "${pr_number}" --approve --body-file "${body_path}"
               ;;
             request-changes|request_changes|requestchanges)
-              gh pr review "${pr_number}" --request-changes --body-file "${body_path}"
-              decision="request-changes"
+              if [[ "${pr_author_login}" == 'app/github-actions' || "${pr_author_login}" == 'github-actions[bot]' ]]; then
+                gh pr review "${pr_number}" --comment --body-file "${body_path}"
+                decision="comment"
+              else
+                gh pr review "${pr_number}" --request-changes --body-file "${body_path}"
+                decision="request-changes"
+              fi
               ;;
             comment)
               gh pr review "${pr_number}" --comment --body-file "${body_path}"
