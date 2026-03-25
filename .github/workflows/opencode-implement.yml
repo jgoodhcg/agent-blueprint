@@ -406,21 +406,21 @@ jobs:
           - Do not modify files, do not create commits, do not push, and do not run \`gh\`.
           - Review \`PR #${{ inputs.pr_number }}\` from \`${{ steps.review_target.outputs.head_ref }}\` into \`${{ steps.review_target.outputs.base_ref }}\`.
           - Use the autonomous review rubric in \`AGENTS.md\`.
-          - You must create the review artifact files yourself with shell commands.
-          - Write the final PR review body to \`${{ steps.artifacts.outputs.body_path }}\` using a shell redirection command such as \`cat > file <<'EOF'\`.
-          - Write exactly one final review decision token to \`${{ steps.artifacts.outputs.decision_path }}\` using a shell command such as \`printf 'approve\n' > file\`.
-          - The decision token must be exactly one of: \`approve\`, \`request-changes\`, or \`comment\`.
+          - Respond in this exact plain-text format and nothing else:
+            1. First line: \`Decision: approve\` or \`Decision: request-changes\` or \`Decision: comment\`
+            2. Second line: blank
+            3. Remaining lines: the markdown review body
           - Keep the review body concise and structured with:
             1. \`Summary\`
             2. \`Blocking Findings\`
             3. \`Non-Blocking Suggestions\`
             4. \`Validation Notes\`
           - Always reference the roadmap path and PR number in the review body.
-          - The final step of this run must be writing those two files. Do not stop after only printing the review in terminal output.
           EOF
           )"
 
-          opencode run \
+          review_output="$(
+            opencode run \
             --model "${{ steps.model.outputs.model }}" \
             --agent build \
             -f "${{ steps.roadmap.outputs.roadmap_path }}" \
@@ -428,6 +428,29 @@ jobs:
             -f "${{ steps.artifacts.outputs.diff_path }}" \
             -- \
             "${prompt}"
+          )"
+
+          printf '%s\n' "${review_output}" > "${RUNNER_TEMP}/opencode-review-output.txt"
+
+          decision_line="$(printf '%s\n' "${review_output}" | sed -n '1p')"
+          decision="$(printf '%s\n' "${decision_line}" | sed -E 's/^Decision: (approve|request-changes|comment)$/\1/')"
+
+          case "${decision}" in
+            approve|request-changes|comment) ;;
+            *)
+              echo "review output did not start with a valid Decision line" >&2
+              printf '%s\n' "${review_output}" >&2
+              exit 1
+              ;;
+          esac
+
+          printf '%s\n' "${decision}" > "${{ steps.artifacts.outputs.decision_path }}"
+          printf '%s\n' "${review_output}" | tail -n +3 > "${{ steps.artifacts.outputs.body_path }}"
+
+          if [[ ! -s "${{ steps.artifacts.outputs.body_path }}" ]]; then
+            echo "review body parsed to an empty file" >&2
+            exit 1
+          fi
 
       - name: Dispatch PR validation
         id: dispatch_validation
