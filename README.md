@@ -80,3 +80,9 @@ For the current POC loop, orchestration is intentionally manual between stages:
 - let PR validation workflows run on the resulting PR
 - dispatch `review` after checks are green or after you want review feedback on the current state
 - if checks fail or review requests changes, rerun `implement` against the same roadmap unit to update the PR
+
+## Demo Flow Snapshot
+
+This section demonstrates the GitHub roadmap automation loop in action.
+
+The typical flow: **Implementation -> PR validation -> Review -> Human review**.
