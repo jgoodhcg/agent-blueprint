@@ -291,6 +291,7 @@ jobs:
             --agent build \
             -f "${{ steps.roadmap.outputs.roadmap_path }}" \
             -f AGENTS.md \
+            -- \
             "${prompt}"
 
       - name: Finalize implement commit
@@ -421,6 +422,7 @@ jobs:
             -f "${{ steps.roadmap.outputs.roadmap_path }}" \
             -f AGENTS.md \
             -f "${{ steps.artifacts.outputs.diff_path }}" \
+            -- \
             "${prompt}"
 
       - name: Dispatch PR validation
