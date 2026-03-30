@@ -1,4 +1,4 @@
-version: "2026-03-24"
+version: "2026-03-28"
 ---
 
 # Agent Blueprint
@@ -147,6 +147,11 @@ When a project adds remote review runs, prefer this pattern:
      - DeepSeek → `DeepSeek <deepseek-ai@users.noreply.github.com>`
   3. **Tier 3 — Unknown** (provider not listed): `{Provider Name} <{github-org}@users.noreply.github.com>` — look up the provider's GitHub org. If truly unknown: `AI Agent <noreply@users.noreply.github.com>`
 - Derive `AI-Provider` and `AI-Model` from runtime context at commit time.
+- For `AI-Provider` and `AI-Model`, prefer the most specific authoritative source available in this order:
+  1. active session/runtime metadata exposed by the tool
+  2. tool-owned local config that controls the current session
+  3. visible UI labels, only if no better source is available
+- Do not down-convert a specific runtime model to a marketing label. Example: if Codex Desktop shows `GPT-5` in the UI but `~/.codex/config.toml` for the active session contains `model = "gpt-5.4"`, use `AI-Model: gpt-5.4`.
 - Include trailers when committing:
   - `Co-authored-by: [resolved name] <[resolved email]>`
   - `AI-Provider: [runtime provider name]` (optional; include only if known)
@@ -399,7 +404,8 @@ Template rules:
   - Claude Code -> `claude`
   - Gemini CLI -> `gemini`
   - OpenCode -> `opencode` (regardless of underlying provider/model, including z.ai)
-- Determine `AI_PROVIDER` and `AI_MODEL` from runtime model metadata.
+- Determine `AI_PROVIDER` and `AI_MODEL` from the most specific authoritative runtime metadata available. Prefer active session metadata, then tool-owned local config, then UI display labels only as a last resort.
+- Example: in Codex Desktop, if the visible label is `GPT-5` but `~/.codex/config.toml` records `model = "gpt-5.4"` for the active session, fill `AI_MODEL` with `gpt-5.4`.
 - Resolve `AI_PRODUCT_NAME` and `AI_PRODUCT_EMAIL` from the **model name** using the tiered resolution order defined in `[BP-WF-COMMIT]`.
 - Fill this template at commit time; do not persist filled values in `AGENTS.md`.
 - For multi-model commits, see `[BP-WF-COMMIT-MULTI]` — add one `Co-authored-by` line per model and comma-separate the other trailers.
