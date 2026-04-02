@@ -1,0 +1,30 @@
+{
+  "name": "roadmap-todo",
+  "private": true,
+  "version": "0.1.0",
+  "type": "module",
+  "scripts": {
+    "dev": "bunx vite",
+    "build": "bunx tsc --noEmit && bunx vite build",
+    "preview": "bunx vite preview",
+    "typecheck": "bunx tsc --noEmit",
+    "test": "bunx vitest run",
+    "test:watch": "bunx vitest",
+    "test:e2e": "bunx playwright test"
+  },
+  "dependencies": {
+    "@preact/signals": "^2.0.1",
+    "preact": "^10.26.4"
+  },
+  "devDependencies": {
+    "@playwright/test": "^1.53.2",
+    "@preact/preset-vite": "^2.10.2",
+    "@testing-library/preact": "^3.2.4",
+    "@testing-library/user-event": "^14.6.1",
+    "@types/node": "^24.0.0",
+    "jsdom": "^26.1.0",
+    "typescript": "^5.8.3",
+    "vite": "^6.3.5",
+    "vitest": "^3.2.4"
+  }
+}

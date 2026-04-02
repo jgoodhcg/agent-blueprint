@@ -151,7 +151,7 @@ jobs:
             -f output[title]='repo-validation' \
             -f output[summary]="${summary}"
 
-  mock-e2e-smoke:
+  project-smoke:
     runs-on: ubuntu-latest
     permissions:
       checks: write
@@ -194,7 +194,7 @@ jobs:
           printf 'pr_head_ref=%s\n' "${pr_head_ref}" >> "${GITHUB_OUTPUT}"
           printf 'pr_head_sha=%s\n' "${pr_head_sha}" >> "${GITHUB_OUTPUT}"
 
-      - name: Start mock-e2e-smoke check run
+      - name: Start project-smoke check run
         id: check_run
         if: ${{ github.event_name == 'workflow_dispatch' }}
         env:
@@ -207,7 +207,7 @@ jobs:
             gh api \
               --method POST \
               repos/${GITHUB_REPOSITORY}/check-runs \
-              -f name='mock-e2e-smoke' \
+              -f name='project-smoke' \
               -f head_sha='${{ steps.target.outputs.pr_head_sha }}' \
               -f status='in_progress' \
               -f started_at="$(date -u +%Y-%m-%dT%H:%M:%SZ)"
@@ -221,16 +221,17 @@ jobs:
         with:
           ref: ${{ steps.target.outputs.pr_head_ref }}
 
-      - name: Mock e2e smoke
+      - name: Project smoke placeholder
         shell: bash
         run: |
           set -euo pipefail
 
-          echo "Simulating e2e smoke for PR #${{ steps.target.outputs.pr_number }}"
-          grep -n "## Demo Flow Snapshot" README.md
-          grep -n "Implementation -> PR validation -> Review -> Human review" README.md
+          echo "Running project smoke placeholder for PR #${{ steps.target.outputs.pr_number }}"
+          test -f AGENTS.md
+          test -f roadmap/index.md
+          echo "Replace this step with repository-specific lint, test, build, or e2e commands."
 
-      - name: Complete mock-e2e-smoke check run
+      - name: Complete project-smoke check run
         if: ${{ always() && github.event_name == 'workflow_dispatch' && steps.check_run.outputs.id != '' }}
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
@@ -243,9 +244,9 @@ jobs:
             conclusion='failure'
           fi
 
-          summary='Mock e2e smoke completed.'
+          summary='Project smoke checks completed.'
           if [[ "${conclusion}" == 'failure' ]]; then
-            summary='Mock e2e smoke failed. See workflow logs for details.'
+            summary='Project smoke checks failed. See workflow logs for details.'
           fi
 
           gh api \
@@ -254,5 +255,5 @@ jobs:
             -f status='completed' \
             -f conclusion="${conclusion}" \
             -f completed_at="$(date -u +%Y-%m-%dT%H:%M:%SZ)" \
-            -f output[title]='mock-e2e-smoke' \
+            -f output[title]='project-smoke' \
             -f output[summary]="${summary}"

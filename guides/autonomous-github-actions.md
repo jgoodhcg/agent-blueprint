@@ -34,6 +34,12 @@ Use this guide when a project wants:
 7. Run fast validation in the implementation stage and heavier validation in a separate PR workflow.
 8. If remote review is enabled, publish a PR-visible review artifact instead of leaving review output only in workflow logs.
 
+## Validation Template
+
+- Keep one generic repository-validation job for shared checks such as formatting, script syntax, or blueprint markers.
+- Add a second attached-check job such as `project-smoke` and replace its placeholder commands with repo-specific lint, test, build, integration, or e2e steps.
+- If implementation PRs are created by `GITHUB_TOKEN`, explicitly dispatch the PR validation workflow after PR creation so those attached checks appear on the PR.
+
 ## Reference Files
 
 These files are intentionally fetchable as raw GitHub artifacts.
@@ -54,7 +60,7 @@ These files are intentionally fetchable as raw GitHub artifacts.
 5. Run the local smoke test.
 6. Run the remote hello workflow.
 7. Run the implementation workflow against a safe `ready` roadmap work unit.
-8. Confirm the PR validation workflow runs automatically on the resulting PR.
+8. Confirm the resulting PR shows attached validation checks. If the PR was workflow-authored, confirm the implementation workflow dispatched validation explicitly.
 9. Run the review workflow against that PR and confirm it publishes a PR review.
 
 ## Notes

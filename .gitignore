@@ -8,3 +8,9 @@ roadmap-file-reference.md
 .env.local
 
 .decisions/*.xlsx
+
+pilots/roadmap-todo/node_modules/
+pilots/roadmap-todo/dist/
+pilots/roadmap-todo/playwright-report/
+pilots/roadmap-todo/test-results/
+pilots/roadmap-todo/.vite/

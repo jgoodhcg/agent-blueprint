@@ -7,9 +7,9 @@ goal: "Maintain and evolve a portable agent operating standard for AI-assisted s
 
 ## Current Focus
 
-- Blueprint version: `2026-03-16`
+- Blueprint version: `2026-03-28`
 - Design System Guide version: `2026-03-07`
-- GitHub automation pilot: roadmap-canonical OpenCode workflows in this repo, triggered through GitHub Actions UI or `gh workflow run`
+- GitHub automation pilot: direct-CLI OpenCode workflows in this repo, triggered through GitHub Actions UI or `gh workflow run`, with a real Bun + Preact pilot app used for attached PR checks
 
 ## Work Units
 
@@ -19,6 +19,7 @@ See individual `[ID]-[slug].md` files in this directory. Use `draft` while clari
 - `002-readme-once-over.md` - tighten the README for maintainer quick reference and clearer GitHub-repo orientation
 - `003-actions-commit-identity-smoke.md` - validate neutral GitHub Actions commit identity on a fresh automated branch/PR
 - `004-demo-flow-snapshot.md` - create a small, visible README change for a clean implement -> validate -> review demo
+- `005-roadmap-todo-pilot.md` - scaffold a small real web app inside this repo so the GitHub automation pilot has meaningful build, test, and e2e validation
 
 ## Quick Ideas
 

@@ -28,10 +28,10 @@ Create a clean, obvious roadmap unit for the live demo so the resulting PR shows
 - [ ] `README.md` contains a `## Demo Flow Snapshot` section under the GitHub automation material.
 - [ ] That section contains the exact phrase `Implementation -> PR validation -> Review -> Human review`.
 - [ ] The implementation workflow opens or updates a PR for this roadmap unit.
-- [ ] The PR validation workflow shows both `repo-validation` and `mock-e2e-smoke` jobs.
+- [ ] The PR validation workflow shows both `repo-validation` and `project-smoke` jobs.
 - [ ] Review mode can be run against the resulting PR.
 
 ## Notes
 
 - This work unit is intentionally performative for a live demo.
-- The `mock-e2e-smoke` PR check validates the exact marker phrase in `README.md`.
+- The original pilot used a demo-specific smoke check for this README marker. The reusable template now uses a generic `project-smoke` placeholder instead.

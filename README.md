@@ -6,7 +6,7 @@ Copy one file, run alignment, answer a few prompts, and your repo gets a consist
 
 ## What This Repository Is
 
-This is a docs-and-workflow repository, not a runtime application.
+This is primarily a docs-and-workflow repository, with a small pilot subproject used to dogfood the GitHub automation flow.
 
 It defines a reusable blueprint you can copy into any codebase so human + agent collaboration follows the same rules each time.
 
@@ -44,14 +44,14 @@ Not a fit:
 ## Versioning
 
 - The source of truth is the frontmatter version in `AGENT_BLUEPRINT.md`.
-- Current blueprint version in this repo: `2026-03-16`.
+- Current blueprint version in this repo: `2026-03-28`.
 - After upgrading in downstream projects, run an alignment pass.
 
 ## Experimental GitHub Automation
 
 - `.github/workflows/opencode-hello.yml` provides a minimal manual smoke test for OpenCode in GitHub Actions.
 - `.github/workflows/opencode-implement.yml` is the roadmap-driven execution and review workflow.
-- `.github/workflows/pr-validation.yml` is the pull-request validation workflow for repository checks that should run automatically after PR updates.
+- `.github/workflows/pr-validation.yml` is the pull-request validation workflow that attaches repository checks to the PR head SHA.
 - `opencode.json` commits the provider routing and default model for the workflow.
 - Add `ZAI_CODING_PLAN_API_KEY` and `OPENCODE_API_KEY` repository secrets in GitHub Actions.
 - Implementation runs default to `zai-coding-plan/glm-5`.
@@ -64,14 +64,16 @@ Not a fit:
 - Override the model when needed, for example `gh workflow run opencode-implement.yml -f mode=implement -f roadmap_path=roadmap/002-readme-once-over.md -f model=opencode/gemini-3.1-pro`.
 - Run roadmap review from the Actions UI or with `gh workflow run opencode-implement.yml -f mode=review -f roadmap_path=roadmap/002-readme-once-over.md -f pr_number=123 -f model=opencode/gpt-5.4`.
 - Review mode now expects the agent to write a structured review artifact that the workflow publishes as a real PR review.
+- `pilots/roadmap-todo/` is the concrete Bun + Preact pilot app used for real project-smoke validation in this repository.
+- The reusable example validation workflow under `guides/examples/` still ships with `repo-validation` plus a placeholder `project-smoke` job; replace that placeholder with lint, test, build, or e2e steps in downstream repos.
 - The roadmap work unit is the canonical execution brief; GitHub only supplies the trigger and the `roadmap_path`.
-- In this repo the automatic PR validation workflow is lightweight because there is no application runtime; in an app repo this is where lint, compile, unit, integration, and e2e checks would run.
-- Because implementation PRs are created by `GITHUB_TOKEN`, the implementation workflow explicitly dispatches PR validation after the PR is created; plain `pull_request` fan-out is not sufficient for that case.
+- In this repo the `project-smoke` job now runs pilot-app install, typecheck, unit tests, build, and Playwright e2e checks against `pilots/roadmap-todo/`.
+- Human-authored PR updates can use normal `pull_request` triggers. Because implementation PRs here are created by `GITHUB_TOKEN`, the implementation workflow also explicitly dispatches PR validation after the PR is created so the checks attach reliably.
 - Recommended pilot proof order:
   1. Run the local smoke test.
   2. Run `opencode-hello.yml` and confirm the workflow summary reports a successful OpenCode action outcome.
   3. Run `opencode-implement.yml` in `implement` mode against a safe `ready` roadmap work unit and confirm it creates or updates the expected branch/PR.
-  4. Confirm the PR triggers `.github/workflows/pr-validation.yml` automatically.
+  4. Confirm the PR shows attached `repo-validation` and `project-smoke` checks from `.github/workflows/pr-validation.yml`.
   5. Run `opencode-implement.yml` in `review` mode against that PR and confirm it posts a PR-visible review with the selected model and target PR.
   6. Update the acceptance checklist in `roadmap/001-github-opencode-pilot.md` only after the corresponding GitHub evidence exists.
 
