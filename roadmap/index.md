@@ -20,6 +20,7 @@ See individual `[ID]-[slug].md` files in this directory. Use `draft` while clari
 - `003-actions-commit-identity-smoke.md` - validate neutral GitHub Actions commit identity on a fresh automated branch/PR
 - `004-demo-flow-snapshot.md` - create a small, visible README change for a clean implement -> validate -> review demo
 - `005-roadmap-todo-pilot.md` - scaffold a small real web app inside this repo so the GitHub automation pilot has meaningful build, test, and e2e validation
+- `006-roadmap-todo-due-dates.md` - add due dates and an overdue filter to the pilot app as the first real workflow-driven feature
 
 ## Quick Ideas
 
