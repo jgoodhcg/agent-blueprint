@@ -27,6 +27,7 @@ on:
 
 jobs:
   roadmap:
+    name: ${{ inputs.mode == 'review' && 'Review pull request' || 'Implement work unit' }}
     runs-on: ubuntu-latest
     permissions:
       actions: write
