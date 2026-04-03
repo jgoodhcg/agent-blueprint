@@ -130,6 +130,8 @@ jobs:
         run: |
           set -euo pipefail
 
+          printf 'commit_subject_path=%s/opencode-commit-subject.txt\n' "${RUNNER_TEMP}" >> "${GITHUB_OUTPUT}"
+          printf 'commit_body_path=%s/opencode-commit-body.md\n' "${RUNNER_TEMP}" >> "${GITHUB_OUTPUT}"
           printf 'pr_number_path=%s/opencode-pr-number.txt\n' "${RUNNER_TEMP}" >> "${GITHUB_OUTPUT}"
           printf 'pr_head_ref_path=%s/opencode-pr-head-ref.txt\n' "${RUNNER_TEMP}" >> "${GITHUB_OUTPUT}"
           printf 'pr_title_path=%s/opencode-pr-title.txt\n' "${RUNNER_TEMP}" >> "${GITHUB_OUTPUT}"
@@ -289,6 +291,8 @@ jobs:
           - Do not create commits. Leave file changes in the working tree and let the workflow stage and commit them.
           - Do not run \`npm install\` or generate \`package-lock.json\` in this repository. Use Bun-based commands only.
           - If a required tool appears missing, stop and report that explicitly instead of switching package managers or generating new lockfiles.
+          - You may optionally write the commit subject to \`${{ steps.artifacts.outputs.commit_subject_path }}\`.
+          - You may optionally write the commit body markdown to \`${{ steps.artifacts.outputs.commit_body_path }}\`.
           - After the implementation is complete, write the PR title to \`${{ steps.artifacts.outputs.pr_title_path }}\`.
           - After the implementation is complete, write the PR body markdown to \`${{ steps.artifacts.outputs.pr_body_path }}\`.
           - Stop after the file changes and PR metadata files are written.
@@ -306,6 +310,11 @@ jobs:
       - name: Finalize implement commit
         id: finalize_commit
         if: ${{ inputs.mode == 'implement' && steps.opencode_implement.outcome == 'success' }}
+        env:
+          GIT_AUTHOR_NAME: ${{ steps.git_identity.outputs.author_name }}
+          GIT_AUTHOR_EMAIL: ${{ steps.git_identity.outputs.author_email }}
+          GIT_COMMITTER_NAME: ${{ steps.git_identity.outputs.author_name }}
+          GIT_COMMITTER_EMAIL: ${{ steps.git_identity.outputs.author_email }}
         shell: bash
         run: |
           set -euo pipefail
@@ -329,12 +338,35 @@ jobs:
             exit 0
           fi
 
+          commit_subject_path="${{ steps.artifacts.outputs.commit_subject_path }}"
+          commit_body_path="${{ steps.artifacts.outputs.commit_body_path }}"
+          commit_subject="Apply ${{ steps.roadmap.outputs.roadmap_path }}"
+
+          if [[ -s "${commit_subject_path}" ]]; then
+            commit_subject="$(head -n 1 "${commit_subject_path}" | tr -d '\r')"
+          fi
+
+          if [[ -z "${commit_subject}" ]]; then
+            echo "commit subject must not be empty" >&2
+            exit 1
+          fi
+
           git add -A
-          git commit -m "Apply ${{ steps.roadmap.outputs.roadmap_path }}" \
-            -m "Co-authored-by: ${{ steps.attribution.outputs.coauthor_name }} <${{ steps.attribution.outputs.coauthor_email }}>" \
-            -m "AI-Provider: ${{ steps.attribution.outputs.provider_label }}" \
-            -m "AI-Product: ${{ steps.attribution.outputs.product_label }}" \
+          commit_args=(-m "${commit_subject}")
+
+          if [[ -s "${commit_body_path}" ]]; then
+            commit_body="$(cat "${commit_body_path}")"
+            commit_args+=(-m "${commit_body}")
+          fi
+
+          commit_args+=(
+            -m "Co-authored-by: ${{ steps.attribution.outputs.coauthor_name }} <${{ steps.attribution.outputs.coauthor_email }}>"
+            -m "AI-Provider: ${{ steps.attribution.outputs.provider_label }}"
+            -m "AI-Product: ${{ steps.attribution.outputs.product_label }}"
             -m "AI-Model: ${{ steps.attribution.outputs.model_label }}"
+          )
+
+          git commit "${commit_args[@]}"
 
           printf 'commit_sha=%s\n' "$(git rev-parse HEAD)" >> "${GITHUB_OUTPUT}"
           printf 'changes_present=true\n' >> "${GITHUB_OUTPUT}"
