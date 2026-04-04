@@ -48,4 +48,61 @@ describe("Roadmap Todo app", () => {
     expect(screen.getByText("Updated title")).toBeTruthy();
     expect(screen.queryByText("Initial title")).toBeNull();
   });
+
+  it("adds todos with optional due dates", () => {
+    render(<App />);
+
+    const titleInput = screen.getByLabelText("Task title");
+    const dueDateInput = screen.getByLabelText("Due date (optional)");
+
+    fireEvent.input(titleInput, { target: { value: "Task with deadline" } });
+    fireEvent.input(dueDateInput, { target: { value: "2026-04-10" } });
+    fireEvent.click(screen.getByRole("button", { name: "Add todo" }));
+
+    expect(screen.getByText("Task with deadline")).toBeTruthy();
+    expect(screen.getByText(/Due:/)).toBeTruthy();
+  });
+
+  it("shows overdue filter and marks overdue items", () => {
+    render(<App />);
+
+    const titleInput = screen.getByLabelText("Task title");
+    const dueDateInput = screen.getByLabelText("Due date (optional)");
+
+    fireEvent.input(titleInput, { target: { value: "Overdue task" } });
+    fireEvent.input(dueDateInput, { target: { value: "2020-01-01" } });
+    fireEvent.click(screen.getByRole("button", { name: "Add todo" }));
+
+    fireEvent.input(titleInput, { target: { value: "Future task" } });
+    fireEvent.input(dueDateInput, { target: { value: "2030-01-01" } });
+    fireEvent.click(screen.getByRole("button", { name: "Add todo" }));
+
+    const overdueCard = screen.getByText("Overdue task").closest(".todo-card");
+    expect(overdueCard?.classList.contains("todo-card--overdue")).toBe(true);
+
+    const futureCard = screen.getByText("Future task").closest(".todo-card");
+    expect(futureCard?.classList.contains("todo-card--overdue")).toBe(false);
+
+    fireEvent.click(screen.getByRole("button", { name: "Overdue" }));
+
+    expect(screen.getByText("Overdue task")).toBeTruthy();
+    expect(screen.queryByText("Future task")).toBeNull();
+  });
+
+  it("excludes completed items from overdue view", () => {
+    render(<App />);
+
+    const titleInput = screen.getByLabelText("Task title");
+    const dueDateInput = screen.getByLabelText("Due date (optional)");
+
+    fireEvent.input(titleInput, { target: { value: "Completed overdue task" } });
+    fireEvent.input(dueDateInput, { target: { value: "2020-01-01" } });
+    fireEvent.click(screen.getByRole("button", { name: "Add todo" }));
+
+    fireEvent.click(screen.getByLabelText("Mark Completed overdue task as done"));
+
+    fireEvent.click(screen.getByRole("button", { name: "Overdue" }));
+
+    expect(screen.queryByText("Completed overdue task")).toBeNull();
+  });
 });

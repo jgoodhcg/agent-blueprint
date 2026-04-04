@@ -5,10 +5,12 @@ import {
   cancelEdit,
   clearCompleted,
   counts,
+  draftDueDate,
   draftPriority,
   draftTitle,
   editingId,
   editingTitle,
+  isOverdue,
   removeTodo,
   saveEdit,
   toggleTodo,
@@ -21,7 +23,8 @@ import {
 const FILTER_LABELS: Record<TodoFilter, string> = {
   all: "All",
   open: "Open",
-  done: "Done"
+  done: "Done",
+  overdue: "Overdue"
 };
 
 function submitNewTodo(event: SubmitEvent) {
@@ -40,9 +43,10 @@ function renderPriority(priority: TodoPriority) {
 
 function TodoRow({ todo }: { todo: TodoItem }) {
   const isEditing = editingId.value === todo.id;
+  const overdue = isOverdue(todo);
 
   return (
-    <li class={`todo-card ${todo.completed ? "todo-card--done" : ""}`}>
+    <li class={`todo-card ${todo.completed ? "todo-card--done" : ""} ${overdue ? "todo-card--overdue" : ""}`}>
       <div class="todo-card__main">
         <label class="todo-card__toggle">
           <input
@@ -78,6 +82,11 @@ function TodoRow({ todo }: { todo: TodoItem }) {
               <span class={`priority-badge priority-badge--${todo.priority}`}>
                 {renderPriority(todo.priority)}
               </span>
+              {todo.dueDate && (
+                <span class={`due-date ${overdue ? "due-date--overdue" : ""}`}>
+                  Due: {new Date(todo.dueDate).toLocaleDateString()}
+                </span>
+              )}
               <span>{new Date(todo.createdAt).toLocaleDateString()}</span>
             </p>
           </div>
@@ -153,6 +162,17 @@ export function App() {
               <option value="medium">Medium</option>
               <option value="high">High</option>
             </select>
+          </label>
+
+          <label class="field">
+            <span>Due date (optional)</span>
+            <input
+              type="date"
+              value={draftDueDate.value}
+              onInput={(event) => {
+                draftDueDate.value = (event.currentTarget as HTMLInputElement).value;
+              }}
+            />
           </label>
 
           <button type="submit">Add todo</button>
