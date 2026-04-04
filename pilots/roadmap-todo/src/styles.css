@@ -138,7 +138,7 @@ h1 {
 .composer {
   display: grid;
   gap: 1rem;
-  grid-template-columns: minmax(0, 1.6fr) minmax(0, 0.7fr) auto;
+  grid-template-columns: minmax(0, 1.6fr) minmax(0, 0.7fr) minmax(0, 0.7fr) auto;
   align-items: end;
 }
 
@@ -202,6 +202,11 @@ h1 {
 
 .todo-card--done {
   opacity: 0.78;
+}
+
+.todo-card--overdue {
+  border-color: #e85d4c;
+  background: linear-gradient(180deg, #fff5f3 0%, #ffebe8 100%);
 }
 
 .todo-card__main {
@@ -269,6 +274,16 @@ h1 {
 .priority-badge--high {
   background: #f5c3b8;
   color: #832d1d;
+}
+
+.due-date {
+  font-size: 0.85rem;
+  color: #6b7280;
+}
+
+.due-date--overdue {
+  color: #dc2626;
+  font-weight: 700;
 }
 
 .empty-state {

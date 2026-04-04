@@ -1,7 +1,7 @@
 import { computed, effect, signal } from "@preact/signals";
 
 export type TodoPriority = "low" | "medium" | "high";
-export type TodoFilter = "all" | "open" | "done";
+export type TodoFilter = "all" | "open" | "done" | "overdue";
 
 export interface TodoItem {
   id: string;
@@ -9,6 +9,17 @@ export interface TodoItem {
   completed: boolean;
   priority: TodoPriority;
   createdAt: string;
+  dueDate?: string;
+}
+
+export function isOverdue(todo: TodoItem): boolean {
+  if (todo.completed || !todo.dueDate) {
+    return false;
+  }
+  const due = new Date(todo.dueDate);
+  const now = new Date();
+  now.setHours(0, 0, 0, 0);
+  return due < now;
 }
 
 const STORAGE_KEY = "roadmap-todo:v1";
@@ -38,6 +49,7 @@ function createId() {
 export const todos = signal<TodoItem[]>(loadTodos());
 export const draftTitle = signal("");
 export const draftPriority = signal<TodoPriority>("medium");
+export const draftDueDate = signal("");
 export const activeFilter = signal<TodoFilter>("all");
 export const editingId = signal<string | null>(null);
 export const editingTitle = signal("");
@@ -48,6 +60,8 @@ export const visibleTodos = computed(() => {
       return todos.value.filter((todo) => !todo.completed);
     case "done":
       return todos.value.filter((todo) => todo.completed);
+    case "overdue":
+      return todos.value.filter((todo) => isOverdue(todo));
     default:
       return todos.value;
   }
@@ -73,6 +87,7 @@ export function resetStore() {
   todos.value = [];
   draftTitle.value = "";
   draftPriority.value = "medium";
+  draftDueDate.value = "";
   activeFilter.value = "all";
   editingId.value = null;
   editingTitle.value = "";
@@ -88,19 +103,23 @@ export function addTodo() {
     return false;
   }
 
+  const dueDate = draftDueDate.value.trim() || undefined;
+
   todos.value = [
     {
       id: createId(),
       title,
       completed: false,
       priority: draftPriority.value,
-      createdAt: new Date().toISOString()
+      createdAt: new Date().toISOString(),
+      dueDate
     },
     ...todos.value
   ];
 
   draftTitle.value = "";
   draftPriority.value = "medium";
+  draftDueDate.value = "";
   return true;
 }
 
