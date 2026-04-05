@@ -24,7 +24,7 @@ See individual `[ID]-[slug].md` files in this directory. Use `draft` while clari
 - `006-roadmap-todo-due-dates.md` (`active`) - add due dates and an overdue filter to the pilot app as the first real workflow-driven feature
 - `007-playwright-screenshot-design-loop.md` (`draft`) - prove screenshot-informed UI decisions during implementation on the pilot app
 - `008-review-driven-decision-rework.md` (`draft`) - prove review can catch substantive product or UX decisions that require rework
-- `009-fix-review-comments-and-failed-checks.md` (`draft`) - prove the fix loop can address PR review feedback and failing GitHub checks on the same PR
+- `009-fix-review-comments-and-failed-checks.md` (`ready`) - prove the fix loop can address PR review feedback and failing GitHub checks on the same PR
 
 ## Quick Ideas
 
