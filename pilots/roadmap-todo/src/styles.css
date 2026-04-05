@@ -138,7 +138,7 @@ h1 {
 .composer {
   display: grid;
   gap: 1rem;
-  grid-template-columns: minmax(0, 1.6fr) minmax(0, 0.7fr) auto;
+  grid-template-columns: minmax(0, 1.6fr) minmax(0, 0.7fr) minmax(0, 0.7fr) auto;
   align-items: end;
 }
 
@@ -269,6 +269,11 @@ h1 {
 .priority-badge--high {
   background: #f5c3b8;
   color: #832d1d;
+}
+
+.due-date--overdue {
+  color: #832d1d;
+  font-weight: 700;
 }
 
 .empty-state {

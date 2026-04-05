@@ -5,10 +5,13 @@ import {
   cancelEdit,
   clearCompleted,
   counts,
+  draftDueDate,
   draftPriority,
   draftTitle,
   editingId,
   editingTitle,
+  isOverdue,
+  parseLocalDate,
   removeTodo,
   saveEdit,
   toggleTodo,
@@ -21,7 +24,8 @@ import {
 const FILTER_LABELS: Record<TodoFilter, string> = {
   all: "All",
   open: "Open",
-  done: "Done"
+  done: "Done",
+  overdue: "Overdue"
 };
 
 function submitNewTodo(event: SubmitEvent) {
@@ -38,8 +42,14 @@ function renderPriority(priority: TodoPriority) {
   return priority.charAt(0).toUpperCase() + priority.slice(1);
 }
 
+function formatDueDate(dateStr: string): string {
+  const date = parseLocalDate(dateStr);
+  return date.toLocaleDateString();
+}
+
 function TodoRow({ todo }: { todo: TodoItem }) {
   const isEditing = editingId.value === todo.id;
+  const overdue = isOverdue(todo.dueDate, todo.completed);
 
   return (
     <li class={`todo-card ${todo.completed ? "todo-card--done" : ""}`}>
@@ -79,6 +89,11 @@ function TodoRow({ todo }: { todo: TodoItem }) {
                 {renderPriority(todo.priority)}
               </span>
               <span>{new Date(todo.createdAt).toLocaleDateString()}</span>
+              {todo.dueDate && (
+                <span class={overdue ? "due-date--overdue" : ""}>
+                  Due: {formatDueDate(todo.dueDate)}
+                </span>
+              )}
             </p>
           </div>
         )}
@@ -153,6 +168,17 @@ export function App() {
               <option value="medium">Medium</option>
               <option value="high">High</option>
             </select>
+          </label>
+
+          <label class="field">
+            <span>Due date</span>
+            <input
+              type="date"
+              value={draftDueDate.value}
+              onInput={(event) => {
+                draftDueDate.value = (event.currentTarget as HTMLInputElement).value;
+              }}
+            />
           </label>
 
           <button type="submit">Add todo</button>
