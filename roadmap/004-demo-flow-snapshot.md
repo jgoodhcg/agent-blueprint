@@ -3,7 +3,7 @@ title: "Add Demo Flow Snapshot to README"
 status: ready
 description: "Create a visible README section that demonstrates the implementation, validation, and review loop."
 created: 2026-03-25
-updated: 2026-03-25
+updated: 2026-04-04
 tags: [demo, github-actions, readme]
 priority: high
 ---
@@ -28,10 +28,11 @@ Create a clean, obvious roadmap unit for the live demo so the resulting PR shows
 - [ ] `README.md` contains a `## Demo Flow Snapshot` section under the GitHub automation material.
 - [ ] That section contains the exact phrase `Implementation -> PR validation -> Review -> Human review`.
 - [ ] The implementation workflow opens or updates a PR for this roadmap unit.
-- [ ] The PR validation workflow shows both `repo-validation` and `project-smoke` jobs.
+- [ ] The PR validation workflow shows attached repository and project validation checks on the PR head SHA.
 - [ ] Review mode can be run against the resulting PR.
 
 ## Notes
 
 - This work unit is intentionally performative for a live demo.
-- The original pilot used a demo-specific smoke check for this README marker. The reusable template now uses a generic `project-smoke` placeholder instead.
+- The workflow pattern is now proven with attached validation checks and PR-visible review publication, but this specific README content change is still pending.
+- Current in-repo validation uses human-facing check names for repository-level checks plus Roadmap Todo app checks; downstream repos should still replace the project-specific validation jobs with their own suite.
