@@ -45,4 +45,4 @@ Exercise the most practical post-implementation scenario: an autonomous PR recei
 
 - This is the core operational scenario after initial implementation succeeds.
 - The emphasis is on evidence-driven repair, not synthetic "fix" commits that ignore the review or CI context.
-- As of 2026-04-04, PR `#11` exists, is open, and is green, so execution of this work unit requires intentionally adding a review/failure signal first.
+- As of 2026-04-04, PR `#11` has been seeded with blocking review feedback about UTC parsing of date-only due dates, but the repair run itself has not been executed yet.

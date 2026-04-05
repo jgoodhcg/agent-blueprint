@@ -57,6 +57,7 @@ Not a fit:
 - Implementation runs default to `zai-coding-plan/glm-5`.
 - Review runs default to `opencode/gpt-5.4`.
 - You can override the model in either mode with `-f model=provider/model`, using any `opencode/<model-id>` available in your Zen plan or any `zai-coding-plan/<model-id>` available in your Z.AI Coding Plan access.
+- Workflow-owned implementation commits in this repo use the synthetic git identity `Roadmap Agent <roadmap-agent@users.noreply.github.com>`; model attribution remains in `Co-authored-by` plus the `AI-*` trailers.
 - Local smoke test: run `ZAI_CODING_PLAN_API_KEY=... bash ./opencode-hello-local.sh` to verify the pinned provider route without GitHub.
 - Optional local config dump: add `OPENCODE_SHOW_CONFIG=1` when running the local smoke test.
 - Run the hello smoke test from the Actions UI or with `gh workflow run opencode-hello.yml`.

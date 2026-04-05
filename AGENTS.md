@@ -29,6 +29,11 @@ AI-Product: [AI_PRODUCT_LINE]
 AI-Model: [AI_MODEL]
 ```
 
+## Autonomous Commit Identity
+
+- GitHub Actions roadmap workflows in this repo should commit with the synthetic git identity `Roadmap Agent <roadmap-agent@users.noreply.github.com>`.
+- Model attribution still belongs in `Co-authored-by` plus the `AI-*` trailers; the workflow-owned git author/committer should stay separate from model attribution.
+
 Template rules:
 - `AI_PRODUCT_LINE`: `codex|claude|gemini|opencode`
 - Product-line derivation:
