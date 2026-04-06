@@ -12,7 +12,7 @@ priority: high
 
 ## Intent
 
-Create a fresh autonomous PR from `main` that fixes the date-handling bug discovered during review of the first due-date feature pass. This should prove the workflow on a clean branch after the `Roadmap Agent` commit identity change landed.
+Create a fresh autonomous PR from `main` that fixes the date-handling bug discovered during review of the first due-date feature pass. This should prove the workflow on a clean branch after the stage-specific Agent Blueprint identity change landed.
 
 ## Specification
 
@@ -31,7 +31,7 @@ Create a fresh autonomous PR from `main` that fixes the date-handling bug discov
 - [ ] Existing due-date, overdue-filter, and completed-item behavior still works.
 - [ ] Unit tests and Playwright coverage are updated for the local-date semantics.
 - [ ] The implement workflow opens a fresh PR for this roadmap item.
-- [ ] The resulting workflow-owned commit on that PR is authored and committed by `Roadmap Agent <roadmap-agent@users.noreply.github.com>`.
+- [ ] The resulting workflow-owned commit on that PR is authored and committed by `Agent Blueprint Implementer <agent-blueprint-implementer@users.noreply.github.com>`.
 
 ## Notes
 

@@ -80,7 +80,7 @@ jobs:
             gh api \
               --method POST \
               repos/${GITHUB_REPOSITORY}/check-runs \
-              -f name='repo-validation' \
+              -f name='repo checks' \
               -f head_sha='${{ steps.target.outputs.pr_head_sha }}' \
               -f status='in_progress' \
               -f started_at="$(date -u +%Y-%m-%dT%H:%M:%SZ)"
@@ -137,9 +137,9 @@ jobs:
             conclusion='failure'
           fi
 
-          summary='Repository validation completed.'
+          summary='Repository checks completed.'
           if [[ "${conclusion}" == 'failure' ]]; then
-            summary='Repository validation failed. See workflow logs for details.'
+            summary='Repository checks failed. See workflow logs for details.'
           fi
 
           gh api \
@@ -148,7 +148,7 @@ jobs:
             -f status='completed' \
             -f conclusion="${conclusion}" \
             -f completed_at="$(date -u +%Y-%m-%dT%H:%M:%SZ)" \
-            -f output[title]='repo-validation' \
+            -f output[title]='repo checks' \
             -f output[summary]="${summary}"
 
   project-smoke:
@@ -207,7 +207,7 @@ jobs:
             gh api \
               --method POST \
               repos/${GITHUB_REPOSITORY}/check-runs \
-              -f name='project-smoke' \
+              -f name='project checks' \
               -f head_sha='${{ steps.target.outputs.pr_head_sha }}' \
               -f status='in_progress' \
               -f started_at="$(date -u +%Y-%m-%dT%H:%M:%SZ)"
@@ -244,9 +244,9 @@ jobs:
             conclusion='failure'
           fi
 
-          summary='Project smoke checks completed.'
+          summary='Project checks completed.'
           if [[ "${conclusion}" == 'failure' ]]; then
-            summary='Project smoke checks failed. See workflow logs for details.'
+            summary='Project checks failed. See workflow logs for details.'
           fi
 
           gh api \
@@ -255,5 +255,5 @@ jobs:
             -f status='completed' \
             -f conclusion="${conclusion}" \
             -f completed_at="$(date -u +%Y-%m-%dT%H:%M:%SZ)" \
-            -f output[title]='project-smoke' \
+            -f output[title]='project checks' \
             -f output[summary]="${summary}"

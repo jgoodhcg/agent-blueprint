@@ -31,9 +31,12 @@ AI-Model: [AI_MODEL]
 
 ## Autonomous Commit Identity
 
-- GitHub Actions roadmap workflows in this repo should commit with the synthetic git identity `Roadmap Agent <roadmap-agent@users.noreply.github.com>`.
+- GitHub Actions roadmap workflows in this repo should use stage-specific project-relative identities:
+  - `Agent Blueprint Implementer <agent-blueprint-implementer@users.noreply.github.com>`
+  - `Agent Blueprint Reviewer <agent-blueprint-reviewer@users.noreply.github.com>`
+  - `Agent Blueprint Fixer <agent-blueprint-fixer@users.noreply.github.com>`
 - Model attribution still belongs in `Co-authored-by` plus the `AI-*` trailers; the workflow-owned git author/committer should stay separate from model attribution.
-- In downstream repos, name that workflow-owned identity relative to the adopting project instead of copying this repo's placeholder identity unchanged.
+- In downstream repos, rename these identities relative to the adopting project and optionally swap the email domain to one you control.
 
 Template rules:
 - `AI_PRODUCT_LINE`: `codex|claude|gemini|opencode`

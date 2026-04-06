@@ -118,8 +118,8 @@ jobs:
         run: |
           set -euo pipefail
 
-          printf 'author_name=%s\n' 'Roadmap Agent' >> "${GITHUB_OUTPUT}"
-          printf 'author_email=%s\n' 'roadmap-agent@users.noreply.github.com' >> "${GITHUB_OUTPUT}"
+          printf 'author_name=%s\n' 'Agent Blueprint Fixer' >> "${GITHUB_OUTPUT}"
+          printf 'author_email=%s\n' 'agent-blueprint-fixer@users.noreply.github.com' >> "${GITHUB_OUTPUT}"
 
       - name: Resolve model attribution
         id: attribution

@@ -59,8 +59,10 @@ Not a fit:
 - Fix runs default to `zai-coding-plan/glm-5`.
 - Review runs default to `opencode/gpt-5.4`.
 - You can override the model in either mode with `-f model=provider/model`, using any `opencode/<model-id>` available in your Zen plan or any `zai-coding-plan/<model-id>` available in your Z.AI Coding Plan access.
-- Workflow-owned implementation commits in this repo use the synthetic git identity `Roadmap Agent <roadmap-agent@users.noreply.github.com>`; model attribution remains in `Co-authored-by` plus the `AI-*` trailers.
-- Downstream repos should eventually name that workflow-owned identity relative to the adopting project rather than copy this repo's placeholder identity verbatim.
+- Stage identities in this repo are `Agent Blueprint Implementer <agent-blueprint-implementer@users.noreply.github.com>`, `Agent Blueprint Reviewer <agent-blueprint-reviewer@users.noreply.github.com>`, and `Agent Blueprint Fixer <agent-blueprint-fixer@users.noreply.github.com>`.
+- Model attribution still lives in `Co-authored-by` plus the `AI-*` trailers; stage identity and model attribution are intentionally separate.
+- Downstream repos should rename those identities relative to the adopting project and can swap the email domain to one they control for recognizable avatars.
+- Review publication still appears as `github-actions[bot]` when using `GITHUB_TOKEN`; custom reviewer avatars require a dedicated GitHub App or another GitHub identity instead of the default workflow token.
 - Local smoke test: run `ZAI_CODING_PLAN_API_KEY=... bash ./opencode-hello-local.sh` to verify the pinned provider route without GitHub.
 - Optional local config dump: add `OPENCODE_SHOW_CONFIG=1` when running the local smoke test.
 - Run the hello smoke test from the Actions UI or with `gh workflow run opencode-hello.yml`.
@@ -70,7 +72,7 @@ Not a fit:
 - Run roadmap fix from the Actions UI or with `gh workflow run opencode-fix.yml -f roadmap_path=roadmap/002-readme-once-over.md -f pr_number=123`.
 - Review mode now expects the agent to write a structured review artifact that the workflow publishes as a real PR review.
 - `pilots/roadmap-todo/` is the concrete Bun + Preact pilot app used for real project-smoke validation in this repository.
-- The reusable example validation workflow under `guides/examples/` still ships with `repo-validation` plus a placeholder `project-smoke` job; replace that placeholder with lint, test, build, or e2e steps in downstream repos.
+- The reusable example validation workflow under `guides/examples/` still ships with generic `repo checks` plus a placeholder `project checks` job; replace that placeholder with the root-level lint, test, build, or e2e steps that fit the adopting repo.
 - The roadmap work unit is the canonical execution brief; GitHub only supplies the trigger and the `roadmap_path`.
 - In this repo the `project-smoke` job now runs pilot-app install, typecheck, unit tests, build, and Playwright e2e checks against `pilots/roadmap-todo/`.
 - Human-authored PR updates can use normal `pull_request` triggers. Because implementation PRs here are created by `GITHUB_TOKEN`, the implementation workflow also explicitly dispatches PR validation after the PR is created so the checks attach reliably.

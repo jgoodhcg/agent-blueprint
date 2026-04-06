@@ -25,7 +25,7 @@ on:
 
 jobs:
   repo-validation:
-    name: Repo policy and blueprint checks
+    name: repo checks
     runs-on: ubuntu-latest
     permissions:
       checks: write
@@ -81,7 +81,7 @@ jobs:
             gh api \
               --method POST \
               repos/${GITHUB_REPOSITORY}/check-runs \
-              -f name='Repo policy and blueprint checks' \
+              -f name='repo checks' \
               -f head_sha='${{ steps.target.outputs.pr_head_sha }}' \
               -f status='in_progress' \
               -f started_at="$(date -u +%Y-%m-%dT%H:%M:%SZ)"
@@ -138,9 +138,9 @@ jobs:
             conclusion='failure'
           fi
 
-          summary='Repository policy and blueprint checks completed.'
+          summary='Repository checks completed.'
           if [[ "${conclusion}" == 'failure' ]]; then
-            summary='Repository policy and blueprint checks failed. See workflow logs for details.'
+            summary='Repository checks failed. See workflow logs for details.'
           fi
 
           gh api \
@@ -149,11 +149,11 @@ jobs:
             -f status='completed' \
             -f conclusion="${conclusion}" \
             -f completed_at="$(date -u +%Y-%m-%dT%H:%M:%SZ)" \
-            -f output[title]='Repo policy and blueprint checks' \
+            -f output[title]='repo checks' \
             -f output[summary]="${summary}"
 
   pilot-typecheck:
-    name: Roadmap Todo typecheck
+    name: typecheck
     runs-on: ubuntu-latest
     permissions:
       checks: write
@@ -196,7 +196,7 @@ jobs:
           printf 'pr_head_ref=%s\n' "${pr_head_ref}" >> "${GITHUB_OUTPUT}"
           printf 'pr_head_sha=%s\n' "${pr_head_sha}" >> "${GITHUB_OUTPUT}"
 
-      - name: Start Roadmap Todo typecheck check run
+      - name: Start typecheck check run
         id: check_run
         if: ${{ github.event_name == 'workflow_dispatch' }}
         env:
@@ -209,7 +209,7 @@ jobs:
             gh api \
               --method POST \
               repos/${GITHUB_REPOSITORY}/check-runs \
-              -f name='Roadmap Todo typecheck' \
+              -f name='typecheck' \
               -f head_sha='${{ steps.target.outputs.pr_head_sha }}' \
               -f status='in_progress' \
               -f started_at="$(date -u +%Y-%m-%dT%H:%M:%SZ)"
@@ -238,7 +238,7 @@ jobs:
         shell: bash
         run: bun run typecheck
 
-      - name: Complete Roadmap Todo typecheck check run
+      - name: Complete typecheck check run
         if: ${{ always() && github.event_name == 'workflow_dispatch' && steps.check_run.outputs.id != '' }}
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
@@ -251,9 +251,9 @@ jobs:
             conclusion='failure'
           fi
 
-          summary='Roadmap Todo typecheck completed.'
+          summary='Typecheck completed.'
           if [[ "${conclusion}" == 'failure' ]]; then
-            summary='Roadmap Todo typecheck failed. See workflow logs for details.'
+            summary='Typecheck failed. See workflow logs for details.'
           fi
 
           gh api \
@@ -262,11 +262,11 @@ jobs:
             -f status='completed' \
             -f conclusion="${conclusion}" \
             -f completed_at="$(date -u +%Y-%m-%dT%H:%M:%SZ)" \
-            -f output[title]='Roadmap Todo typecheck' \
+            -f output[title]='typecheck' \
             -f output[summary]="${summary}"
 
   pilot-unit-tests:
-    name: Roadmap Todo unit tests
+    name: unit tests
     runs-on: ubuntu-latest
     permissions:
       checks: write
@@ -309,7 +309,7 @@ jobs:
           printf 'pr_head_ref=%s\n' "${pr_head_ref}" >> "${GITHUB_OUTPUT}"
           printf 'pr_head_sha=%s\n' "${pr_head_sha}" >> "${GITHUB_OUTPUT}"
 
-      - name: Start Roadmap Todo unit tests check run
+      - name: Start unit tests check run
         id: check_run
         if: ${{ github.event_name == 'workflow_dispatch' }}
         env:
@@ -322,7 +322,7 @@ jobs:
             gh api \
               --method POST \
               repos/${GITHUB_REPOSITORY}/check-runs \
-              -f name='Roadmap Todo unit tests' \
+              -f name='unit tests' \
               -f head_sha='${{ steps.target.outputs.pr_head_sha }}' \
               -f status='in_progress' \
               -f started_at="$(date -u +%Y-%m-%dT%H:%M:%SZ)"
@@ -351,7 +351,7 @@ jobs:
         shell: bash
         run: bun run test
 
-      - name: Complete Roadmap Todo unit tests check run
+      - name: Complete unit tests check run
         if: ${{ always() && github.event_name == 'workflow_dispatch' && steps.check_run.outputs.id != '' }}
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
@@ -364,9 +364,9 @@ jobs:
             conclusion='failure'
           fi
 
-          summary='Roadmap Todo unit tests completed.'
+          summary='Unit tests completed.'
           if [[ "${conclusion}" == 'failure' ]]; then
-            summary='Roadmap Todo unit tests failed. See workflow logs for details.'
+            summary='Unit tests failed. See workflow logs for details.'
           fi
 
           gh api \
@@ -375,11 +375,11 @@ jobs:
             -f status='completed' \
             -f conclusion="${conclusion}" \
             -f completed_at="$(date -u +%Y-%m-%dT%H:%M:%SZ)" \
-            -f output[title]='Roadmap Todo unit tests' \
+            -f output[title]='unit tests' \
             -f output[summary]="${summary}"
 
   pilot-build:
-    name: Roadmap Todo build
+    name: build
     runs-on: ubuntu-latest
     permissions:
       checks: write
@@ -422,7 +422,7 @@ jobs:
           printf 'pr_head_ref=%s\n' "${pr_head_ref}" >> "${GITHUB_OUTPUT}"
           printf 'pr_head_sha=%s\n' "${pr_head_sha}" >> "${GITHUB_OUTPUT}"
 
-      - name: Start Roadmap Todo build check run
+      - name: Start build check run
         id: check_run
         if: ${{ github.event_name == 'workflow_dispatch' }}
         env:
@@ -435,7 +435,7 @@ jobs:
             gh api \
               --method POST \
               repos/${GITHUB_REPOSITORY}/check-runs \
-              -f name='Roadmap Todo build' \
+              -f name='build' \
               -f head_sha='${{ steps.target.outputs.pr_head_sha }}' \
               -f status='in_progress' \
               -f started_at="$(date -u +%Y-%m-%dT%H:%M:%SZ)"
@@ -464,7 +464,7 @@ jobs:
         shell: bash
         run: bun run build
 
-      - name: Complete Roadmap Todo build check run
+      - name: Complete build check run
         if: ${{ always() && github.event_name == 'workflow_dispatch' && steps.check_run.outputs.id != '' }}
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
@@ -477,9 +477,9 @@ jobs:
             conclusion='failure'
           fi
 
-          summary='Roadmap Todo build completed.'
+          summary='Build completed.'
           if [[ "${conclusion}" == 'failure' ]]; then
-            summary='Roadmap Todo build failed. See workflow logs for details.'
+            summary='Build failed. See workflow logs for details.'
           fi
 
           gh api \
@@ -488,11 +488,11 @@ jobs:
             -f status='completed' \
             -f conclusion="${conclusion}" \
             -f completed_at="$(date -u +%Y-%m-%dT%H:%M:%SZ)" \
-            -f output[title]='Roadmap Todo build' \
+            -f output[title]='build' \
             -f output[summary]="${summary}"
 
   pilot-e2e:
-    name: Roadmap Todo end-to-end tests
+    name: end-to-end tests
     runs-on: ubuntu-latest
     permissions:
       checks: write
@@ -535,7 +535,7 @@ jobs:
           printf 'pr_head_ref=%s\n' "${pr_head_ref}" >> "${GITHUB_OUTPUT}"
           printf 'pr_head_sha=%s\n' "${pr_head_sha}" >> "${GITHUB_OUTPUT}"
 
-      - name: Start Roadmap Todo end-to-end tests check run
+      - name: Start end-to-end tests check run
         id: check_run
         if: ${{ github.event_name == 'workflow_dispatch' }}
         env:
@@ -548,7 +548,7 @@ jobs:
             gh api \
               --method POST \
               repos/${GITHUB_REPOSITORY}/check-runs \
-              -f name='Roadmap Todo end-to-end tests' \
+              -f name='end-to-end tests' \
               -f head_sha='${{ steps.target.outputs.pr_head_sha }}' \
               -f status='in_progress' \
               -f started_at="$(date -u +%Y-%m-%dT%H:%M:%SZ)"
@@ -582,7 +582,7 @@ jobs:
         shell: bash
         run: bun run test:e2e
 
-      - name: Complete Roadmap Todo end-to-end tests check run
+      - name: Complete end-to-end tests check run
         if: ${{ always() && github.event_name == 'workflow_dispatch' && steps.check_run.outputs.id != '' }}
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
@@ -595,9 +595,9 @@ jobs:
             conclusion='failure'
           fi
 
-          summary='Roadmap Todo end-to-end tests completed.'
+          summary='End-to-end tests completed.'
           if [[ "${conclusion}" == 'failure' ]]; then
-            summary='Roadmap Todo end-to-end tests failed. See workflow logs for details.'
+            summary='End-to-end tests failed. See workflow logs for details.'
           fi
 
           gh api \
@@ -606,5 +606,5 @@ jobs:
             -f status='completed' \
             -f conclusion="${conclusion}" \
             -f completed_at="$(date -u +%Y-%m-%dT%H:%M:%SZ)" \
-            -f output[title]='Roadmap Todo end-to-end tests' \
+            -f output[title]='end-to-end tests' \
             -f output[summary]="${summary}"

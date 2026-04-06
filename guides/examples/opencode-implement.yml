@@ -146,8 +146,23 @@ jobs:
         run: |
           set -euo pipefail
 
-          printf 'author_name=%s\n' 'Roadmap Agent' >> "${GITHUB_OUTPUT}"
-          printf 'author_email=%s\n' 'roadmap-agent@users.noreply.github.com' >> "${GITHUB_OUTPUT}"
+          case "${{ inputs.mode }}" in
+            implement)
+              author_name='Agent Blueprint Implementer'
+              author_email='agent-blueprint-implementer@users.noreply.github.com'
+              ;;
+            review)
+              author_name='Agent Blueprint Reviewer'
+              author_email='agent-blueprint-reviewer@users.noreply.github.com'
+              ;;
+            *)
+              echo "unsupported mode for identity resolution: ${{ inputs.mode }}" >&2
+              exit 1
+              ;;
+          esac
+
+          printf 'author_name=%s\n' "${author_name}" >> "${GITHUB_OUTPUT}"
+          printf 'author_email=%s\n' "${author_email}" >> "${GITHUB_OUTPUT}"
 
       - name: Resolve model attribution
         id: attribution
