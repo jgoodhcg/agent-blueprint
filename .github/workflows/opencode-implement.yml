@@ -1,5 +1,8 @@
-name: OpenCode Roadmap
-run-name: OpenCode ${{ inputs.mode }} / ${{ inputs.roadmap_path }}
+name: Roadmap Automation
+run-name: >-
+  ${{ inputs.mode == 'review'
+      && format('Review: PR #{0} / {1}', inputs.pr_number, inputs.roadmap_path)
+      || format('Implement: {0}', inputs.roadmap_path) }}
 
 on:
   workflow_dispatch:

@@ -1,5 +1,5 @@
-name: OpenCode Fix
-run-name: OpenCode fix / PR #${{ inputs.pr_number }} / ${{ inputs.roadmap_path }}
+name: Roadmap Fix
+run-name: Fix: PR #${{ inputs.pr_number }} / ${{ inputs.roadmap_path }}
 
 on:
   workflow_dispatch:
