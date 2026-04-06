@@ -16,6 +16,14 @@ export default defineConfig({
     {
       name: "chromium",
       use: { ...devices["Desktop Chrome"] }
+    },
+    {
+      name: "chromium-timezone-est",
+      use: { 
+        ...devices["Desktop Chrome"],
+        timezoneId: "America/New_York",
+        locale: "en-US"
+      }
     }
   ]
 });
