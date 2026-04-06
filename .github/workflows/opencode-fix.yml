@@ -1,0 +1,482 @@
+name: OpenCode Fix
+run-name: OpenCode fix / PR #${{ inputs.pr_number }} / ${{ inputs.roadmap_path }}
+
+on:
+  workflow_dispatch:
+    inputs:
+      roadmap_path:
+        description: Path to the roadmap work unit under roadmap/
+        required: true
+        type: string
+      pr_number:
+        description: Pull request number to repair
+        required: true
+        type: string
+      model:
+        description: Optional provider/model override for fix mode
+        required: false
+        type: string
+
+jobs:
+  roadmap:
+    name: Fix existing pull request
+    runs-on: ubuntu-latest
+    permissions:
+      actions: write
+      contents: write
+      pull-requests: write
+    env:
+      OPENCODE_CONFIG: ${{ github.workspace }}/opencode.json
+      OPENCODE_DISABLE_AUTOUPDATE: "1"
+      OPENCODE_DISABLE_PRUNE: "1"
+      OPENCODE_DISABLE_TERMINAL_TITLE: "1"
+      OPENCODE_PERMISSION: '{"*":"allow"}'
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v6
+        with:
+          fetch-depth: 0
+          persist-credentials: false
+
+      - name: Validate roadmap input
+        id: roadmap
+        shell: bash
+        run: |
+          set -euo pipefail
+
+          roadmap_path="${{ inputs.roadmap_path }}"
+
+          case "${roadmap_path}" in
+            roadmap/[0-9][0-9][0-9]-*.md) ;;
+            *)
+              echo "roadmap_path must point to a numbered roadmap work unit under roadmap/ (for example roadmap/001-example.md)" >&2
+              exit 1
+              ;;
+          esac
+
+          if [[ ! -f "${roadmap_path}" ]]; then
+            echo "roadmap file not found: ${roadmap_path}" >&2
+            exit 1
+          fi
+
+          status="$(sed -n '1,20p' "${roadmap_path}" | sed -n 's/^status: //p' | head -n 1)"
+
+          case "${status}" in
+            ready|active) ;;
+            *)
+              echo "roadmap file must be in ready or active status, found: ${status:-missing}" >&2
+              exit 1
+              ;;
+          esac
+
+          printf 'roadmap_path=%s\n' "${roadmap_path}" >> "${GITHUB_OUTPUT}"
+          printf 'roadmap_status=%s\n' "${status}" >> "${GITHUB_OUTPUT}"
+
+      - name: Resolve model
+        id: model
+        shell: bash
+        run: |
+          set -euo pipefail
+
+          resolved_model="${{ inputs.model || 'zai-coding-plan/glm-5' }}"
+
+          case "${resolved_model}" in
+            opencode/*|zai-coding-plan/*) ;;
+            *)
+              echo "model must use an allowed provider prefix: opencode/<model-id> or zai-coding-plan/<model-id>" >&2
+              exit 1
+              ;;
+          esac
+
+          if [[ "${resolved_model}" == */ ]]; then
+            echo "model must include a model id after the provider prefix" >&2
+            exit 1
+          fi
+
+          printf 'model=%s\n' "${resolved_model}" >> "${GITHUB_OUTPUT}"
+          printf 'target_ref=PR #%s\n' "${{ inputs.pr_number }}" >> "${GITHUB_OUTPUT}"
+
+      - name: Resolve workflow artifact paths
+        id: artifacts
+        shell: bash
+        run: |
+          set -euo pipefail
+
+          printf 'commit_subject_path=%s/opencode-commit-subject.txt\n' "${RUNNER_TEMP}" >> "${GITHUB_OUTPUT}"
+          printf 'commit_body_path=%s/opencode-commit-body.md\n' "${RUNNER_TEMP}" >> "${GITHUB_OUTPUT}"
+          printf 'pr_context_path=%s/opencode-pr-context.json\n' "${RUNNER_TEMP}" >> "${GITHUB_OUTPUT}"
+          printf 'issue_comments_path=%s/opencode-issue-comments.json\n' "${RUNNER_TEMP}" >> "${GITHUB_OUTPUT}"
+          printf 'reviews_path=%s/opencode-reviews.json\n' "${RUNNER_TEMP}" >> "${GITHUB_OUTPUT}"
+          printf 'review_comments_path=%s/opencode-review-comments.json\n' "${RUNNER_TEMP}" >> "${GITHUB_OUTPUT}"
+          printf 'check_summary_path=%s/opencode-check-summary.txt\n' "${RUNNER_TEMP}" >> "${GITHUB_OUTPUT}"
+          printf 'failed_logs_path=%s/opencode-failed-logs.txt\n' "${RUNNER_TEMP}" >> "${GITHUB_OUTPUT}"
+          printf 'diff_path=%s/opencode-pr.diff\n' "${RUNNER_TEMP}" >> "${GITHUB_OUTPUT}"
+
+      - name: Resolve git identity
+        id: git_identity
+        shell: bash
+        run: |
+          set -euo pipefail
+
+          printf 'author_name=%s\n' 'Roadmap Agent' >> "${GITHUB_OUTPUT}"
+          printf 'author_email=%s\n' 'roadmap-agent@users.noreply.github.com' >> "${GITHUB_OUTPUT}"
+
+      - name: Resolve model attribution
+        id: attribution
+        shell: bash
+        run: |
+          set -euo pipefail
+
+          model_route="${{ steps.model.outputs.model }}"
+          provider_id="${model_route%%/*}"
+          model_id="${model_route#*/}"
+          model_lower="$(printf '%s' "${model_id}" | tr '[:upper:]' '[:lower:]')"
+
+          coauthor_name="AI Agent"
+          coauthor_email="noreply@users.noreply.github.com"
+
+          case "${model_lower}" in
+            *glm*)
+              coauthor_name="GLM"
+              coauthor_email="zai-org@users.noreply.github.com"
+              ;;
+            *gemini*)
+              coauthor_name="Gemini"
+              coauthor_email="google-gemini@users.noreply.github.com"
+              ;;
+            *claude*)
+              coauthor_name="Claude"
+              coauthor_email="claude@users.noreply.github.com"
+              ;;
+            *gpt*|*codex*)
+              coauthor_name="Codex"
+              coauthor_email="codex@users.noreply.github.com"
+              ;;
+          esac
+
+          case "${provider_id}" in
+            zai-coding-plan) provider_label="Zhipu" ;;
+            opencode) provider_label="OpenCode Zen" ;;
+            *) provider_label="${provider_id}" ;;
+          esac
+
+          printf 'coauthor_name=%s\n' "${coauthor_name}" >> "${GITHUB_OUTPUT}"
+          printf 'coauthor_email=%s\n' "${coauthor_email}" >> "${GITHUB_OUTPUT}"
+          printf 'provider_label=%s\n' "${provider_label}" >> "${GITHUB_OUTPUT}"
+          printf 'product_label=%s\n' 'opencode' >> "${GITHUB_OUTPUT}"
+          printf 'model_label=%s\n' "${model_id}" >> "${GITHUB_OUTPUT}"
+
+      - name: Prepare OpenCode runtime
+        shell: bash
+        run: |
+          set -euo pipefail
+          export XDG_DATA_HOME="${RUNNER_TEMP}/opencode/data"
+          export XDG_STATE_HOME="${RUNNER_TEMP}/opencode/state"
+          export XDG_CACHE_HOME="${RUNNER_TEMP}/opencode/cache"
+          mkdir -p "${XDG_DATA_HOME}" "${XDG_STATE_HOME}" "${XDG_CACHE_HOME}"
+          {
+            printf 'XDG_DATA_HOME=%s\n' "${XDG_DATA_HOME}"
+            printf 'XDG_STATE_HOME=%s\n' "${XDG_STATE_HOME}"
+            printf 'XDG_CACHE_HOME=%s\n' "${XDG_CACHE_HOME}"
+          } >> "${GITHUB_ENV}"
+
+      - name: Install OpenCode CLI
+        shell: bash
+        run: |
+          set -euo pipefail
+          curl -fsSL https://opencode.ai/install | bash
+          echo "${HOME}/.opencode/bin" >> "${GITHUB_PATH}"
+
+      - name: Set up Bun
+        uses: oven-sh/setup-bun@v2
+        with:
+          bun-version: "1.3.4"
+
+      - name: Prepare fix target and collect PR context
+        id: fix_target
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        shell: bash
+        run: |
+          set -euo pipefail
+
+          pr_number="${{ inputs.pr_number }}"
+          pr_context_path="${{ steps.artifacts.outputs.pr_context_path }}"
+          issue_comments_path="${{ steps.artifacts.outputs.issue_comments_path }}"
+          reviews_path="${{ steps.artifacts.outputs.reviews_path }}"
+          review_comments_path="${{ steps.artifacts.outputs.review_comments_path }}"
+          check_summary_path="${{ steps.artifacts.outputs.check_summary_path }}"
+          failed_logs_path="${{ steps.artifacts.outputs.failed_logs_path }}"
+          diff_path="${{ steps.artifacts.outputs.diff_path }}"
+          run_ids_path="${RUNNER_TEMP}/opencode-failed-run-ids.txt"
+
+          pr_json="$(gh pr view "${pr_number}" --json headRefName,baseRefName,url,title,body,reviewDecision)"
+          printf '%s\n' "${pr_json}" | python3 -m json.tool > "${pr_context_path}"
+
+          head_ref="$(printf '%s' "${pr_json}" | python3 -c 'import json,sys; data=json.load(sys.stdin); print(data["headRefName"])')"
+          base_ref="$(printf '%s' "${pr_json}" | python3 -c 'import json,sys; data=json.load(sys.stdin); print(data["baseRefName"])')"
+          pr_url="$(printf '%s' "${pr_json}" | python3 -c 'import json,sys; data=json.load(sys.stdin); print(data["url"])')"
+          pr_title="$(printf '%s' "${pr_json}" | python3 -c 'import json,sys; data=json.load(sys.stdin); print(data["title"])')"
+
+          git fetch origin "${base_ref}" "${head_ref}"
+          git checkout -B "${head_ref}" "origin/${head_ref}"
+          start_sha="$(git rev-parse HEAD)"
+          git diff --no-color "origin/${base_ref}...HEAD" > "${diff_path}"
+
+          gh api "repos/${GITHUB_REPOSITORY}/issues/${pr_number}/comments" | python3 -m json.tool > "${issue_comments_path}"
+          gh api "repos/${GITHUB_REPOSITORY}/pulls/${pr_number}/reviews" | python3 -m json.tool > "${reviews_path}"
+          gh api "repos/${GITHUB_REPOSITORY}/pulls/${pr_number}/comments" | python3 -m json.tool > "${review_comments_path}"
+
+          status_json="$(gh pr view "${pr_number}" --json statusCheckRollup)"
+          STATUS_JSON="${status_json}" python3 - "${check_summary_path}" "${run_ids_path}" <<'PY'
+          import json
+          import os
+          import re
+          import sys
+
+          summary_path = sys.argv[1]
+          run_ids_path = sys.argv[2]
+          data = json.loads(os.environ["STATUS_JSON"])
+          items = data.get("statusCheckRollup") or []
+          failing_entries = []
+          run_ids = set()
+          passing_states = {"success", "successful", "neutral", "skipped"}
+          non_failing_statuses = {"completed"}
+
+          for item in items:
+              item_type = item.get("__typename", "unknown")
+              name = item.get("name") or item.get("context") or "unknown"
+              workflow = item.get("workflowName") or ""
+              state = item.get("conclusion") or item.get("state") or item.get("status") or "unknown"
+              state_lower = str(state).lower()
+              details_url = item.get("detailsUrl") or item.get("targetUrl") or ""
+
+              is_failing = False
+              if item_type == "CheckRun":
+                  is_failing = state_lower not in passing_states
+              elif item_type == "StatusContext":
+                  is_failing = state_lower not in passing_states
+              else:
+                  is_failing = state_lower not in passing_states and state_lower not in non_failing_statuses
+
+              if not is_failing:
+                  continue
+
+              failing_entries.append((name, item_type, state, workflow, details_url))
+              match = re.search(r"/actions/runs/(\d+)", details_url)
+              if match:
+                  run_ids.add(match.group(1))
+
+          with open(summary_path, "w", encoding="utf-8") as summary_file:
+              if not failing_entries:
+                  summary_file.write("No failing or pending checks were detected on the target PR.\n")
+              else:
+                  for name, item_type, state, workflow, details_url in failing_entries:
+                      summary_file.write(f"Check: {name}\n")
+                      summary_file.write(f"Type: {item_type}\n")
+                      summary_file.write(f"Status: {state}\n")
+                      if workflow:
+                          summary_file.write(f"Workflow: {workflow}\n")
+                      if details_url:
+                          summary_file.write(f"Details: {details_url}\n")
+                      summary_file.write("\n")
+
+          with open(run_ids_path, "w", encoding="utf-8") as run_ids_file:
+              for run_id in sorted(run_ids):
+                  run_ids_file.write(f"{run_id}\n")
+          PY
+
+          if [[ -s "${run_ids_path}" ]]; then
+            : > "${failed_logs_path}"
+            while IFS= read -r run_id; do
+              [[ -n "${run_id}" ]] || continue
+              {
+                printf '===== Failed log excerpt for Actions run %s =====\n' "${run_id}"
+                if ! gh run view "${run_id}" --log-failed; then
+                  printf 'Unable to load failed logs for Actions run %s\n' "${run_id}"
+                fi
+                printf '\n'
+              } >> "${failed_logs_path}"
+            done < "${run_ids_path}"
+          else
+            printf 'No failed GitHub Actions runs were detected for PR #%s.\n' "${pr_number}" > "${failed_logs_path}"
+          fi
+
+          printf 'head_ref=%s\n' "${head_ref}" >> "${GITHUB_OUTPUT}"
+          printf 'base_ref=%s\n' "${base_ref}" >> "${GITHUB_OUTPUT}"
+          printf 'start_sha=%s\n' "${start_sha}" >> "${GITHUB_OUTPUT}"
+          printf 'pr_url=%s\n' "${pr_url}" >> "${GITHUB_OUTPUT}"
+          printf 'pr_title=%s\n' "${pr_title}" >> "${GITHUB_OUTPUT}"
+
+      - name: Run OpenCode fix
+        id: opencode_fix
+        env:
+          ZAI_CODING_PLAN_API_KEY: ${{ secrets.ZAI_CODING_PLAN_API_KEY }}
+          OPENCODE_API_KEY: ${{ secrets.OPENCODE_API_KEY }}
+          GIT_AUTHOR_NAME: ${{ steps.git_identity.outputs.author_name }}
+          GIT_AUTHOR_EMAIL: ${{ steps.git_identity.outputs.author_email }}
+          GIT_COMMITTER_NAME: ${{ steps.git_identity.outputs.author_name }}
+          GIT_COMMITTER_EMAIL: ${{ steps.git_identity.outputs.author_email }}
+        shell: bash
+        run: |
+          set -euo pipefail
+
+          prompt="$(cat <<EOF
+          \`fix\` mode for roadmap work unit \`${{ steps.roadmap.outputs.roadmap_path }}\`.
+
+          Shared execution contract:
+          - Treat that roadmap file as the canonical source of scope.
+          - Read \`AGENTS.md\`, the roadmap file, the PR context files, and the attached diff before making changes.
+          - Apply the \`Runtime: Autonomous GitHub Actions\` policy in \`AGENTS.md\`.
+          - Target \`PR #${{ inputs.pr_number }}\` from \`${{ steps.fix_target.outputs.head_ref }}\` into \`${{ steps.fix_target.outputs.base_ref }}\`.
+          - Stay on the current branch \`${{ steps.fix_target.outputs.head_ref }}\`; do not create or switch branches.
+          - Inspect actionable PR review feedback and failing check evidence before editing code.
+          - Make the narrowest change that resolves the observed issue.
+          - Do not run \`gh\`, do not push, do not open pull requests, and do not dispatch downstream workflows.
+          - Do not create commits. Leave file changes in the working tree and let the workflow stage and commit them.
+          - Do not run \`npm install\` or generate \`package-lock.json\` in this repository. Use Bun-based commands only.
+          - If a required tool appears missing, stop and report that explicitly instead of switching package managers or generating new lockfiles.
+          - Run the repository validation commands listed in \`AGENTS.md\` before finishing.
+          - If you change files under \`pilots/roadmap-todo/\`, also run \`bun run typecheck\`, \`bun run test\`, and \`bun run build\` from that directory before finishing.
+          - You may optionally write the commit subject to \`${{ steps.artifacts.outputs.commit_subject_path }}\`.
+          - You may optionally write the commit body markdown to \`${{ steps.artifacts.outputs.commit_body_path }}\`.
+          - Stop after the fix is implemented and the optional commit metadata files are written.
+          EOF
+          )"
+
+          opencode run \
+            --model "${{ steps.model.outputs.model }}" \
+            --agent build \
+            -f "${{ steps.roadmap.outputs.roadmap_path }}" \
+            -f AGENTS.md \
+            -f "${{ steps.artifacts.outputs.pr_context_path }}" \
+            -f "${{ steps.artifacts.outputs.issue_comments_path }}" \
+            -f "${{ steps.artifacts.outputs.reviews_path }}" \
+            -f "${{ steps.artifacts.outputs.review_comments_path }}" \
+            -f "${{ steps.artifacts.outputs.check_summary_path }}" \
+            -f "${{ steps.artifacts.outputs.failed_logs_path }}" \
+            -f "${{ steps.artifacts.outputs.diff_path }}" \
+            -- \
+            "${prompt}"
+
+      - name: Finalize fix commit
+        id: finalize_commit
+        if: ${{ steps.opencode_fix.outcome == 'success' }}
+        env:
+          GIT_AUTHOR_NAME: ${{ steps.git_identity.outputs.author_name }}
+          GIT_AUTHOR_EMAIL: ${{ steps.git_identity.outputs.author_email }}
+          GIT_COMMITTER_NAME: ${{ steps.git_identity.outputs.author_name }}
+          GIT_COMMITTER_EMAIL: ${{ steps.git_identity.outputs.author_email }}
+        shell: bash
+        run: |
+          set -euo pipefail
+
+          start_sha="${{ steps.fix_target.outputs.start_sha }}"
+          current_sha="$(git rev-parse HEAD)"
+
+          if [[ "${current_sha}" != "${start_sha}" ]]; then
+            if [[ -n "$(git status --short)" ]]; then
+              echo "agent left additional uncommitted changes after creating a commit" >&2
+              exit 1
+            fi
+
+            printf 'commit_sha=%s\n' "${current_sha}" >> "${GITHUB_OUTPUT}"
+            printf 'changes_present=true\n' >> "${GITHUB_OUTPUT}"
+            exit 0
+          fi
+
+          if [[ -z "$(git status --short)" ]]; then
+            printf 'changes_present=false\n' >> "${GITHUB_OUTPUT}"
+            exit 0
+          fi
+
+          commit_subject_path="${{ steps.artifacts.outputs.commit_subject_path }}"
+          commit_body_path="${{ steps.artifacts.outputs.commit_body_path }}"
+          commit_subject="Fix PR #${{ inputs.pr_number }} for ${{ steps.roadmap.outputs.roadmap_path }}"
+
+          if [[ -s "${commit_subject_path}" ]]; then
+            commit_subject="$(head -n 1 "${commit_subject_path}" | tr -d '\r')"
+          fi
+
+          if [[ -z "${commit_subject}" ]]; then
+            echo "commit subject must not be empty" >&2
+            exit 1
+          fi
+
+          git add -A
+          commit_args=(-m "${commit_subject}")
+
+          if [[ -s "${commit_body_path}" ]]; then
+            commit_body="$(cat "${commit_body_path}")"
+            commit_args+=(-m "${commit_body}")
+          fi
+
+          commit_args+=(
+            -m "Co-authored-by: ${{ steps.attribution.outputs.coauthor_name }} <${{ steps.attribution.outputs.coauthor_email }}>"
+            -m "AI-Provider: ${{ steps.attribution.outputs.provider_label }}"
+            -m "AI-Product: ${{ steps.attribution.outputs.product_label }}"
+            -m "AI-Model: ${{ steps.attribution.outputs.model_label }}"
+          )
+
+          git commit "${commit_args[@]}"
+
+          printf 'commit_sha=%s\n' "$(git rev-parse HEAD)" >> "${GITHUB_OUTPUT}"
+          printf 'changes_present=true\n' >> "${GITHUB_OUTPUT}"
+
+      - name: Push fix branch
+        id: push_branch
+        if: ${{ steps.finalize_commit.outputs.changes_present == 'true' }}
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        shell: bash
+        run: |
+          set -euo pipefail
+
+          head_ref="${{ steps.fix_target.outputs.head_ref }}"
+          git remote set-url origin "https://x-access-token:${GITHUB_TOKEN}@github.com/${GITHUB_REPOSITORY}.git"
+          git push origin "HEAD:${head_ref}"
+          printf 'head_sha=%s\n' "$(git rev-parse HEAD)" >> "${GITHUB_OUTPUT}"
+
+      - name: Dispatch PR validation
+        id: dispatch_validation
+        if: ${{ steps.push_branch.outcome == 'success' }}
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        shell: bash
+        run: |
+          set -euo pipefail
+
+          pr_number="${{ inputs.pr_number }}"
+          pr_head_ref="${{ steps.fix_target.outputs.head_ref }}"
+          pr_head_sha="${{ steps.push_branch.outputs.head_sha }}"
+
+          gh workflow run pr-validation.yml \
+            -f pr_number="${pr_number}" \
+            -f pr_head_ref="${pr_head_ref}" \
+            -f pr_head_sha="${pr_head_sha}"
+
+          printf 'dispatched=true\n' >> "${GITHUB_OUTPUT}"
+          printf 'pr_number=%s\n' "${pr_number}" >> "${GITHUB_OUTPUT}"
+          printf 'pr_head_ref=%s\n' "${pr_head_ref}" >> "${GITHUB_OUTPUT}"
+          printf 'pr_head_sha=%s\n' "${pr_head_sha}" >> "${GITHUB_OUTPUT}"
+
+      - name: Write workflow summary
+        if: always()
+        shell: bash
+        run: |
+          {
+            echo "## OpenCode Fix"
+            echo
+            echo "- Roadmap path: \`${{ steps.roadmap.outputs.roadmap_path }}\`"
+            echo "- Roadmap status: \`${{ steps.roadmap.outputs.roadmap_status }}\`"
+            echo "- Target PR: \`#${{ inputs.pr_number }}\`"
+            echo "- Target branch: \`${{ steps.fix_target.outputs.head_ref || 'n/a' }}\`"
+            echo "- Resolved model: \`${{ steps.model.outputs.model }}\`"
+            echo "- Git commit identity: \`${{ steps.git_identity.outputs.author_name }} <${{ steps.git_identity.outputs.author_email }}>\`"
+            echo "- OpenCode fix outcome: \`${{ steps.opencode_fix.outcome || 'n/a' }}\`"
+            echo "- Finalize commit outcome: \`${{ steps.finalize_commit.outcome || 'n/a' }}\`"
+            echo "- Changes present: \`${{ steps.finalize_commit.outputs.changes_present || 'n/a' }}\`"
+            echo "- Push outcome: \`${{ steps.push_branch.outcome || 'n/a' }}\`"
+            echo "- Validation dispatch outcome: \`${{ steps.dispatch_validation.outcome || 'n/a' }}\`"
+            echo "- Validation dispatch target: \`PR #${{ steps.dispatch_validation.outputs.pr_number || 'n/a' }} / ${{ steps.dispatch_validation.outputs.pr_head_ref || 'n/a' }}\`"
+          } >> "${GITHUB_STEP_SUMMARY}"

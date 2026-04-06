@@ -33,6 +33,7 @@ AI-Model: [AI_MODEL]
 
 - GitHub Actions roadmap workflows in this repo should commit with the synthetic git identity `Roadmap Agent <roadmap-agent@users.noreply.github.com>`.
 - Model attribution still belongs in `Co-authored-by` plus the `AI-*` trailers; the workflow-owned git author/committer should stay separate from model attribution.
+- In downstream repos, name that workflow-owned identity relative to the adopting project instead of copying this repo's placeholder identity unchanged.
 
 Template rules:
 - `AI_PRODUCT_LINE`: `codex|claude|gemini|opencode`
@@ -102,7 +103,8 @@ Use one policy file for both paired local work and autonomous GitHub Actions run
 - If a PR is created by `GITHUB_TOKEN`, downstream PR validation may need explicit workflow dispatch because GitHub does not recursively trigger every event from workflow-authored activity.
 - `git commit`, branch creation, push, and PR creation are allowed when required to complete the referenced roadmap work unit.
 - `review` runs should target an explicit PR, publish a GitHub PR review artifact, and avoid mutating code.
-- For the current POC, looping between implement and review may be manually triggered between workflow runs; do not assume an unbounded autonomous loop.
+- `fix` runs should target an explicit existing PR, inspect review/check context first, and update that same PR branch rather than opening a replacement PR.
+- For the current POC, looping between implement, review, and fix may be manually triggered between workflow runs; do not assume an unbounded autonomous loop.
 - Network access is allowed when required for task execution, including GitHub operations, model-provider calls, package downloads, and task-scoped documentation lookup.
 - Use GitHub Actions secrets and committed repo config; do not depend on local machine state.
 - Do not pause for human confirmation steps that cannot occur inside the workflow.

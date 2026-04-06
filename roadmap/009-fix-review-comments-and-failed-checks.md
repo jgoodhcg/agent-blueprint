@@ -1,9 +1,9 @@
 ---
 title: "Fix Review Comments and Failed PR Checks on the Same PR"
 status: ready
-description: "Prove the fix stage can read PR feedback and GitHub Actions failures, then converge the same autonomous PR back to green."
+description: "Prove the dedicated fix workflow can read PR feedback and GitHub Actions failures, then converge the same autonomous PR back to green."
 created: 2026-04-04
-updated: 2026-04-04
+updated: 2026-04-06
 tags: [pilot, fix, review, ci]
 priority: high
 ---
@@ -16,11 +16,12 @@ Exercise the most practical post-implementation scenario: an autonomous PR recei
 
 ## Specification
 
-- Use PR `#11` (`roadmap/006-roadmap-todo-due-dates.md`) as the initial repair target unless that PR is merged or replaced before execution starts.
+- Use PR `#12` (`roadmap/010-roadmap-todo-local-due-dates.md`) as the initial repair target unless that PR is merged or replaced before execution starts.
 - Seed the scenario with at least one concrete repair signal before running the fix loop:
-  - a PR-visible review comment or requested change on PR `#11`, or
+  - a PR-visible review comment or requested change on PR `#12`, or
   - a deliberately introduced narrow regression on the PR branch that causes one or more GitHub validation checks to fail
 - If a deliberate regression is used, keep it small, reversible, and obviously scoped so the repair target is unambiguous.
+- The fix stage must run through a dedicated workflow that targets an explicit PR number rather than overloading the fresh-branch implement workflow.
 - The fix stage must inspect the GitHub review context and failing Actions logs before making edits.
 - The fix stage should make the narrowest change that resolves the observed issue.
 - The branch, PR, and validation loop should remain the same so convergence is visible on one PR timeline.
@@ -28,9 +29,9 @@ Exercise the most practical post-implementation scenario: an autonomous PR recei
 
 ## Acceptance Criteria
 
-- [ ] PR `#11` or its direct replacement has at least one seeded review comment, requested change, or failing GitHub check before the fix run begins.
+- [ ] PR `#12` or its direct replacement has at least one seeded review comment, requested change, or failing GitHub check before the fix run begins.
 - [ ] The fix flow identifies concrete review feedback or failing checks from GitHub metadata or logs.
-- [ ] A follow-up implementation run updates the same PR rather than opening a replacement PR.
+- [ ] A dedicated fix workflow run updates the same PR rather than opening a replacement PR.
 - [ ] The addressed review feedback or failing checks are resolved on the next validation pass.
 - [ ] The resulting PR timeline shows an understandable implement -> review/failure -> fix -> green sequence.
 
@@ -45,4 +46,4 @@ Exercise the most practical post-implementation scenario: an autonomous PR recei
 
 - This is the core operational scenario after initial implementation succeeds.
 - The emphasis is on evidence-driven repair, not synthetic "fix" commits that ignore the review or CI context.
-- As of 2026-04-04, PR `#11` has been seeded with blocking review feedback about UTC parsing of date-only due dates, but the repair run itself has not been executed yet.
+- As of 2026-04-06, PR `#12` has a blocking review finding about missing deterministic non-UTC Playwright coverage, which is the current seed signal for the first clean fix-loop proof.

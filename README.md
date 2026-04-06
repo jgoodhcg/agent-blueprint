@@ -50,20 +50,24 @@ Not a fit:
 ## Experimental GitHub Automation
 
 - `.github/workflows/opencode-hello.yml` provides a minimal manual smoke test for OpenCode in GitHub Actions.
-- `.github/workflows/opencode-implement.yml` is the roadmap-driven execution and review workflow.
+- `.github/workflows/opencode-implement.yml` opens fresh roadmap-driven implementation PRs and also publishes review artifacts.
+- `.github/workflows/opencode-fix.yml` updates an existing PR branch after review feedback or failed checks.
 - `.github/workflows/pr-validation.yml` is the pull-request validation workflow that attaches repository checks to the PR head SHA.
 - `opencode.json` commits the provider routing and default model for the workflow.
 - Add `ZAI_CODING_PLAN_API_KEY` and `OPENCODE_API_KEY` repository secrets in GitHub Actions.
 - Implementation runs default to `zai-coding-plan/glm-5`.
+- Fix runs default to `zai-coding-plan/glm-5`.
 - Review runs default to `opencode/gpt-5.4`.
 - You can override the model in either mode with `-f model=provider/model`, using any `opencode/<model-id>` available in your Zen plan or any `zai-coding-plan/<model-id>` available in your Z.AI Coding Plan access.
 - Workflow-owned implementation commits in this repo use the synthetic git identity `Roadmap Agent <roadmap-agent@users.noreply.github.com>`; model attribution remains in `Co-authored-by` plus the `AI-*` trailers.
+- Downstream repos should eventually name that workflow-owned identity relative to the adopting project rather than copy this repo's placeholder identity verbatim.
 - Local smoke test: run `ZAI_CODING_PLAN_API_KEY=... bash ./opencode-hello-local.sh` to verify the pinned provider route without GitHub.
 - Optional local config dump: add `OPENCODE_SHOW_CONFIG=1` when running the local smoke test.
 - Run the hello smoke test from the Actions UI or with `gh workflow run opencode-hello.yml`.
 - Run roadmap implementation from the Actions UI or with `gh workflow run opencode-implement.yml -f mode=implement -f roadmap_path=roadmap/002-readme-once-over.md`.
 - Override the model when needed, for example `gh workflow run opencode-implement.yml -f mode=implement -f roadmap_path=roadmap/002-readme-once-over.md -f model=opencode/gemini-3.1-pro`.
 - Run roadmap review from the Actions UI or with `gh workflow run opencode-implement.yml -f mode=review -f roadmap_path=roadmap/002-readme-once-over.md -f pr_number=123 -f model=opencode/gpt-5.4`.
+- Run roadmap fix from the Actions UI or with `gh workflow run opencode-fix.yml -f roadmap_path=roadmap/002-readme-once-over.md -f pr_number=123`.
 - Review mode now expects the agent to write a structured review artifact that the workflow publishes as a real PR review.
 - `pilots/roadmap-todo/` is the concrete Bun + Preact pilot app used for real project-smoke validation in this repository.
 - The reusable example validation workflow under `guides/examples/` still ships with `repo-validation` plus a placeholder `project-smoke` job; replace that placeholder with lint, test, build, or e2e steps in downstream repos.
@@ -73,13 +77,14 @@ Not a fit:
 - Recommended pilot proof order:
   1. Run the local smoke test.
   2. Run `opencode-hello.yml` and confirm the workflow summary reports a successful OpenCode action outcome.
-  3. Run `opencode-implement.yml` in `implement` mode against a safe `ready` roadmap work unit and confirm it creates or updates the expected branch/PR.
-  4. Confirm the PR shows attached `repo-validation` and `project-smoke` checks from `.github/workflows/pr-validation.yml`.
+  3. Run `opencode-implement.yml` in `implement` mode against a safe `ready` roadmap work unit and confirm it creates a fresh branch/PR.
+  4. Confirm the PR shows attached repository and pilot-app validation checks from `.github/workflows/pr-validation.yml`.
   5. Run `opencode-implement.yml` in `review` mode against that PR and confirm it posts a PR-visible review with the selected model and target PR.
-  6. Update the acceptance checklist in `roadmap/001-github-opencode-pilot.md` only after the corresponding GitHub evidence exists.
+  6. Seed a real review comment or failing check, then run `opencode-fix.yml` against that same PR and confirm it pushes a follow-up commit to the existing branch and re-dispatches PR validation.
+  7. Update the acceptance checklist in `roadmap/001-github-opencode-pilot.md` only after the corresponding GitHub evidence exists.
 
 For the current POC loop, orchestration is intentionally manual between stages:
 - dispatch `implement`
 - let PR validation workflows run on the resulting PR
 - dispatch `review` after checks are green or after you want review feedback on the current state
-- if checks fail or review requests changes, rerun `implement` against the same roadmap unit to update the PR
+- if checks fail or review requests changes, dispatch `fix` against the same roadmap unit and PR number to update that existing PR

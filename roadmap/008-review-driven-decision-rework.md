@@ -25,7 +25,7 @@ Validate that review mode can do more than code cleanup by surfacing product, UX
 ## Acceptance Criteria
 
 - [ ] Review mode posts PR-visible feedback that references at least one explicit decision point.
-- [ ] A follow-up implementation or fix run addresses that decision on the same PR when changes are requested.
+- [ ] A follow-up fix run addresses that decision on the same PR when changes are requested.
 - [ ] The final PR state reflects the resolved decision in code, review history, or both.
 - [ ] Validation is green again after the rework.
 
@@ -33,4 +33,3 @@ Validate that review mode can do more than code cleanup by surfacing product, UX
 
 - This is aimed at the common failure mode where an autonomous review is technically accurate but not product-useful.
 - The proof target is a review loop that changes implementation direction, not just polish.
-

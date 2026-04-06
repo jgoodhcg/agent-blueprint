@@ -10,7 +10,7 @@ goal: "Maintain and evolve a portable agent operating standard for AI-assisted s
 - Blueprint version: `2026-03-28`
 - Design System Guide version: `2026-03-07`
 - GitHub automation pilot: direct-CLI OpenCode workflows in this repo, triggered through GitHub Actions UI or `gh workflow run`, with workflow-owned commit/push/PR handling now proven on a real Bun + Preact pilot app
-- Next proof target: richer autonomous loops on the pilot app, especially screenshot-informed implementation, review-driven rework, and fix runs that address review comments plus failing GitHub checks
+- Next proof target: richer autonomous loops on the pilot app, especially screenshot-informed implementation, review-driven rework, and a dedicated `implement -> review -> fix` path that updates the same PR after comments or failed checks
 
 ## Work Units
 
