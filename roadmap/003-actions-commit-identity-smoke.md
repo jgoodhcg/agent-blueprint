@@ -1,6 +1,6 @@
 ---
 title: "Actions Commit Identity Smoke"
-status: ready
+status: done
 description: "Validate that a fresh GitHub Actions implementation run creates a branch/PR with the stage-specific Agent Blueprint Implementer git identity and normal AI trailers."
 created: 2026-03-18
 updated: 2026-04-06
@@ -35,3 +35,9 @@ Prove that the roadmap-driven GitHub Actions implementation flow can create a fr
 - Inspect the resulting branch/PR and commit metadata in GitHub.
 - Confirm the commit author/committer is `Agent Blueprint Implementer <agent-blueprint-implementer@users.noreply.github.com>`.
 - Confirm the commit message trailers still include `Co-authored-by` and the `AI-*` lines.
+
+## Notes
+
+- Completed on 2026-04-06 after the workflow identity change landed on `main`.
+- Fresh autonomous PR `#13` was created by implement run `24042334398`, and its workflow-owned commit used `Agent Blueprint Implementer <agent-blueprint-implementer@users.noreply.github.com>`.
+- That PR was later closed intentionally during cleanup, but it still serves as the proof artifact for this work unit.

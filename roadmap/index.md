@@ -9,8 +9,9 @@ goal: "Maintain and evolve a portable agent operating standard for AI-assisted s
 
 - Blueprint version: `2026-03-28`
 - Design System Guide version: `2026-03-07`
-- GitHub automation pilot: direct-CLI OpenCode workflows in this repo, triggered through GitHub Actions UI or `gh workflow run`, with workflow-owned commit/push/PR handling now proven on a real Bun + Preact pilot app
-- Next proof target: richer autonomous loops on the pilot app, especially screenshot-informed implementation, review-driven rework, and a dedicated `implement -> review -> fix` path that updates the same PR after comments or failed checks
+- GitHub automation pilot: direct-CLI OpenCode workflows in this repo, triggered through GitHub Actions UI or `gh workflow run`, with workflow-owned implement, review, fix, commit, push, and PR-validation redispatch now proven on a real Bun + Preact pilot app
+- Current repository state: no autonomous pilot PRs are open; the next run should start from a tightened roadmap brief rather than reusing earlier proof branches
+- Next proof target: a cleaner screenshot-informed implementation PR that can receive a real human review comment and then exercise the same-PR fix loop again
 
 ## Work Units
 
@@ -18,14 +19,14 @@ See individual `[ID]-[slug].md` files in this directory. Use `draft` while clari
 
 - `001-github-opencode-pilot.md` (`done`) - dogfood the GitHub Actions pilot before standardizing adoption guidance in the blueprint
 - `002-readme-once-over.md` (`ready`) - tighten the README for maintainer quick reference and clearer GitHub-repo orientation
-- `003-actions-commit-identity-smoke.md` (`ready`) - validate neutral GitHub Actions commit identity on a fresh automated branch/PR
+- `003-actions-commit-identity-smoke.md` (`done`) - validate stage-specific GitHub Actions commit identity on a fresh automated branch/PR
 - `004-demo-flow-snapshot.md` (`ready`) - create a small, visible README change for a clean implement -> validate -> review demo
 - `005-roadmap-todo-pilot.md` (`done`) - scaffold a small real web app inside this repo so the GitHub automation pilot has meaningful build, test, and e2e validation
-- `006-roadmap-todo-due-dates.md` (`active`) - add due dates and an overdue filter to the pilot app as the first real workflow-driven feature
+- `006-roadmap-todo-due-dates.md` (`done`) - add due dates and an overdue filter to the pilot app as the first real workflow-driven feature proof
 - `007-playwright-screenshot-design-loop.md` (`draft`) - prove screenshot-informed UI decisions during implementation on the pilot app
 - `008-review-driven-decision-rework.md` (`draft`) - prove review can catch substantive product or UX decisions that require rework
-- `009-fix-review-comments-and-failed-checks.md` (`ready`) - prove the fix loop can address PR review feedback and failing GitHub checks on the same PR
-- `010-roadmap-todo-local-due-dates.md` (`ready`) - fix date-only due dates to behave as local calendar dates on a fresh autonomous PR
+- `009-fix-review-comments-and-failed-checks.md` (`done`) - prove the fix loop can address PR review feedback and failing GitHub checks on the same PR
+- `010-roadmap-todo-local-due-dates.md` (`done`) - fix date-only due dates to behave as local calendar dates on a fresh autonomous PR
 - `011-roadmap-todo-visual-hierarchy-loop.md` (`ready`) - open a screenshot-informed pilot-app PR designed for a real human review comment and same-PR fix follow-up
 
 ## Quick Ideas

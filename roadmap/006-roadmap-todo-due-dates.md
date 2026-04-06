@@ -1,9 +1,9 @@
 ---
 title: "Add Due Dates and Overdue Filter to Roadmap Todo"
-status: active
+status: done
 description: "Use the pilot app for the first real GitHub automation feature by adding due dates and overdue filtering."
 created: 2026-04-02
-updated: 2026-04-04
+updated: 2026-04-06
 tags: [pilot, web, todo, workflow]
 priority: high
 ---
@@ -40,4 +40,5 @@ Create the first non-trivial roadmap work unit against `pilots/roadmap-todo/` so
 - This is intentionally the first real feature-sized work unit for the pilot app.
 - The goal is to exercise state changes, UI changes, and validation updates in one contained pass.
 - GitHub Actions implement run `23988119469` completed successfully for this work unit on 2026-04-04 and opened PR `#11`: <https://github.com/jgoodhcg/agent-blueprint/actions/runs/23988119469>, <https://github.com/jgoodhcg/agent-blueprint/pull/11>
-- PR validation run `23988206922` passed for PR `#11`, making that PR the active review and follow-up surface for this work unit: <https://github.com/jgoodhcg/agent-blueprint/actions/runs/23988206922>
+- PR validation run `23988206922` passed for PR `#11`, proving the first real pilot-app feature loop: <https://github.com/jgoodhcg/agent-blueprint/actions/runs/23988206922>
+- PR `#11` was later closed during cleanup after the timezone-focused follow-up work moved to `roadmap/010-roadmap-todo-local-due-dates.md`.

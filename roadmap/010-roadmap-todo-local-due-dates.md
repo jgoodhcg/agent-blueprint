@@ -1,9 +1,9 @@
 ---
 title: "Treat Roadmap Todo Due Dates as Local Calendar Dates"
-status: ready
+status: done
 description: "Fix the pilot app so date-only due dates render and evaluate overdue status as local calendar dates, then prove the change on a fresh autonomous PR."
 created: 2026-04-05
-updated: 2026-04-05
+updated: 2026-04-06
 tags: [pilot, web, todo, dates, workflow]
 priority: high
 ---
@@ -37,3 +37,5 @@ Create a fresh autonomous PR from `main` that fixes the date-handling bug discov
 
 - This work unit intentionally starts from `main` instead of reusing PR `#11`, so the proof artifact is not mixed with earlier check names, earlier commit identity behavior, or seeded review history.
 - The bug was surfaced by review feedback on PR `#11`, but this work unit should stand on its own as a clean implementation proof.
+- Implement run `24009281387` opened PR `#12`, validation run `24009380566` passed, review run `24038904809` surfaced the missing timezone-coverage concern, and fix run `24040510112` plus validation run `24040566133` completed the same-PR repair loop.
+- PR `#12` was later closed during cleanup, but the work unit succeeded as a workflow proof artifact before closure.
