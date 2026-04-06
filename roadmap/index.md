@@ -35,6 +35,8 @@ Ideas not yet promoted to work units:
 - Cross-agent testing — validate blueprint adoption across all four product lines (codex, claude, gemini, opencode)
 - Adoption tooling — scripted alignment checks, automated drift detection
 - Decision artifact examples — sample `.decisions/` entries for common scenarios
+- Project-relative automation identity — instruction files and workflow examples should name the workflow-owned git identity relative to the adopting project, not with a blueprint-specific hardcoded persona
+- Squash/finalize action — after implement/review/fix loops are proven, explore a dedicated action that can produce a clean squash-merge style end state instead of leaving the full autonomous commit history as the final branch shape
 - Ambiguous work unit handling — force a decision artifact or explicit scope narrowing instead of silent assumption drift
 - Base-branch drift recovery — refresh an open autonomous PR after `main` moves and confirm validation still converges
 - Second proxy project — validate the same workflow pattern in a repo with a meaningfully different stack and validation suite
