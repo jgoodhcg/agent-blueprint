@@ -472,20 +472,33 @@ jobs:
 
           printf '%s\n' "${review_output}" > "${RUNNER_TEMP}/opencode-review-output.txt"
 
-          decision_line="$(printf '%s\n' "${review_output}" | sed -n '1p')"
+          decision_line_number="$(
+            printf '%s\n' "${review_output}" \
+              | grep -nE '^Decision: (approve|request-changes|comment)$' \
+              | head -n 1 \
+              | cut -d: -f1
+          )"
+
+          if [[ -z "${decision_line_number}" ]]; then
+            echo "review output did not contain a valid Decision line" >&2
+            printf '%s\n' "${review_output}" >&2
+            exit 1
+          fi
+
+          decision_line="$(printf '%s\n' "${review_output}" | sed -n "${decision_line_number}p")"
           decision="$(printf '%s\n' "${decision_line}" | sed -E 's/^Decision: (approve|request-changes|comment)$/\1/')"
 
           case "${decision}" in
             approve|request-changes|comment) ;;
             *)
-              echo "review output did not start with a valid Decision line" >&2
+              echo "review output did not contain a valid Decision line" >&2
               printf '%s\n' "${review_output}" >&2
               exit 1
               ;;
           esac
 
           printf '%s\n' "${decision}" > "${{ steps.artifacts.outputs.decision_path }}"
-          printf '%s\n' "${review_output}" | tail -n +3 > "${{ steps.artifacts.outputs.body_path }}"
+          printf '%s\n' "${review_output}" | tail -n +"$((decision_line_number + 2))" > "${{ steps.artifacts.outputs.body_path }}"
 
           if [[ ! -s "${{ steps.artifacts.outputs.body_path }}" ]]; then
             echo "review body parsed to an empty file" >&2
