@@ -26,6 +26,7 @@ See individual `[ID]-[slug].md` files in this directory. Use `draft` while clari
 - `008-review-driven-decision-rework.md` (`draft`) - prove review can catch substantive product or UX decisions that require rework
 - `009-fix-review-comments-and-failed-checks.md` (`ready`) - prove the fix loop can address PR review feedback and failing GitHub checks on the same PR
 - `010-roadmap-todo-local-due-dates.md` (`ready`) - fix date-only due dates to behave as local calendar dates on a fresh autonomous PR
+- `011-roadmap-todo-visual-hierarchy-loop.md` (`ready`) - open a screenshot-informed pilot-app PR designed for a real human review comment and same-PR fix follow-up
 
 ## Quick Ideas
 
