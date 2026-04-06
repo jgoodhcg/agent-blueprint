@@ -127,8 +127,17 @@ export function App() {
         </div>
       </section>
 
-      <section class="panel">
+      <section class="panel panel--composer">
         <form class="composer" onSubmit={submitNewTodo}>
+          <div class="composer__header">
+            <svg class="composer__icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <circle cx="12" cy="12" r="10"/>
+              <line x1="12" y1="8" x2="12" y2="16"/>
+              <line x1="8" y1="12" x2="16" y2="12"/>
+            </svg>
+            <span class="composer__title">Add a new task</span>
+          </div>
+
           <label class="field">
             <span>Task title</span>
             <input
@@ -155,7 +164,7 @@ export function App() {
             </select>
           </label>
 
-          <button type="submit">Add todo</button>
+          <button type="submit" class="button-primary">Add todo</button>
         </form>
       </section>
 
