@@ -83,7 +83,13 @@ Not a fit:
   4. Confirm the PR shows attached repository and pilot-app validation checks from `.github/workflows/pr-validation.yml`.
   5. Run `opencode-implement.yml` in `review` mode against that PR and confirm it posts a PR-visible review with the selected model and target PR.
   6. Seed a real review comment or failing check, then run `opencode-fix.yml` against that same PR and confirm it pushes a follow-up commit to the existing branch and re-dispatches PR validation.
-  7. Update the acceptance checklist in `roadmap/001-github-opencode-pilot.md` only after the corresponding GitHub evidence exists.
+   7. Update the acceptance checklist in `roadmap/001-github-opencode-pilot.md` only after the corresponding GitHub evidence exists.
+
+## Demo Flow Snapshot
+
+This section exists to demonstrate the GitHub roadmap automation loop.
+
+- The automation loop follows: Implementation -> PR validation -> Review -> Human review.
 
 For the current POC loop, orchestration is intentionally manual between stages:
 - dispatch `implement`
