@@ -141,6 +141,7 @@ jobs:
           printf 'pr_body_path=%s/opencode-pr-body.md\n' "${RUNNER_TEMP}" >> "${GITHUB_OUTPUT}"
           printf 'body_path=%s/opencode-review.md\n' "${RUNNER_TEMP}" >> "${GITHUB_OUTPUT}"
           printf 'decision_path=%s/opencode-review-decision.txt\n' "${RUNNER_TEMP}" >> "${GITHUB_OUTPUT}"
+          printf 'review_context_path=%s/opencode-review-context.md\n' "${RUNNER_TEMP}" >> "${GITHUB_OUTPUT}"
           printf 'diff_path=%s/opencode-pr.diff\n' "${RUNNER_TEMP}" >> "${GITHUB_OUTPUT}"
 
       - name: Resolve git identity
@@ -269,13 +270,50 @@ jobs:
           set -euo pipefail
 
           pr_number="${{ inputs.pr_number }}"
-          pr_json="$(gh pr view "${pr_number}" --json headRefName,baseRefName,url,title)"
+          pr_json="$(gh pr view "${pr_number}" --json number,headRefName,baseRefName,url,title,reviewDecision,statusCheckRollup)"
           head_ref="$(printf '%s' "${pr_json}" | python3 -c 'import json,sys; data=json.load(sys.stdin); print(data["headRefName"])')"
           base_ref="$(printf '%s' "${pr_json}" | python3 -c 'import json,sys; data=json.load(sys.stdin); print(data["baseRefName"])')"
 
           git fetch origin "${base_ref}" "${head_ref}"
           git checkout -B "${head_ref}" "origin/${head_ref}"
           git diff --no-color "origin/${base_ref}...HEAD" > "${{ steps.artifacts.outputs.diff_path }}"
+
+          printf '%s\n' "${pr_json}" | python3 - "${{ steps.artifacts.outputs.review_context_path }}" <<'PY'
+          import json
+          import sys
+
+          output_path = sys.argv[1]
+          data = json.load(sys.stdin)
+
+          lines = [
+              "# Review Context",
+              f"- PR: #{data['number']} {data['title']}",
+              f"- URL: {data['url']}",
+              f"- Base branch: {data['baseRefName']}",
+              f"- Head branch: {data['headRefName']}",
+              f"- Existing review decision: {data.get('reviewDecision') or 'none'}",
+              "",
+              "## Attached Check Status",
+          ]
+
+          checks = data.get("statusCheckRollup") or []
+          if not checks:
+              lines.append("- No attached check data was available.")
+          else:
+              for item in checks:
+                  name = item.get("name") or item.get("context") or "unknown"
+                  workflow = item.get("workflowName") or ""
+                  state = item.get("conclusion") or item.get("state") or item.get("status") or "unknown"
+                  details = item.get("detailsUrl") or item.get("targetUrl") or ""
+                  label = f"{workflow} / {name}" if workflow else name
+                  line = f"- {label}: {state}"
+                  if details:
+                      line += f" ({details})"
+                  lines.append(line)
+
+          with open(output_path, "w", encoding="utf-8") as handle:
+              handle.write("\n".join(lines) + "\n")
+          PY
 
           printf 'head_ref=%s\n' "${head_ref}" >> "${GITHUB_OUTPUT}"
           printf 'base_ref=%s\n' "${base_ref}" >> "${GITHUB_OUTPUT}"
@@ -460,7 +498,7 @@ jobs:
 
           Shared execution contract:
           - Treat that roadmap file as the canonical source of scope.
-          - Read \`AGENTS.md\`, the roadmap file, and the attached diff before deciding.
+          - Read \`AGENTS.md\`, the roadmap file, the attached review context, and the attached diff before deciding.
           - Apply the \`Runtime: Autonomous GitHub Actions\` policy in \`AGENTS.md\`.
           - Do not modify files, do not create commits, do not push, and do not run \`gh\`.
           - Review \`PR #${{ inputs.pr_number }}\` from \`${{ steps.review_target.outputs.head_ref }}\` into \`${{ steps.review_target.outputs.base_ref }}\`.
@@ -469,12 +507,19 @@ jobs:
             1. First line: \`Decision: approve\` or \`Decision: request-changes\` or \`Decision: comment\`
             2. Second line: blank
             3. Remaining lines: the markdown review body
-          - Keep the review body concise and structured with:
-            1. \`Summary\`
-            2. \`Blocking Findings\`
-            3. \`Non-Blocking Suggestions\`
-            4. \`Validation Notes\`
+          - Write the review body as if you are leaving a real PR review comment for the author and for a later fix run, not as an internal audit memo.
           - Always reference the roadmap path and PR number in the review body.
+          - Keep the review body concise and structured with these sections:
+            1. \`Verdict\`
+            2. \`Why This Is Ready\` when approving, or \`Requested Changes\` when requesting changes, or \`Review Notes\` when commenting
+            3. \`Non-Blocking Suggestions\`
+            4. \`Validation Context\`
+          - If the decision is \`approve\`, explain in 1 to 3 bullets why the PR is ready to merge relative to the roadmap, and explicitly mention whether there are any non-blocking suggestions.
+          - If the decision is \`request-changes\`, list only blocking changes. Each bullet must say what should change and why it blocks approval.
+          - If the decision is \`comment\`, use \`Review Notes\` for concise guidance that is useful but not approval-blocking.
+          - In \`Non-Blocking Suggestions\`, either list concise suggestions or write \`None.\`
+          - In \`Validation Context\`, summarize whether attached checks appear green, mixed, failing, or unavailable from the supplied context.
+          - Avoid phrases like "in the supplied diff" or "based on the supplied materials." Write like a human reviewer commenting directly on the PR.
           EOF
           )"
 
@@ -484,6 +529,7 @@ jobs:
             --agent build \
             -f "${{ steps.roadmap.outputs.roadmap_path }}" \
             -f AGENTS.md \
+            -f "${{ steps.artifacts.outputs.review_context_path }}" \
             -f "${{ steps.artifacts.outputs.diff_path }}" \
             -- \
             "${prompt}"
