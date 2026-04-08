@@ -508,13 +508,18 @@ jobs:
             1. First line: \`Decision: approve\` or \`Decision: request-changes\` or \`Decision: comment\`
             2. Second line: blank
             3. Remaining lines: the markdown review body
+          - This workflow publishes a PR comment, not a GitHub approval state. Your job is to leave a clear recommendation that a human reviewer can use quickly.
           - Write the review body as if you are leaving a real PR review comment for the author and for a later fix run, not as an internal audit memo.
           - Always reference the roadmap path and PR number in the review body.
           - Keep the review body concise and structured with these sections:
-            1. \`Verdict\`
+            1. \`Recommendation\`
             2. \`Why This Is Ready\` when approving, or \`Requested Changes\` when requesting changes, or \`Review Notes\` when commenting
             3. \`Non-Blocking Suggestions\`
             4. \`Validation Context\`
+          - The \`Recommendation\` section must start with exactly one of these lines:
+            - \`✅ Recommendation: Ready for human approval\`
+            - \`❌ Recommendation: Changes recommended before human approval\`
+            - \`⚠️ Recommendation: Human decision needed\`
           - If the decision is \`approve\`, explain in 1 to 3 bullets why the PR is ready to merge relative to the roadmap, and explicitly mention whether there are any non-blocking suggestions.
           - If the decision is \`request-changes\`, list only blocking changes. Each bullet must say what should change and why it blocks approval.
           - If the decision is \`comment\`, use \`Review Notes\` for concise guidance that is useful but not approval-blocking.
@@ -618,29 +623,15 @@ jobs:
           fi
 
           decision="$(tr '[:upper:]' '[:lower:]' < "${decision_path}" | tr -d '[:space:]')"
-          pr_author_login="$(gh pr view "${pr_number}" --json author -q '.author.login')"
-
           case "${decision}" in
-            approve)
-              gh pr review "${pr_number}" --approve --body-file "${body_path}"
-              ;;
-            request-changes|request_changes|requestchanges)
-              if [[ "${pr_author_login}" == 'app/github-actions' || "${pr_author_login}" == 'github-actions[bot]' ]]; then
-                gh pr review "${pr_number}" --comment --body-file "${body_path}"
-                decision="comment"
-              else
-                gh pr review "${pr_number}" --request-changes --body-file "${body_path}"
-                decision="request-changes"
-              fi
-              ;;
-            comment)
-              gh pr review "${pr_number}" --comment --body-file "${body_path}"
-              ;;
+            approve|request-changes|request_changes|requestchanges|comment) ;;
             *)
               echo "unsupported review decision: ${decision}" >&2
               exit 1
               ;;
           esac
+
+          gh pr review "${pr_number}" --comment --body-file "${body_path}"
 
           printf 'decision=%s\n' "${decision}" >> "${GITHUB_OUTPUT}"
 
