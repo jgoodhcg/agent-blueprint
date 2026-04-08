@@ -6,7 +6,7 @@ if [[ $# -ne 1 ]]; then
   exit 1
 fi
 
-repo_root="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+repo_root="${GITHUB_WORKSPACE:-${PWD}}"
 output_path="$1"
 runtime_dir="${RUNNER_TEMP:-/tmp}"
 server_log="${runtime_dir}/roadmap-todo-vite.log"
