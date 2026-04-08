@@ -138,6 +138,25 @@ Use one policy file for both paired local work and autonomous GitHub Actions run
 - Preserve one-file portability of the blueprint across projects.
 - Keep language concise and deterministic; avoid unnecessary ceremony.
 
+## Codebase Reconnaissance
+
+Run these git commands when applying the blueprint to an existing codebase or auditing a mature blueprint-following project. The output informs AGENTS.md sections like project-specific rules, validation priorities, and key files — grounding them in observed risk rather than assumptions.
+
+| Signal | Command | What it reveals |
+|--------|---------|-----------------|
+| Churn hotspots | `git log --format=format: --name-only --since="1 year ago" \| sort \| uniq -c \| sort -nr \| head -20` | Files that change most often — candidates for tighter validation or ownership rules |
+| Bus factor | `git shortlog -sn --no-merges --since="6 months ago"` | Knowledge concentration — flag areas where a single contributor owns 60%+ of recent changes |
+| Bug clusters | `git log -i -E --grep="fix\|bug\|broken" --name-only --format='' \| sort \| uniq -c \| sort -nr \| head -20` | Files with the most bug-related commits — cross-reference with churn to find highest-risk code |
+| Project momentum | `git log --format='%ad' --date=format:'%Y-%m' \| sort \| uniq -c` | Commit frequency by month — reveals team health, departures, or batch-release patterns |
+| Firefighting frequency | `git log --oneline --since="1 year ago" \| grep -iE 'revert\|hotfix\|emergency\|rollback'` | Revert/hotfix rate — frequent entries suggest deploy process or test coverage gaps |
+
+Use the results to:
+- Prioritize which areas need validation commands or stricter review.
+- Identify files that warrant explicit ownership or focused test coverage.
+- Calibrate project-specific rules to actual risk patterns rather than convention alone.
+
+Source: [The Git Commands I Run Before Reading Any Code](https://piechowski.io/post/git-commands-before-reading-code/) — Ally Piechowski
+
 ## Reality Check
 
 Before implementing, briefly consider:
