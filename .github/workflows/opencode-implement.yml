@@ -404,8 +404,10 @@ jobs:
             exit 0
           fi
 
+          helper_path="${RUNNER_TEMP}/capture-roadmap-todo-screenshot.sh"
           screenshot_path="pilots/roadmap-todo/docs/roadmap-todo-main-screen.png"
-          bash ./capture-roadmap-todo-screenshot.sh "${GITHUB_WORKSPACE}/${screenshot_path}"
+          git show "origin/${base_ref}:capture-roadmap-todo-screenshot.sh" > "${helper_path}"
+          bash "${helper_path}" "${GITHUB_WORKSPACE}/${screenshot_path}"
 
           printf 'captured=true\n' >> "${GITHUB_OUTPUT}"
           printf 'path=%s\n' "${screenshot_path}" >> "${GITHUB_OUTPUT}"
