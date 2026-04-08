@@ -81,17 +81,50 @@ button {
   margin-top: 1rem;
 }
 
-.panel--hero {
+.panel--composer {
+  border: 2px solid #c24f2f;
+  background: rgba(255, 250, 242, 0.96);
+}
+
+.composer__heading {
+  margin: 0 0 0.75rem;
+  font-size: 1.35rem;
+  font-weight: 700;
+  letter-spacing: -0.01em;
+  color: #172033;
+}
+
+.composer__fields {
   display: grid;
+  gap: 1rem;
+  grid-template-columns: minmax(0, 1.6fr) minmax(0, 0.7fr) auto;
+  align-items: end;
+}
+
+.composer__submit {
+  font-size: 1rem;
+  padding: 0.8rem 1.4rem;
+}
+
+.panel--hero {
+  display: flex;
   gap: 1.25rem;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+}
+
+.hero__text {
+  min-width: 0;
 }
 
 .eyebrow {
-  margin: 0 0 0.4rem;
+  margin: 0 0 0.15rem;
   text-transform: uppercase;
   letter-spacing: 0.14em;
-  font-size: 0.76rem;
+  font-size: 0.7rem;
   color: #8d5e2d;
+  font-weight: 600;
 }
 
 h1,
@@ -100,16 +133,11 @@ p {
   margin: 0;
 }
 
-h1 {
-  font-size: clamp(2.2rem, 6vw, 4.4rem);
-  line-height: 0.95;
-  letter-spacing: -0.04em;
-}
-
 .lede {
-  margin-top: 0.85rem;
-  max-width: 40rem;
-  color: #48556a;
+  margin-top: 0.15rem;
+  max-width: 28rem;
+  color: #6a7486;
+  font-size: 0.9rem;
 }
 
 .stats-grid {
@@ -137,9 +165,7 @@ h1 {
 
 .composer {
   display: grid;
-  gap: 1rem;
-  grid-template-columns: minmax(0, 1.6fr) minmax(0, 0.7fr) auto;
-  align-items: end;
+  gap: 0;
 }
 
 .field {
@@ -286,12 +312,13 @@ h1 {
   }
 
   .stats-grid,
-  .composer {
+  .composer__fields {
     grid-template-columns: 1fr;
   }
 
   .toolbar,
-  .todo-card {
+  .todo-card,
+  .panel--hero {
     flex-direction: column;
   }
 }

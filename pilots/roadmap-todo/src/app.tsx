@@ -101,14 +101,45 @@ function TodoRow({ todo }: { todo: TodoItem }) {
 export function App() {
   return (
     <main class="shell">
+      <section class="panel panel--composer">
+        <form class="composer" onSubmit={submitNewTodo}>
+          <h2 class="composer__heading">What needs to be done?</h2>
+          <div class="composer__fields">
+            <label class="field">
+              <span>Task title</span>
+              <input
+                placeholder="Ship the pilot app"
+                value={draftTitle.value}
+                onInput={(event) => {
+                  draftTitle.value = (event.currentTarget as HTMLInputElement).value;
+                }}
+              />
+            </label>
+
+            <label class="field">
+              <span>Priority</span>
+              <select
+                value={draftPriority.value}
+                onChange={(event) => {
+                  draftPriority.value = (event.currentTarget as HTMLSelectElement)
+                    .value as TodoPriority;
+                }}
+              >
+                <option value="low">Low</option>
+                <option value="medium">Medium</option>
+                <option value="high">High</option>
+              </select>
+            </label>
+
+            <button type="submit" class="composer__submit">Add todo</button>
+          </div>
+        </form>
+      </section>
+
       <section class="panel panel--hero">
-        <div>
-          <p class="eyebrow">Pilot app</p>
-          <h1>Roadmap Todo</h1>
-          <p class="lede">
-            A small real app for exercising GitHub automation with real features, real tests, and
-            real UI state.
-          </p>
+        <div class="hero__text">
+          <p class="eyebrow">Roadmap Todo</p>
+          <p class="lede">Track and manage your work items.</p>
         </div>
 
         <div class="stats-grid" aria-label="Todo summary">
@@ -125,38 +156,6 @@ export function App() {
             <strong>{counts.value.completed}</strong>
           </div>
         </div>
-      </section>
-
-      <section class="panel">
-        <form class="composer" onSubmit={submitNewTodo}>
-          <label class="field">
-            <span>Task title</span>
-            <input
-              placeholder="Ship the pilot app"
-              value={draftTitle.value}
-              onInput={(event) => {
-                draftTitle.value = (event.currentTarget as HTMLInputElement).value;
-              }}
-            />
-          </label>
-
-          <label class="field">
-            <span>Priority</span>
-            <select
-              value={draftPriority.value}
-              onChange={(event) => {
-                draftPriority.value = (event.currentTarget as HTMLSelectElement)
-                  .value as TodoPriority;
-              }}
-            >
-              <option value="low">Low</option>
-              <option value="medium">Medium</option>
-              <option value="high">High</option>
-            </select>
-          </label>
-
-          <button type="submit">Add todo</button>
-        </form>
       </section>
 
       <section class="panel">
@@ -188,8 +187,8 @@ export function App() {
 
         {visibleTodos.value.length === 0 ? (
           <div class="empty-state">
-            <h2>No todos in this view</h2>
-            <p>Add a task or switch filters to see your queued work.</p>
+            <h2>No tasks yet</h2>
+            <p>Add your first task above to get started.</p>
           </div>
         ) : (
           <ul class="todo-list">
