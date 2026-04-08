@@ -1,5 +1,5 @@
 name: Roadmap Hello
-run-name: Hello: smoke test
+run-name: "Hello: smoke test"
 
 on:
   workflow_dispatch:

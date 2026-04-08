@@ -1,5 +1,5 @@
 name: Roadmap Fix
-run-name: Fix: PR #${{ inputs.pr_number }} / ${{ inputs.roadmap_path }}
+run-name: "Fix: PR #${{ inputs.pr_number }} / ${{ inputs.roadmap_path }}"
 
 on:
   workflow_dispatch:
