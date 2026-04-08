@@ -101,35 +101,10 @@ function TodoRow({ todo }: { todo: TodoItem }) {
 export function App() {
   return (
     <main class="shell">
-      <section class="panel panel--hero">
-        <div>
-          <p class="eyebrow">Pilot app</p>
-          <h1>Roadmap Todo</h1>
-          <p class="lede">
-            A small real app for exercising GitHub automation with real features, real tests, and
-            real UI state.
-          </p>
-        </div>
-
-        <div class="stats-grid" aria-label="Todo summary">
-          <div class="stat-card">
-            <span class="stat-card__label">Total</span>
-            <strong>{counts.value.total}</strong>
-          </div>
-          <div class="stat-card">
-            <span class="stat-card__label">Open</span>
-            <strong>{counts.value.open}</strong>
-          </div>
-          <div class="stat-card">
-            <span class="stat-card__label">Done</span>
-            <strong>{counts.value.completed}</strong>
-          </div>
-        </div>
-      </section>
-
-      <section class="panel">
+      <section class="panel panel--composer">
+        <h1 class="composer-prompt">What needs to be done?</h1>
         <form class="composer" onSubmit={submitNewTodo}>
-          <label class="field">
+          <label class="field field--title">
             <span>Task title</span>
             <input
               placeholder="Ship the pilot app"
@@ -140,7 +115,7 @@ export function App() {
             />
           </label>
 
-          <label class="field">
+          <label class="field field--priority">
             <span>Priority</span>
             <select
               value={draftPriority.value}
@@ -155,8 +130,28 @@ export function App() {
             </select>
           </label>
 
-          <button type="submit">Add todo</button>
+          <button type="submit" class="composer-submit">Add todo</button>
         </form>
+      </section>
+
+      <section class="panel panel--summary">
+        <div class="summary-layout">
+          <p class="eyebrow">Roadmap Todo</p>
+          <div class="stats-grid" aria-label="Todo summary">
+            <div class="stat-card">
+              <span class="stat-card__label">Total</span>
+              <strong>{counts.value.total}</strong>
+            </div>
+            <div class="stat-card">
+              <span class="stat-card__label">Open</span>
+              <strong>{counts.value.open}</strong>
+            </div>
+            <div class="stat-card">
+              <span class="stat-card__label">Done</span>
+              <strong>{counts.value.completed}</strong>
+            </div>
+          </div>
+        </div>
       </section>
 
       <section class="panel">
@@ -188,8 +183,8 @@ export function App() {
 
         {visibleTodos.value.length === 0 ? (
           <div class="empty-state">
-            <h2>No todos in this view</h2>
-            <p>Add a task or switch filters to see your queued work.</p>
+            <h2>No todos yet</h2>
+            <p>Add your first task above to get started.</p>
           </div>
         ) : (
           <ul class="todo-list">
