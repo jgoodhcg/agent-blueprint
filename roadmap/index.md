@@ -29,6 +29,7 @@ See individual `[ID]-[slug].md` files in this directory. Use `draft` while clari
 - `010-roadmap-todo-local-due-dates.md` (`done`) - fix date-only due dates to behave as local calendar dates on a fresh autonomous PR
 - `011-roadmap-todo-visual-hierarchy-loop.md` (`ready`) - open a screenshot-informed pilot-app PR designed for a real human review comment and same-PR fix follow-up
 - `012-roadmap-todo-full-loop-demo.md` (`ready`) - run one clean demo-grade implement -> review -> human comment -> fix -> review loop with screenshot evidence on the pilot app
+- `013-roadmap-todo-full-loop-demo-clean-run.md` (`ready`) - run a fresh clean-room version of the same demo so the Actions list and PR timeline are contiguous for a live walkthrough
 
 ## Quick Ideas
 
