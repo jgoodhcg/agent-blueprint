@@ -278,12 +278,13 @@ jobs:
           git checkout -B "${head_ref}" "origin/${head_ref}"
           git diff --no-color "origin/${base_ref}...HEAD" > "${{ steps.artifacts.outputs.diff_path }}"
 
-          printf '%s\n' "${pr_json}" | python3 - "${{ steps.artifacts.outputs.review_context_path }}" <<'PY'
+          PR_JSON="${pr_json}" python3 - "${{ steps.artifacts.outputs.review_context_path }}" <<'PY'
           import json
+          import os
           import sys
 
           output_path = sys.argv[1]
-          data = json.load(sys.stdin)
+          data = json.loads(os.environ["PR_JSON"])
 
           lines = [
               "# Review Context",
