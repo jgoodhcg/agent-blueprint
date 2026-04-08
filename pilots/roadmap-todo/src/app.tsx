@@ -104,6 +104,7 @@ export function App() {
       <section class="panel panel--composer">
         <form class="composer" onSubmit={submitNewTodo}>
           <h2 class="composer__heading">What needs to be done?</h2>
+          <p class="composer__hint">Start here — type a title and hit Add todo.</p>
           <div class="composer__fields">
             <label class="field">
               <span>Task title</span>
@@ -188,7 +189,7 @@ export function App() {
         {visibleTodos.value.length === 0 ? (
           <div class="empty-state">
             <h2>No tasks yet</h2>
-            <p>Add your first task above to get started.</p>
+            <p>Use the composer above to add your first task.</p>
           </div>
         ) : (
           <ul class="todo-list">

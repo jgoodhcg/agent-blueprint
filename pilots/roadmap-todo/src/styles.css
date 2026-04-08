@@ -94,6 +94,13 @@ button {
   color: #172033;
 }
 
+.composer__hint {
+  margin: -0.5rem 0 0.75rem;
+  font-size: 0.82rem;
+  color: #8d5e2d;
+  font-weight: 500;
+}
+
 .composer__fields {
   display: grid;
   gap: 1rem;
