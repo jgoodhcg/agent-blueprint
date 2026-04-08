@@ -356,13 +356,23 @@ jobs:
           EOF
           )"
 
-          opencode run \
+          set +e
+          timeout --signal=TERM 25m opencode run \
             --model "${{ steps.model.outputs.model }}" \
             --agent build \
             -f "${{ steps.roadmap.outputs.roadmap_path }}" \
             -f AGENTS.md \
             -- \
             "${prompt}"
+          status=$?
+          set -e
+
+          if [[ "${status}" -eq 124 ]]; then
+            echo "OpenCode implement exceeded the 25 minute timeout" >&2
+            exit 124
+          fi
+
+          exit "${status}"
 
       - name: Finalize implement commit
         id: finalize_commit
