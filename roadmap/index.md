@@ -10,8 +10,8 @@ goal: "Maintain and evolve a portable agent operating standard for AI-assisted s
 - Blueprint version: `2026-03-28`
 - Design System Guide version: `2026-03-07`
 - GitHub automation pilot: direct-CLI OpenCode workflows in this repo, triggered through GitHub Actions UI or `gh workflow run`, with workflow-owned implement, review, fix, commit, push, and PR-validation redispatch now proven on a real Bun + Preact pilot app
-- Current repository state: no autonomous pilot PRs are open; the next run should start from a tightened roadmap brief rather than reusing earlier proof branches
-- Next proof target: a cleaner screenshot-informed implementation PR that can receive a real human review comment and then exercise the same-PR fix loop again
+- Current repository state: one open demo PR may still exist from workflow tuning, but the next real demo should start from a fresh roadmap item and a fresh PR timeline
+- Next proof target: a full demo loop on the Roadmap Todo pilot covering implement, screenshot-backed PR context, autonomous review, human follow-up, same-PR fix, and rerun review
 
 ## Work Units
 
@@ -28,6 +28,7 @@ See individual `[ID]-[slug].md` files in this directory. Use `draft` while clari
 - `009-fix-review-comments-and-failed-checks.md` (`done`) - prove the fix loop can address PR review feedback and failing GitHub checks on the same PR
 - `010-roadmap-todo-local-due-dates.md` (`done`) - fix date-only due dates to behave as local calendar dates on a fresh autonomous PR
 - `011-roadmap-todo-visual-hierarchy-loop.md` (`ready`) - open a screenshot-informed pilot-app PR designed for a real human review comment and same-PR fix follow-up
+- `012-roadmap-todo-full-loop-demo.md` (`ready`) - run one clean demo-grade implement -> review -> human comment -> fix -> review loop with screenshot evidence on the pilot app
 
 ## Quick Ideas
 
