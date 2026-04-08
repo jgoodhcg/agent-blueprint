@@ -270,7 +270,8 @@ jobs:
           set -euo pipefail
 
           pr_number="${{ inputs.pr_number }}"
-          pr_json="$(gh pr view "${pr_number}" --json number,headRefName,baseRefName,url,title,reviewDecision,statusCheckRollup)"
+          pr_json="$(gh pr view "${pr_number}" --json number,headRefName,baseRefName,url,title,body,reviewDecision,statusCheckRollup)"
+          issue_comments_json="$(gh api "repos/${GITHUB_REPOSITORY}/issues/${pr_number}/comments")"
           head_ref="$(printf '%s' "${pr_json}" | python3 -c 'import json,sys; data=json.load(sys.stdin); print(data["headRefName"])')"
           base_ref="$(printf '%s' "${pr_json}" | python3 -c 'import json,sys; data=json.load(sys.stdin); print(data["baseRefName"])')"
 
@@ -278,13 +279,14 @@ jobs:
           git checkout -B "${head_ref}" "origin/${head_ref}"
           git diff --no-color "origin/${base_ref}...HEAD" > "${{ steps.artifacts.outputs.diff_path }}"
 
-          PR_JSON="${pr_json}" python3 - "${{ steps.artifacts.outputs.review_context_path }}" <<'PY'
+          PR_JSON="${pr_json}" ISSUE_COMMENTS_JSON="${issue_comments_json}" python3 - "${{ steps.artifacts.outputs.review_context_path }}" <<'PY'
           import json
           import os
           import sys
 
           output_path = sys.argv[1]
           data = json.loads(os.environ["PR_JSON"])
+          issue_comments = json.loads(os.environ["ISSUE_COMMENTS_JSON"])
 
           lines = [
               "# Review Context",
@@ -293,9 +295,24 @@ jobs:
               f"- Base branch: {data['baseRefName']}",
               f"- Head branch: {data['headRefName']}",
               f"- Existing review decision: {data.get('reviewDecision') or 'none'}",
-              "",
-              "## Attached Check Status",
           ]
+
+          body = (data.get("body") or "").strip()
+          if body:
+              lines.extend(["", "## PR Body", body])
+
+          lines.extend(["", "## Issue Comments"])
+          if not issue_comments:
+              lines.append("- No issue comments were available.")
+          else:
+              for comment in issue_comments[-10:]:
+                  user = comment.get("user", {}).get("login", "unknown")
+                  created_at = comment.get("created_at", "unknown-time")
+                  lines.append(f"### {user} at {created_at}")
+                  lines.append((comment.get("body") or "").strip() or "(empty comment)")
+                  lines.append("")
+
+          lines.append("## Attached Check Status")
 
           checks = data.get("statusCheckRollup") or []
           if not checks:
@@ -373,6 +390,25 @@ jobs:
           fi
 
           exit "${status}"
+
+      - name: Capture pilot screenshot
+        id: capture_pilot_screenshot
+        if: ${{ inputs.mode == 'implement' }}
+        shell: bash
+        run: |
+          set -euo pipefail
+
+          base_ref="${{ steps.implement_branch.outputs.base_ref }}"
+          if ! git diff --name-only "origin/${base_ref}...HEAD" | grep -q '^pilots/roadmap-todo/'; then
+            printf 'captured=false\n' >> "${GITHUB_OUTPUT}"
+            exit 0
+          fi
+
+          screenshot_path="pilots/roadmap-todo/docs/roadmap-todo-main-screen.png"
+          bash ./capture-roadmap-todo-screenshot.sh "${GITHUB_WORKSPACE}/${screenshot_path}"
+
+          printf 'captured=true\n' >> "${GITHUB_OUTPUT}"
+          printf 'path=%s\n' "${screenshot_path}" >> "${GITHUB_OUTPUT}"
 
       - name: Finalize implement commit
         id: finalize_commit
@@ -489,6 +525,30 @@ jobs:
           printf '%s\n' "${{ steps.implement_branch.outputs.branch_name }}" > "${{ steps.artifacts.outputs.pr_head_ref_path }}"
           printf 'pr_number=%s\n' "${pr_number}" >> "${GITHUB_OUTPUT}"
           printf 'pr_url=%s\n' "${pr_url}" >> "${GITHUB_OUTPUT}"
+
+      - name: Publish screenshot evidence comment
+        if: ${{ inputs.mode == 'implement' && steps.create_pr.outcome == 'success' && steps.capture_pilot_screenshot.outputs.captured == 'true' }}
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        shell: bash
+        run: |
+          set -euo pipefail
+
+          pr_number="$(tr -d '[:space:]' < "${{ steps.artifacts.outputs.pr_number_path }}")"
+          screenshot_url="https://github.com/${GITHUB_REPOSITORY}/blob/${{ steps.push_branch.outputs.head_sha }}/${{ steps.capture_pilot_screenshot.outputs.path }}?raw=1"
+          comment_path="${RUNNER_TEMP}/opencode-screenshot-comment.md"
+
+          cat > "${comment_path}" <<EOF
+          ## Screenshot Evidence
+
+          Bot-generated Playwright capture from the PR branch for \`${{ steps.roadmap.outputs.roadmap_path }}\`.
+
+          ![Roadmap Todo first screen](${screenshot_url})
+
+          Caption: composer-first layout, reduced hero, and first-action guidance visible on the main screen.
+          EOF
+
+          gh pr comment "${pr_number}" --body-file "${comment_path}"
 
       - name: Run OpenCode review
         id: opencode_review
