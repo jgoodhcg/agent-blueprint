@@ -1,6 +1,6 @@
 ---
 title: "Add Model Attribution to Workflow Comments and Reviews"
-status: ready
+status: active
 description: "Stamp workflow-authored PR comments and reviews with provider, product, and model attribution."
 created: 2026-04-09
 updated: 2026-04-09
@@ -14,11 +14,22 @@ priority: medium
 
 Make every workflow-authored review artifact self-describing so a human can see which model and provider produced it without reading Actions logs.
 
+## Sequencing
+
+- Execution order: third
+- Dependency role: add attribution after `015` settles which comments or PR-body-adjacent artifacts remain canonical
+
 ## Specification
 
 - Resolve provider, product, and model once per workflow run.
 - Append that attribution consistently to autonomous review comments and screenshot-evidence comments.
 - Keep the format concise and machine-checkable.
+
+## Chosen Defaults
+
+- Visible footer: `Attribution: <provider> / <product> / <model>`
+- Machine-checkable marker: HTML comment carrying the same three fields
+- Coverage: autonomous review comments plus screenshot-evidence lifecycle comments in implement and fix stages
 
 ## Acceptance Criteria
 

@@ -137,6 +137,10 @@ Use one policy file for both paired local work and autonomous GitHub Actions run
 - Keep `CLAUDE.md` and `GEMINI.md` as thin pointers to this file.
 - Preserve one-file portability of the blueprint across projects.
 - Keep language concise and deterministic; avoid unnecessary ceremony.
+- For workflow-owned screenshots, use `<project-root>/docs/evidence/<work-unit-slug>/` as the canonical artifact directory.
+- Treat the PR body `Evidence` section as the canonical screenshot surface; use PR comments only for supplemental timeline context such as refreshed post-fix evidence.
+- Workflow-authored screenshot comments and review comments should include visible provider/product/model attribution plus a machine-checkable marker.
+- Demo or proof PRs are artifacts first: close superseded demos with a final pointer, and do not merge a demo PR unless it is intentionally the long-lived change vehicle.
 
 ## Codebase Reconnaissance
 

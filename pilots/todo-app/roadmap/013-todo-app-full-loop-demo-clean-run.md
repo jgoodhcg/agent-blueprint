@@ -3,7 +3,7 @@ title: "Run a Clean Full Implement Review Fix Demo on Todo App"
 status: archived
 description: "Create a fresh pilot-app PR that demonstrates implement, validation, autonomous review, human feedback, same-PR fix, rerun review, and final human approval readiness with bot-generated screenshot evidence."
 created: 2026-04-08
-updated: 2026-04-08
+updated: 2026-04-09
 tags: [pilot, demo, screenshot, review, fix, workflow]
 priority: high
 ---
@@ -79,3 +79,5 @@ This work unit is intentionally a demo script for the workflow itself, not just 
 - This work unit is a fresh rerun of the `012` demo path so the GitHub UI and PR timeline are clean for a live walkthrough.
 - The highest priority is a believable, low-risk demo artifact under time pressure, not a broad visual redesign.
 - Keep the first implementation prompt narrow enough to avoid planning drift in the model step.
+- Canonical demo PR: `#18`
+- This PR is preserved as the clean proof artifact for the archived demo path and may be intentionally closed instead of merged.

@@ -310,6 +310,14 @@ jobs:
           - You may optionally write the commit body markdown to \`${{ steps.artifacts.outputs.commit_body_path }}\`.
           - After the implementation is complete, write the PR title to \`${{ steps.artifacts.outputs.pr_title_path }}\`.
           - After the implementation is complete, write the PR body markdown to \`${{ steps.artifacts.outputs.pr_body_path }}\`.
+          - Keep the PR body concise and reviewer-first with this section order:
+            1. \`Roadmap: <path>\` near the top
+            2. \`## Summary\`
+            3. \`## Evidence\` when screenshots or other proof artifacts exist
+            4. \`## Test Coverage\`
+            5. \`## Validation\`
+          - In \`Test Coverage\`, summarize new or updated automated tests in plain language. Do not rely on file paths alone when you know what the tests prove.
+          - In \`Validation\`, keep the content short and easy to scan.
           - Stop after the file changes and PR metadata files are written.
           EOF
           )"
@@ -399,6 +407,143 @@ jobs:
           git remote set-url origin "https://x-access-token:${GITHUB_TOKEN}@github.com/${GITHUB_REPOSITORY}.git"
           git push -u origin "${branch_name}"
 
+      - name: Prepare implement PR metadata
+        id: prepare_pr_metadata
+        if: ${{ inputs.mode == 'implement' && steps.finalize_commit.outputs.changes_present == 'true' }}
+        shell: bash
+        run: |
+          set -euo pipefail
+
+          pr_title_path="${{ steps.artifacts.outputs.pr_title_path }}"
+          pr_body_path="${{ steps.artifacts.outputs.pr_body_path }}"
+          changed_files_path="${RUNNER_TEMP}/opencode-changed-files.txt"
+          roadmap_path="${{ steps.roadmap.outputs.roadmap_path }}"
+          base_ref="${{ steps.implement_branch.outputs.base_ref }}"
+
+          git diff --name-only "origin/${base_ref}...HEAD" > "${changed_files_path}"
+
+          python3 - "${pr_title_path}" "${pr_body_path}" "${changed_files_path}" "${roadmap_path}" <<'PY'
+          import pathlib
+          import re
+          import sys
+
+          title_path = pathlib.Path(sys.argv[1])
+          body_path = pathlib.Path(sys.argv[2])
+          changed_files_path = pathlib.Path(sys.argv[3])
+          roadmap_path = sys.argv[4]
+
+          def read_text(path: pathlib.Path) -> str:
+              if not path.exists():
+                  return ""
+              return path.read_text(encoding="utf-8").replace("\r\n", "\n").strip()
+
+          title = read_text(title_path)
+          if not title:
+              title = f"Apply {roadmap_path}"
+          title_path.write_text(title.splitlines()[0].strip() + "\n", encoding="utf-8")
+
+          raw_body = read_text(body_path)
+          body_lines = [
+              line
+              for line in raw_body.splitlines()
+              if not re.match(r"^Roadmap:\s*`?.+`?\s*$", line.strip())
+          ]
+          normalized_body = "\n".join(body_lines).strip()
+
+          sections = []
+          preamble = []
+          current = None
+
+          for line in normalized_body.splitlines():
+              match = re.match(r"^##\s+(.+?)\s*$", line)
+              if match:
+                  current = {"heading": match.group(1).strip(), "lines": []}
+                  sections.append(current)
+                  continue
+
+              if current is None:
+                  preamble.append(line)
+              else:
+                  current["lines"].append(line)
+
+          def normalize_heading(value: str) -> str:
+              return re.sub(r"\s+", " ", value.strip().lower())
+
+          standard_sections = {}
+          extra_sections = []
+
+          for section in sections:
+              heading = section["heading"]
+              normalized = normalize_heading(heading)
+              content = "\n".join(section["lines"]).strip()
+
+              if normalized in {"summary", "evidence", "test coverage", "validation"} and normalized not in standard_sections:
+                  standard_sections[normalized] = content
+              else:
+                  extra_sections.append((heading, content))
+
+          preamble_text = "\n".join(preamble).strip()
+          if preamble_text:
+              summary_content = standard_sections.get("summary", "").strip()
+              standard_sections["summary"] = (
+                  f"{preamble_text}\n\n{summary_content}".strip()
+                  if summary_content
+                  else preamble_text
+              )
+
+          if not standard_sections.get("summary"):
+              standard_sections["summary"] = f"- Apply the scoped roadmap work unit `{roadmap_path}`."
+
+          changed_files = [
+              line.strip()
+              for line in read_text(changed_files_path).splitlines()
+              if line.strip()
+          ]
+          test_files = [
+              path
+              for path in changed_files
+              if "/tests/" in path or ".test." in path or ".spec." in path
+          ]
+
+          if not standard_sections.get("test coverage"):
+              if test_files:
+                  coverage_lines = []
+                  for path in test_files:
+                      if "/e2e/" in path or ".spec." in path:
+                          coverage_lines.append(f"- End-to-end coverage changed in `{path}`.")
+                      else:
+                          coverage_lines.append(f"- Automated test coverage changed in `{path}`.")
+                  standard_sections["test coverage"] = "\n".join(coverage_lines)
+              else:
+                  standard_sections["test coverage"] = "- No new automated tests were added in this workflow run."
+
+          if not standard_sections.get("validation"):
+              validation_lines = [
+                  "- Fast `AGENTS.md` validation runs in the agent stage before the PR is updated.",
+                  "- Attached PR checks are dispatched immediately after branch push.",
+              ]
+              standard_sections["validation"] = "\n".join(validation_lines)
+
+          ordered_sections = [
+              ("Summary", standard_sections.get("summary", "").strip()),
+              ("Evidence", standard_sections.get("evidence", "").strip()),
+              ("Test Coverage", standard_sections.get("test coverage", "").strip()),
+              ("Validation", standard_sections.get("validation", "").strip()),
+          ]
+
+          output_lines = [f"Roadmap: `{roadmap_path}`", ""]
+
+          for heading, content in ordered_sections:
+              if heading == "Evidence" and not content:
+                  continue
+              output_lines.extend([f"## {heading}", "", content or "None.", ""])
+
+          for heading, content in extra_sections:
+              output_lines.extend([f"## {heading}", "", content or "None.", ""])
+
+          body_path.write_text("\n".join(output_lines).rstrip() + "\n", encoding="utf-8")
+          PY
+
       - name: Create implement PR
         id: create_pr
         if: ${{ inputs.mode == 'implement' && steps.finalize_commit.outputs.changes_present == 'true' }}
@@ -417,11 +562,20 @@ jobs:
 
           if [[ ! -s "${pr_body_path}" ]]; then
             cat > "${pr_body_path}" <<EOF
+          Roadmap: `${{ steps.roadmap.outputs.roadmap_path }}`
+
           ## Summary
 
-          - Apply the scoped roadmap work unit `${{ steps.roadmap.outputs.roadmap_path }}`
+          - Apply the scoped roadmap work unit `${{ steps.roadmap.outputs.roadmap_path }}`.
 
-          Roadmap: `${{ steps.roadmap.outputs.roadmap_path }}`
+          ## Test Coverage
+
+          - No new automated tests were added in this workflow run.
+
+          ## Validation
+
+          - Fast `AGENTS.md` validation runs in the agent stage before the PR is updated.
+          - Attached PR checks are dispatched immediately after branch push.
           EOF
           fi
 
@@ -568,19 +722,43 @@ jobs:
 
           case "${decision}" in
             approve)
-              gh pr review "${pr_number}" --approve --body-file "${body_path}"
+              publish_body_path="${RUNNER_TEMP}/opencode-review-publish.md"
+              cat "${body_path}" > "${publish_body_path}"
+              {
+                echo
+                echo
+                printf '_Attribution: %s / %s / %s_\n' "${{ steps.attribution.outputs.provider_label }}" "${{ steps.attribution.outputs.product_label }}" "${{ steps.attribution.outputs.model_label }}"
+                printf '<!-- ai-attribution provider="%s" product="%s" model="%s" -->\n' "${{ steps.attribution.outputs.provider_label }}" "${{ steps.attribution.outputs.product_label }}" "${{ steps.attribution.outputs.model_label }}"
+              } >> "${publish_body_path}"
+              gh pr review "${pr_number}" --approve --body-file "${publish_body_path}"
               ;;
             request-changes|request_changes|requestchanges)
+              publish_body_path="${RUNNER_TEMP}/opencode-review-publish.md"
+              cat "${body_path}" > "${publish_body_path}"
+              {
+                echo
+                echo
+                printf '_Attribution: %s / %s / %s_\n' "${{ steps.attribution.outputs.provider_label }}" "${{ steps.attribution.outputs.product_label }}" "${{ steps.attribution.outputs.model_label }}"
+                printf '<!-- ai-attribution provider="%s" product="%s" model="%s" -->\n' "${{ steps.attribution.outputs.provider_label }}" "${{ steps.attribution.outputs.product_label }}" "${{ steps.attribution.outputs.model_label }}"
+              } >> "${publish_body_path}"
               if [[ "${pr_author_login}" == 'app/github-actions' || "${pr_author_login}" == 'github-actions[bot]' ]]; then
-                gh pr review "${pr_number}" --comment --body-file "${body_path}"
+                gh pr review "${pr_number}" --comment --body-file "${publish_body_path}"
                 decision="comment"
               else
-                gh pr review "${pr_number}" --request-changes --body-file "${body_path}"
+                gh pr review "${pr_number}" --request-changes --body-file "${publish_body_path}"
                 decision="request-changes"
               fi
               ;;
             comment)
-              gh pr review "${pr_number}" --comment --body-file "${body_path}"
+              publish_body_path="${RUNNER_TEMP}/opencode-review-publish.md"
+              cat "${body_path}" > "${publish_body_path}"
+              {
+                echo
+                echo
+                printf '_Attribution: %s / %s / %s_\n' "${{ steps.attribution.outputs.provider_label }}" "${{ steps.attribution.outputs.product_label }}" "${{ steps.attribution.outputs.model_label }}"
+                printf '<!-- ai-attribution provider="%s" product="%s" model="%s" -->\n' "${{ steps.attribution.outputs.provider_label }}" "${{ steps.attribution.outputs.product_label }}" "${{ steps.attribution.outputs.model_label }}"
+              } >> "${publish_body_path}"
+              gh pr review "${pr_number}" --comment --body-file "${publish_body_path}"
               ;;
             *)
               echo "unsupported review decision: ${decision}" >&2

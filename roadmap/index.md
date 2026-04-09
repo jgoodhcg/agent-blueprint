@@ -17,11 +17,19 @@ goal: "Maintain and evolve a portable agent operating standard for AI-assisted s
 
 See individual `[ID]-[slug].md` files in this directory. Use `draft` while clarifying and `ready` when autonomous execution can begin.
 
-- `014-pr-body-reviewability-defaults.md` (`ready`) - standardize the PR body so roadmap context, evidence, test coverage, and validation are easy to scan
-- `015-screenshot-evidence-policy.md` (`ready`) - define where screenshot artifacts live and how before/after evidence is surfaced in workflow-authored PRs
-- `016-post-fix-review-convergence.md` (`ready`) - ensure review recommendations converge after fix runs and green validation instead of going stale
-- `017-bot-comment-model-attribution.md` (`ready`) - stamp workflow-authored comments and reviews with provider, product, and model attribution
-- `018-demo-pr-cleanup-policy.md` (`draft`) - decide how superseded demo PRs should be closed, approved, merged, or preserved as canonical artifacts
+- `014-pr-body-reviewability-defaults.md` (`active`) - standardize the PR body so roadmap context, evidence, test coverage, and validation are easy to scan
+- `015-screenshot-evidence-policy.md` (`active`) - define where screenshot artifacts live and how before/after evidence is surfaced in workflow-authored PRs
+- `016-post-fix-review-convergence.md` (`active`) - ensure review recommendations converge after fix runs and green validation instead of going stale
+- `017-bot-comment-model-attribution.md` (`active`) - stamp workflow-authored comments and reviews with provider, product, and model attribution
+- `018-demo-pr-cleanup-policy.md` (`active`) - decide how superseded demo PRs should be closed, approved, merged, or preserved as canonical artifacts
+
+## Recommended Order
+
+1. `014-pr-body-reviewability-defaults.md` - sets the main reviewer-facing surface and reduces ambiguity for the remaining workflow work.
+2. `015-screenshot-evidence-policy.md` - should build on the PR body defaults so evidence placement and storage do not split across competing surfaces.
+3. `017-bot-comment-model-attribution.md` - should follow the evidence/comment decision so attribution lands on the final artifact surfaces.
+4. `016-post-fix-review-convergence.md` - should act on the stabilized review and comment format instead of chasing churn in the artifact shape.
+5. `018-demo-pr-cleanup-policy.md` - should come last because canonical demo PR handling depends on the final workflow ergonomics.
 
 ## Archived
 

@@ -33,12 +33,47 @@ Use this guide when a project wants:
 6. Treat the referenced roadmap file as the canonical execution brief.
 7. Run fast validation in the implementation stage and heavier validation in a separate PR workflow.
 8. If remote review is enabled, publish a PR-visible review artifact instead of leaving review output only in workflow logs.
+9. Normalize workflow-authored PR bodies so reviewers can scan roadmap context, summary, evidence, test coverage, and validation in a predictable order.
 
 ## Validation Template
 
 - Keep one generic repository-validation job for shared checks such as formatting, script syntax, or blueprint markers.
 - Add a second attached-check job such as `project-smoke` and replace its placeholder commands with repo-specific lint, test, build, integration, or e2e steps.
 - If implementation PRs are created by `GITHUB_TOKEN`, explicitly dispatch the PR validation workflow after PR creation so those attached checks appear on the PR.
+
+## PR Body Defaults
+
+- Put the roadmap reference near the top so scope is visible before comments or checks.
+- Keep `Summary` concise and human-readable.
+- Add `Evidence` when screenshots or other proof artifacts exist.
+- Add `Test Coverage` even when no new tests were added, so reviewers do not have to infer coverage from the diff alone.
+- Keep `Validation` short and lower in the body so it stays visible without dominating the page.
+
+## Evidence Policy
+
+- Store workflow-owned evidence under `<project-root>/docs/evidence/<work-unit-slug>/`.
+- Use the PR body `Evidence` section as the canonical place for screenshot rendering.
+- Reserve bot comments for supplemental lifecycle markers such as refreshed post-fix evidence, not as the only place screenshots appear.
+- For visibly UI-driven work, prefer a `before-*` and `after-*` pair in the same work-unit evidence directory so reviewers can compare states without manual cleanup.
+- Treat the work-unit evidence directory as the future home for adjacent artifacts beyond screenshots.
+
+## Comment Attribution
+
+- Append visible provider, product, and model attribution to workflow-authored screenshot comments and review comments.
+- Include a machine-checkable marker such as an HTML comment so later tooling can parse attribution without scraping prose.
+
+## Post-Fix Review
+
+- After a fix run updates a PR, dispatch validation first.
+- Wait for validation to settle when practical, then dispatch a fresh review against the same PR.
+- The latest autonomous recommendation should describe the latest code and check state, even if checks are still pending or failed.
+
+## Demo PR Cleanup
+
+- Treat proof or demo PRs as artifacts first, not merge targets by default.
+- When multiple demo PRs exist for the same proof, keep the newest clean rerun as canonical and close older superseded PRs with a final pointer comment.
+- A canonical demo PR may also be closed intentionally once the proof is recorded in roadmap history; only merge PRs that are meant to change the long-lived default branch.
+- When a roadmap item depends on a demo proof, record which PR is canonical so maintainers do not have to infer it from timeline archaeology.
 
 ## Reference Files
 
@@ -71,3 +106,4 @@ These files are intentionally fetchable as raw GitHub artifacts.
 - Keep PR validation separate from roadmap implementation.
 - If the PR is created by `GITHUB_TOKEN`, explicitly dispatch PR validation or use alternate credentials; do not assume `pull_request` fan-out will happen automatically.
 - Do not let issue comments become the canonical work definition if the roadmap is supposed to be canonical.
+- Treat the PR body as the primary human review summary. Use comments for supplemental artifacts or follow-up context, not as the only place where proof or scope appears.

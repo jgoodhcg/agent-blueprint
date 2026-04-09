@@ -460,6 +460,73 @@ jobs:
           printf 'pr_head_ref=%s\n' "${pr_head_ref}" >> "${GITHUB_OUTPUT}"
           printf 'pr_head_sha=%s\n' "${pr_head_sha}" >> "${GITHUB_OUTPUT}"
 
+      - name: Wait for validation convergence
+        id: wait_for_validation
+        if: ${{ steps.opencode_fix.outcome == 'success' }}
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        shell: bash
+        run: |
+          set -euo pipefail
+
+          pr_number="${{ inputs.pr_number }}"
+          timeout_seconds=1800
+          poll_seconds=20
+          elapsed=0
+          settled=false
+
+          while (( elapsed <= timeout_seconds )); do
+            status_json="$(gh pr view "${pr_number}" --json statusCheckRollup)"
+            pending_count="$(
+              STATUS_JSON="${status_json}" python3 - <<'PY'
+          import json
+          import os
+
+          pending_states = {"queued", "in_progress", "pending", "requested", "waiting"}
+          data = json.loads(os.environ["STATUS_JSON"])
+          pending = 0
+
+          for item in data.get("statusCheckRollup") or []:
+              state = (item.get("conclusion") or item.get("state") or item.get("status") or "unknown").lower()
+              if state in pending_states:
+                  pending += 1
+
+          print(pending)
+          PY
+            )"
+
+            if [[ "${pending_count}" == "0" ]]; then
+              settled=true
+              break
+            fi
+
+            sleep "${poll_seconds}"
+            elapsed=$((elapsed + poll_seconds))
+          done
+
+          printf 'pending_checks=%s\n' "${pending_count:-0}" >> "${GITHUB_OUTPUT}"
+          if [[ "${settled}" == "true" ]]; then
+            printf 'state=settled\n' >> "${GITHUB_OUTPUT}"
+          else
+            printf 'state=timeout\n' >> "${GITHUB_OUTPUT}"
+          fi
+
+      - name: Dispatch post-fix review
+        id: dispatch_review
+        if: ${{ steps.opencode_fix.outcome == 'success' }}
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        shell: bash
+        run: |
+          set -euo pipefail
+
+          gh workflow run opencode-implement.yml \
+            -f roadmap_path="${{ steps.roadmap.outputs.roadmap_path }}" \
+            -f mode=review \
+            -f pr_number="${{ inputs.pr_number }}"
+
+          printf 'dispatched=true\n' >> "${GITHUB_OUTPUT}"
+
       - name: Write workflow summary
         if: always()
         shell: bash
@@ -479,4 +546,7 @@ jobs:
             echo "- Push outcome: \`${{ steps.push_branch.outcome || 'n/a' }}\`"
             echo "- Validation dispatch outcome: \`${{ steps.dispatch_validation.outcome || 'n/a' }}\`"
             echo "- Validation dispatch target: \`PR #${{ steps.dispatch_validation.outputs.pr_number || 'n/a' }} / ${{ steps.dispatch_validation.outputs.pr_head_ref || 'n/a' }}\`"
+            echo "- Validation wait state: \`${{ steps.wait_for_validation.outputs.state || 'n/a' }}\`"
+            echo "- Pending checks after wait: \`${{ steps.wait_for_validation.outputs.pending_checks || 'n/a' }}\`"
+            echo "- Post-fix review dispatch outcome: \`${{ steps.dispatch_review.outcome || 'n/a' }}\`"
           } >> "${GITHUB_STEP_SUMMARY}"

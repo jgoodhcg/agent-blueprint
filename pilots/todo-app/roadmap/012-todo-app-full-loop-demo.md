@@ -80,3 +80,5 @@ This work unit is intentionally a demo script for the workflow itself, not just 
 - The highest priority is a believable, low-risk demo artifact under time pressure, not a broad visual redesign.
 - The previous broad version of this work unit caused an implement run to stall inside the model step, so this roadmap item is now deliberately narrowed to reduce planning drift.
 - If embedding screenshots directly in the PR body turns out to be awkward in the current workflow, a PR comment with stable screenshot references is an acceptable fallback for this demo.
+- Historical demo PR: `#17`
+- Superseded by cleaner rerun: `#18`
