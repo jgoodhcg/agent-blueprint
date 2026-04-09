@@ -1,5 +1,13 @@
-import { fireEvent, render, screen } from "@testing-library/preact";
+import { fireEvent, render, screen, within } from "@testing-library/preact";
 import { App } from "../src/app";
+
+function getMainList() {
+  return within(screen.getByRole("region", { name: "Todo list" }));
+}
+
+function getTodayFocus() {
+  return within(screen.getByRole("region", { name: "Today focus" }));
+}
 
 describe("Todo App", () => {
   it("adds todos, filters them, and clears completed items", () => {
@@ -15,21 +23,22 @@ describe("Todo App", () => {
     fireEvent.input(titleInput, { target: { value: "Ship pilot app" } });
     fireEvent.click(screen.getByRole("button", { name: "Add todo" }));
 
-    expect(screen.getByText("Write workflow docs")).toBeTruthy();
-    expect(screen.getByText("Ship pilot app")).toBeTruthy();
+    expect(screen.getAllByText("Write workflow docs").length).toBeGreaterThan(0);
+    expect(screen.getAllByText("Ship pilot app").length).toBeGreaterThan(0);
     expect(screen.getAllByText("High").length).toBeGreaterThan(0);
 
-    fireEvent.click(screen.getByLabelText("Mark Ship pilot app as done"));
+    fireEvent.click(screen.getAllByLabelText("Mark Ship pilot app as done")[0]);
     fireEvent.click(screen.getByRole("button", { name: "Done" }));
 
-    expect(screen.getByText("Ship pilot app")).toBeTruthy();
-    expect(screen.queryByText("Write workflow docs")).toBeNull();
+    expect(screen.getAllByText("Ship pilot app").length).toBeGreaterThan(0);
+    expect(getTodayFocus().getAllByText("Write workflow docs").length).toBeGreaterThan(0);
+    expect(getMainList().queryByText("Write workflow docs")).toBeNull();
 
     fireEvent.click(screen.getByRole("button", { name: "Clear completed" }));
     fireEvent.click(screen.getByRole("button", { name: "All" }));
 
     expect(screen.queryByText("Ship pilot app")).toBeNull();
-    expect(screen.getByText("Write workflow docs")).toBeTruthy();
+    expect(screen.getAllByText("Write workflow docs").length).toBeGreaterThanOrEqual(1);
   });
 
   it("edits an existing todo", () => {
@@ -39,13 +48,13 @@ describe("Todo App", () => {
     fireEvent.input(titleInput, { target: { value: "Initial title" } });
     fireEvent.click(screen.getByRole("button", { name: "Add todo" }));
 
-    fireEvent.click(screen.getByRole("button", { name: "Edit" }));
+    fireEvent.click(screen.getAllByRole("button", { name: "Edit" })[0]);
 
     const editInput = screen.getByLabelText("Edit Initial title");
     fireEvent.input(editInput, { target: { value: "Updated title" } });
     fireEvent.click(screen.getByRole("button", { name: "Save" }));
 
-    expect(screen.getByText("Updated title")).toBeTruthy();
+    expect(screen.getAllByText("Updated title").length).toBeGreaterThan(0);
     expect(screen.queryByText("Initial title")).toBeNull();
   });
 });

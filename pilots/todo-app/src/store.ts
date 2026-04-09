@@ -42,6 +42,13 @@ export const activeFilter = signal<TodoFilter>("all");
 export const editingId = signal<string | null>(null);
 export const editingTitle = signal("");
 
+export const todayTodos = computed(() => {
+  const today = new Date().toISOString().slice(0, 10);
+  return todos.value.filter(
+    (todo) => !todo.completed && todo.createdAt.slice(0, 10) === today
+  );
+});
+
 export const visibleTodos = computed(() => {
   switch (activeFilter.value) {
     case "open":

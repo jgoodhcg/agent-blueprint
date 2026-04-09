@@ -279,6 +279,41 @@ h1 {
   color: #5f6775;
 }
 
+.panel--today {
+  background: linear-gradient(180deg, #fff8ee 0%, #fdf1de 100%);
+  border-color: rgba(194, 79, 47, 0.18);
+}
+
+.today-header {
+  margin-bottom: 1rem;
+}
+
+.today-header h2 {
+  font-size: 1.5rem;
+  letter-spacing: -0.02em;
+  color: #172033;
+}
+
+.today-count {
+  margin-top: 0.25rem;
+  color: #8d5e2d;
+  font-size: 0.92rem;
+}
+
+.todo-card--today {
+  border-color: rgba(194, 79, 47, 0.22);
+  background: linear-gradient(180deg, #fffcf6 0%, #fef5e8 100%);
+}
+
+.todo-list--compact {
+  gap: 0.55rem;
+}
+
+.todo-list--compact .todo-card {
+  padding: 0.75rem 1rem;
+  border-radius: 18px;
+}
+
 @media (max-width: 760px) {
   .shell {
     width: min(100% - 1rem, 960px);
