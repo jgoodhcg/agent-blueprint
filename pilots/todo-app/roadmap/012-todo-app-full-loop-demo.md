@@ -1,6 +1,6 @@
 ---
 title: "Run a Full Implement Review Fix Demo on Todo App"
-status: done
+status: archived
 description: "Create a fresh pilot-app PR that demonstrates implement, validation, autonomous review, human feedback, same-PR fix, rerun review, and final human approval readiness with screenshot evidence."
 created: 2026-04-08
 updated: 2026-04-09

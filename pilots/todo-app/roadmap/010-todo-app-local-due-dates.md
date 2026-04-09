@@ -1,6 +1,6 @@
 ---
 title: "Treat Todo App Due Dates as Local Calendar Dates"
-status: done
+status: archived
 description: "Fix the pilot app so date-only due dates render and evaluate overdue status as local calendar dates, then prove the change on a fresh autonomous PR."
 created: 2026-04-05
 updated: 2026-04-06

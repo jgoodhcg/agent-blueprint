@@ -1,6 +1,6 @@
 ---
 title: "Refresh Todo App Visual Hierarchy for a Full Loop Trial"
-status: ready
+status: archived
 description: "Create a fresh pilot-app PR that uses screenshot-informed implementation, invites a human UX comment, and is small enough for review and fix to iterate on the same branch."
 created: 2026-04-06
 updated: 2026-04-06
