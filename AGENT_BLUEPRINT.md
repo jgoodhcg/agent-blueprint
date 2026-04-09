@@ -205,6 +205,26 @@ AI-Model: claude-opus-4-6, gemini-2.5-pro
 
 Note: `AI-Product` reflects the **tool**, not the model. If both models were used within OpenCode, both entries are `opencode`.
 
+### Evidence Policy [BP-WF-EVIDENCE]
+
+Workflow-authored PRs that produce visual or test proof artifacts follow one consistent storage and presentation convention.
+
+**Storage:**
+- Store artifacts under `<project-root>/docs/evidence/<work-unit-slug>/`.
+- The directory scales to adjacent artifacts beyond screenshots (e.g., logs, diffs, benchmark outputs).
+- Prefer committed artifacts over ephemeral CI storage so reviewers can access evidence without re-running workflows.
+
+**Presentation:**
+- Present screenshots in the PR body `Evidence` section.
+- Use PR comments only for supplemental lifecycle context such as refreshed post-fix evidence, never as the only place screenshots appear.
+
+**Before/after support:**
+- For visibly UI-driven work, use `before-*` and `after-*` filename prefixes in the same work-unit evidence directory so reviewers can compare states without manual cleanup.
+- Pair naming is optional for non-visual evidence.
+
+**Adoption:**
+- Document the adopted convention in `AGENTS.md` under `## Project-Specific Rules`.
+
 ### User Profile [BP-WF-PROFILE]
 
 Calibrate agent interactions based on user context. Store in a git-ignored file (e.g., `.agent-profile.md`) referenced from `AGENTS.md`.

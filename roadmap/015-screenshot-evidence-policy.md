@@ -1,6 +1,6 @@
 ---
 title: "Define Screenshot Evidence Policy"
-status: active
+status: done
 description: "Set one opinionated location and presentation policy for workflow-owned screenshots, including before/after support."
 created: 2026-04-09
 updated: 2026-04-09
@@ -35,7 +35,7 @@ Make screenshot evidence predictable so reviewers always know where artifacts li
 
 ## Acceptance Criteria
 
-- [ ] The repository documents one canonical screenshot storage convention.
-- [ ] Workflow-authored PRs present screenshots in a consistent place.
-- [ ] UI-driven changes can show before/after evidence without manual cleanup.
-- [ ] The chosen convention scales to future support artifacts beyond screenshots.
+- [x] The repository documents one canonical screenshot storage convention.
+- [x] Workflow-authored PRs present screenshots in a consistent place.
+- [x] UI-driven changes can show before/after evidence without manual cleanup.
+- [x] The chosen convention scales to future support artifacts beyond screenshots.
