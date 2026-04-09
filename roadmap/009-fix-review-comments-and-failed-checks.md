@@ -16,7 +16,7 @@ Exercise the most practical post-implementation scenario: an autonomous PR recei
 
 ## Specification
 
-- Use PR `#12` (`roadmap/010-roadmap-todo-local-due-dates.md`) as the initial repair target unless that PR is merged or replaced before execution starts.
+- Use PR `#12` (`pilots/todo-app/roadmap/010-todo-app-local-due-dates.md`) as the initial repair target unless that PR is merged or replaced before execution starts.
 - Seed the scenario with at least one concrete repair signal before running the fix loop:
   - a PR-visible review comment or requested change on PR `#12`, or
   - a deliberately introduced narrow regression on the PR branch that causes one or more GitHub validation checks to fail

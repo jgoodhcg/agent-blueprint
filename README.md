@@ -71,10 +71,11 @@ Not a fit:
 - Run roadmap review from the Actions UI or with `gh workflow run opencode-implement.yml -f mode=review -f roadmap_path=roadmap/002-readme-once-over.md -f pr_number=123 -f model=opencode/gpt-5.4`.
 - Run roadmap fix from the Actions UI or with `gh workflow run opencode-fix.yml -f roadmap_path=roadmap/002-readme-once-over.md -f pr_number=123`.
 - Review mode now expects the agent to write a structured review artifact that the workflow publishes as a real PR review.
-- `pilots/roadmap-todo/` is the concrete Bun + Preact pilot app used for real project-smoke validation in this repository.
+- `pilots/todo-app/` is the concrete Bun + Preact pilot app used for real project-smoke validation in this repository.
+- Pilot-only demo work units now live under `pilots/todo-app/roadmap/`; the root `roadmap/` is for Agent Blueprint work itself.
 - The reusable example validation workflow under `guides/examples/` still ships with generic `repo checks` plus a placeholder `project checks` job; replace that placeholder with the root-level lint, test, build, or e2e steps that fit the adopting repo.
 - The roadmap work unit is the canonical execution brief; GitHub only supplies the trigger and the `roadmap_path`.
-- In this repo the `project-smoke` job now runs pilot-app install, typecheck, unit tests, build, and Playwright e2e checks against `pilots/roadmap-todo/`.
+- In this repo the `project-smoke` job now runs pilot-app install, typecheck, unit tests, build, and Playwright e2e checks against `pilots/todo-app/`.
 - Human-authored PR updates can use normal `pull_request` triggers. Because implementation PRs here are created by `GITHUB_TOKEN`, the implementation workflow also explicitly dispatches PR validation after the PR is created so the checks attach reliably.
 - Recommended pilot proof order:
   1. Run the local smoke test.

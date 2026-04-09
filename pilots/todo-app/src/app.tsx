@@ -104,7 +104,7 @@ export function App() {
       <section class="panel panel--hero">
         <div>
           <p class="eyebrow">Pilot app</p>
-          <h1>Roadmap Todo</h1>
+          <h1>Todo App</h1>
           <p class="lede">
             A small real app for exercising GitHub automation with real features, real tests, and
             real UI state.

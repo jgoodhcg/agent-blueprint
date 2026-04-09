@@ -35,4 +35,4 @@ Create a clean, obvious roadmap unit for the live demo so the resulting PR shows
 
 - This work unit is intentionally performative for a live demo.
 - The workflow pattern is now proven with attached validation checks and PR-visible review publication, but this specific README content change is still pending.
-- Current in-repo validation uses human-facing check names for repository-level checks plus Roadmap Todo app checks; downstream repos should still replace the project-specific validation jobs with their own suite.
+- Current in-repo validation uses human-facing check names for repository-level checks plus Todo App checks; downstream repos should still replace the project-specific validation jobs with their own suite.

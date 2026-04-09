@@ -8,7 +8,7 @@ on:
   workflow_dispatch:
     inputs:
       roadmap_path:
-        description: Path to the roadmap work unit under roadmap/
+        description: Path to the numbered roadmap work unit in this repository
         required: true
         type: string
       mode:
@@ -58,9 +58,9 @@ jobs:
           roadmap_path="${{ inputs.roadmap_path }}"
 
           case "${roadmap_path}" in
-            roadmap/[0-9][0-9][0-9]-*.md) ;;
+            roadmap/[0-9][0-9][0-9]-*.md|*/roadmap/[0-9][0-9][0-9]-*.md) ;;
             *)
-              echo "roadmap_path must point to a numbered roadmap work unit under roadmap/ (for example roadmap/001-example.md)" >&2
+              echo "roadmap_path must point to a numbered roadmap work unit in this repository (for example roadmap/001-example.md or pilots/todo-app/roadmap/010-todo-app-example.md)" >&2
               exit 1
               ;;
           esac
@@ -358,7 +358,7 @@ jobs:
           - Read \`AGENTS.md\` and the roadmap file before making changes.
           - Apply the \`Runtime: Autonomous GitHub Actions\` policy in \`AGENTS.md\`.
           - Run the repository validation commands listed in \`AGENTS.md\` before finishing.
-          - If you change files under \`pilots/roadmap-todo/\`, also run \`bun run typecheck\`, \`bun run test\`, and \`bun run build\` from that directory before finishing.
+          - If you change files under \`pilots/todo-app/\`, also run \`bun run typecheck\`, \`bun run test\`, and \`bun run build\` from that directory before finishing.
           - Reference the roadmap path \`${{ steps.roadmap.outputs.roadmap_path }}\` in the final commit message or PR body.
           - Stay on the current branch \`${{ steps.implement_branch.outputs.branch_name }}\`; do not create or switch branches.
           - Do not run \`gh\`, do not push, do not open pull requests, and do not dispatch downstream workflows.
@@ -399,14 +399,14 @@ jobs:
           set -euo pipefail
 
           base_ref="${{ steps.implement_branch.outputs.base_ref }}"
-          if ! git diff --name-only "origin/${base_ref}...HEAD" | grep -q '^pilots/roadmap-todo/'; then
+          if ! git diff --name-only "origin/${base_ref}...HEAD" | grep -q '^pilots/todo-app/'; then
             printf 'captured=false\n' >> "${GITHUB_OUTPUT}"
             exit 0
           fi
 
-          helper_path="${RUNNER_TEMP}/capture-roadmap-todo-screenshot.sh"
-          screenshot_path="pilots/roadmap-todo/docs/roadmap-todo-main-screen.png"
-          git show "origin/${base_ref}:capture-roadmap-todo-screenshot.sh" > "${helper_path}"
+          helper_path="${RUNNER_TEMP}/capture-todo-app-screenshot.sh"
+          screenshot_path="pilots/todo-app/docs/todo-app-main-screen.png"
+          git show "origin/${base_ref}:capture-todo-app-screenshot.sh" > "${helper_path}"
           bash "${helper_path}" "${GITHUB_WORKSPACE}/${screenshot_path}"
 
           printf 'captured=true\n' >> "${GITHUB_OUTPUT}"
@@ -545,7 +545,7 @@ jobs:
 
           Bot-generated Playwright capture from the PR branch for \`${{ steps.roadmap.outputs.roadmap_path }}\`.
 
-          ![Roadmap Todo first screen](${screenshot_url})
+          ![Todo App main screen](${screenshot_url})
 
           Caption: composer-first layout, reduced hero, and first-action guidance visible on the main screen.
           EOF

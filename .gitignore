@@ -9,8 +9,8 @@ roadmap-file-reference.md
 
 .decisions/*.xlsx
 
-pilots/roadmap-todo/node_modules/
-pilots/roadmap-todo/dist/
-pilots/roadmap-todo/playwright-report/
-pilots/roadmap-todo/test-results/
-pilots/roadmap-todo/.vite/
+pilots/todo-app/node_modules/
+pilots/todo-app/dist/
+pilots/todo-app/playwright-report/
+pilots/todo-app/test-results/
+pilots/todo-app/.vite/

@@ -1,7 +1,7 @@
 import { fireEvent, render, screen } from "@testing-library/preact";
 import { App } from "../src/app";
 
-describe("Roadmap Todo app", () => {
+describe("Todo App", () => {
   it("adds todos, filters them, and clears completed items", () => {
     render(<App />);
 

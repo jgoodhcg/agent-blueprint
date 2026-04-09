@@ -299,7 +299,7 @@ jobs:
           - Read \`AGENTS.md\` and the roadmap file before making changes.
           - Apply the \`Runtime: Autonomous GitHub Actions\` policy in \`AGENTS.md\`.
           - Run the repository validation commands listed in \`AGENTS.md\` before finishing.
-          - If you change files under \`pilots/roadmap-todo/\`, also run \`bun run typecheck\`, \`bun run test\`, and \`bun run build\` from that directory before finishing.
+          - If you change files under \`pilots/todo-app/\`, also run \`bun run typecheck\`, \`bun run test\`, and \`bun run build\` from that directory before finishing.
           - Reference the roadmap path \`${{ steps.roadmap.outputs.roadmap_path }}\` in the final commit message or PR body.
           - Stay on the current branch \`${{ steps.implement_branch.outputs.branch_name }}\`; do not create or switch branches.
           - Do not run \`gh\`, do not push, do not open pull requests, and do not dispatch downstream workflows.

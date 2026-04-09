@@ -9,7 +9,7 @@ fi
 repo_root="${GITHUB_WORKSPACE:-${PWD}}"
 output_path="$1"
 runtime_dir="${RUNNER_TEMP:-/tmp}"
-server_log="${runtime_dir}/roadmap-todo-vite.log"
+server_log="${runtime_dir}/todo-app-vite.log"
 
 mkdir -p "$(dirname "${output_path}")"
 
@@ -22,7 +22,7 @@ cleanup() {
 
 trap cleanup EXIT
 
-cd "${repo_root}/pilots/roadmap-todo"
+cd "${repo_root}/pilots/todo-app"
 
 bunx playwright install --with-deps chromium
 bunx vite --host 127.0.0.1 --port 4173 >"${server_log}" 2>&1 &
@@ -36,7 +36,7 @@ for _ in $(seq 1 60); do
 done
 
 if ! curl -fsS http://127.0.0.1:4173 >/dev/null; then
-  echo "roadmap-todo dev server did not become ready; see ${server_log}" >&2
+  echo "todo-app dev server did not become ready; see ${server_log}" >&2
   exit 1
 fi
 

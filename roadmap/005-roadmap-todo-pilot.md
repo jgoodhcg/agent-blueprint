@@ -1,5 +1,5 @@
 ---
-title: "Scaffold Roadmap Todo Pilot App"
+title: "Scaffold Todo App Pilot"
 status: done
 description: "Add a small real web-app subproject that the GitHub automation pilot can build, test, and review."
 created: 2026-04-02
@@ -8,7 +8,7 @@ tags: [pilot, web, bun, preact, playwright]
 priority: high
 ---
 
-# Scaffold Roadmap Todo Pilot App
+# Scaffold Todo App Pilot
 
 ## Intent
 
@@ -16,7 +16,7 @@ Create a small but real application inside this repository so the GitHub automat
 
 ## Specification
 
-- Add a fenced pilot subproject at `pilots/roadmap-todo/`.
+- Add a fenced pilot subproject at `pilots/todo-app/`.
 - Use TypeScript, Bun, Preact, Preact Signals, and vanilla CSS.
 - Keep the first version client-only; do not add a backend service.
 - Implement a todo application with enough behavior to support realistic agent changes:
@@ -33,7 +33,7 @@ Create a small but real application inside this repository so the GitHub automat
 
 ## Acceptance Criteria
 
-- [x] `pilots/roadmap-todo/` contains a runnable Bun + Preact app with Signals-based state.
+- [x] `pilots/todo-app/` contains a runnable Bun + Preact app with Signals-based state.
 - [x] The app supports create, edit, complete, delete, filter, and clear-completed flows.
 - [x] The app includes at least one unit test file and one Playwright e2e spec.
 - [x] The repo PR validation workflow runs pilot-app install, typecheck, unit tests, build, and Playwright for the `project-smoke` job.

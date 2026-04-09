@@ -11,7 +11,7 @@ export interface TodoItem {
   createdAt: string;
 }
 
-const STORAGE_KEY = "roadmap-todo:v1";
+const STORAGE_KEY = "todo-app:v1";
 
 function loadTodos(): TodoItem[] {
   if (typeof localStorage === "undefined") {

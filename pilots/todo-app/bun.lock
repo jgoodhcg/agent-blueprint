@@ -3,7 +3,7 @@
   "configVersion": 1,
   "workspaces": {
     "": {
-      "name": "roadmap-todo",
+      "name": "todo-app",
       "dependencies": {
         "@preact/signals": "^2.0.1",
         "preact": "^10.26.4",

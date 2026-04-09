@@ -337,7 +337,7 @@ jobs:
           - Do not run \`npm install\` or generate \`package-lock.json\` in this repository. Use Bun-based commands only.
           - If a required tool appears missing, stop and report that explicitly instead of switching package managers or generating new lockfiles.
           - Run the repository validation commands listed in \`AGENTS.md\` before finishing.
-          - If you change files under \`pilots/roadmap-todo/\`, also run \`bun run typecheck\`, \`bun run test\`, and \`bun run build\` from that directory before finishing.
+          - If you change files under \`pilots/todo-app/\`, also run \`bun run typecheck\`, \`bun run test\`, and \`bun run build\` from that directory before finishing.
           - You may optionally write the commit subject to \`${{ steps.artifacts.outputs.commit_subject_path }}\`.
           - You may optionally write the commit body markdown to \`${{ steps.artifacts.outputs.commit_body_path }}\`.
           - Stop after the fix is implemented and the optional commit metadata files are written.

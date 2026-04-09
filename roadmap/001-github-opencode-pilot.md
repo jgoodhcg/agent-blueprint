@@ -22,7 +22,7 @@ Validate a GitHub-native autonomous workflow in this repo so future blueprint gu
 - `opencode.json` should define both the `zai-coding-plan` provider for implementation and the `opencode` provider for Zen-based review.
 - The required provider credentials should be `ZAI_CODING_PLAN_API_KEY` for implementation and `OPENCODE_API_KEY` for Zen review.
 - The canonical execution workflow should be manually dispatched with a required `roadmap_path` input plus an explicit execution `mode`.
-- The workflow should validate that `roadmap_path` points to a real `roadmap/[ID]-[slug].md` work unit in `ready` or `active` status before handing execution to OpenCode.
+- The workflow should validate that `roadmap_path` points to a real numbered roadmap work unit in the repository and that the file is in `ready` or `active` status before handing execution to OpenCode.
 - Review runs should accept an explicit provider/model input rather than relying on a hardcoded allowlist.
 - Review runs should require an explicit PR target such as `pr_number`.
 - The implementation workflow should run OpenCode CLI directly on `ubuntu-latest` and keep GitHub orchestration in YAML rather than delegating branch/PR lifecycle to the older `anomalyco/opencode/github` wrapper.
@@ -69,7 +69,7 @@ Validate a GitHub-native autonomous workflow in this repo so future blueprint gu
 - 2026-03-25 review runs `23555427543`, `23555690658`, and `23556216053` narrowed remaining review issues from missing review artifacts to bot self-request-changes handling.
 - 2026-03-25 review run `23557021008` completed successfully against `roadmap/004-demo-flow-snapshot.md`, proving the read-only PR-review publication path on the direct-CLI workflow architecture.
 - 2026-04-02 the reusable PR validation workflow and guide were updated to replace demo-specific README greps with a generic `project-smoke` placeholder job intended for downstream repo-specific commands.
-- 2026-04-02 a real Bun + Preact pilot app was scaffolded at `pilots/roadmap-todo/`, and the in-repo `project-smoke` workflow was updated to validate that app with typecheck, unit, build, and Playwright steps.
+- 2026-04-02 a real Bun + Preact pilot app was scaffolded at `pilots/todo-app/`, and the in-repo `project-smoke` workflow was updated to validate that app with typecheck, unit, build, and Playwright steps.
 - 2026-04-04 implement run `23988119469` completed successfully against `roadmap/006-roadmap-todo-due-dates.md`, opened PR `#11`, and dispatched attached PR validation successfully: <https://github.com/jgoodhcg/agent-blueprint/actions/runs/23988119469>, <https://github.com/jgoodhcg/agent-blueprint/pull/11>
 - 2026-04-04 validation run `23988206922` completed successfully on PR `#11`, and follow-up validation run `23988861705` proved the split human-facing check names now used by the in-repo pilot: <https://github.com/jgoodhcg/agent-blueprint/actions/runs/23988206922>, <https://github.com/jgoodhcg/agent-blueprint/actions/runs/23988861705>
 
@@ -79,6 +79,6 @@ Validate a GitHub-native autonomous workflow in this repo so future blueprint gu
 - No runtime model-selection arguments are needed for the smoke test; the workflow should use the committed project config.
 - Runtime execution input should be limited to `roadmap_path`, `mode`, and explicit model-selection inputs such as `pr_number` plus optional `model`.
 - Validation should be staged: fast agent-run checks during implement mode, then PR validation workflows that publish attached check runs to the PR head SHA.
-- `roadmap/` is the canonical planning surface; GitHub provides the remote trigger and execution history.
+- `roadmap/` remains the canonical planning surface for Agent Blueprint itself; subprojects can keep their own local `roadmap/` when they are only validation targets.
 - This pilot loop is now proven for implement, validation dispatch, and review on real PRs in this repo.
 - The next roadmap items should focus on harder autonomous scenarios such as screenshot-informed implementation, review-driven rework, and fix loops that respond to review comments or failing checks.
