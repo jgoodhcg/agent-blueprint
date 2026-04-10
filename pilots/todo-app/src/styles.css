@@ -86,6 +86,65 @@ button {
   gap: 1.25rem;
 }
 
+.panel--today {
+  background: linear-gradient(180deg, #fff5e6 0%, #ffe8c8 100%);
+  border-color: #e8a840;
+}
+
+.today-focus__header {
+  display: flex;
+  align-items: center;
+  gap: 0.65rem;
+  margin-bottom: 0.85rem;
+}
+
+.today-focus__header h2 {
+  font-size: 1.3rem;
+  letter-spacing: -0.02em;
+}
+
+.today-focus__count {
+  background: #c24f2f;
+  color: #fffaf6;
+  border-radius: 999px;
+  padding: 0.15rem 0.6rem;
+  font-size: 0.85rem;
+  font-weight: 700;
+}
+
+.today-focus__empty {
+  color: #7a6542;
+  font-size: 0.95rem;
+}
+
+.today-focus__empty p {
+  margin: 0;
+}
+
+.today-focus__list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: grid;
+  gap: 0.5rem;
+}
+
+.today-focus__item {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.75rem;
+  padding: 0.6rem 0.85rem;
+  border-radius: 16px;
+  background: rgba(255, 255, 255, 0.65);
+  border: 1px solid #e8d5b0;
+}
+
+.today-focus__item-title {
+  font-weight: 600;
+  font-size: 1rem;
+}
+
 .eyebrow {
   margin: 0 0 0.4rem;
   text-transform: uppercase;
@@ -288,6 +347,10 @@ h1 {
   .stats-grid,
   .composer {
     grid-template-columns: 1fr;
+  }
+
+  .today-focus__item {
+    flex-wrap: wrap;
   }
 
   .toolbar,

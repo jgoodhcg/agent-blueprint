@@ -11,6 +11,8 @@ import {
   editingTitle,
   removeTodo,
   saveEdit,
+  todayCount,
+  todayTodos,
   toggleTodo,
   visibleTodos,
   type TodoFilter,
@@ -125,6 +127,30 @@ export function App() {
             <strong>{counts.value.completed}</strong>
           </div>
         </div>
+      </section>
+
+      <section class="panel panel--today" aria-label="Today focus">
+        <div class="today-focus__header">
+          <h2>Today Focus</h2>
+          <span class="today-focus__count">{todayCount.value}</span>
+        </div>
+
+        {todayTodos.value.length === 0 ? (
+          <div class="today-focus__empty">
+            <p>No tasks for today yet. Add a task and it will appear here when it is still open.</p>
+          </div>
+        ) : (
+          <ul class="today-focus__list">
+            {todayTodos.value.map((todo) => (
+              <li key={todo.id} class="today-focus__item">
+                <span class="today-focus__item-title">{todo.title}</span>
+                <span class={`priority-badge priority-badge--${todo.priority}`}>
+                  {renderPriority(todo.priority)}
+                </span>
+              </li>
+            ))}
+          </ul>
+        )}
       </section>
 
       <section class="panel">

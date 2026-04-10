@@ -53,6 +53,16 @@ export const visibleTodos = computed(() => {
   }
 });
 
+function isToday(isoDate: string): boolean {
+  return new Date(isoDate).toLocaleDateString() === new Date().toLocaleDateString();
+}
+
+export const todayTodos = computed(() =>
+  todos.value.filter((todo) => !todo.completed && isToday(todo.createdAt))
+);
+
+export const todayCount = computed(() => todayTodos.value.length);
+
 export const counts = computed(() => {
   const total = todos.value.length;
   const completed = todos.value.filter((todo) => todo.completed).length;
