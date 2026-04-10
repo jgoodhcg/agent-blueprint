@@ -13,6 +13,9 @@ test("manages the todo workflow", async ({ page }) => {
   await expect(page.getByText("Create pilot app")).toBeVisible();
   await expect(page.getByText("Cover with Playwright")).toBeVisible();
 
+  await expect(page.getByText("Today Focus")).toBeVisible();
+  await expect(page.getByText("Create pilot app").first()).toBeVisible();
+
   await page.getByLabel("Mark Create pilot app as done").click();
   await page.getByRole("button", { name: "Done" }).click();
 
