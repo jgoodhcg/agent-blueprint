@@ -105,9 +105,9 @@ Use one policy file for both paired local work and autonomous GitHub Actions run
 - Heavier validation such as full integration or e2e suites should run in separate PR workflows after the implementation PR is updated.
 - If a PR is created by `GITHUB_TOKEN`, downstream PR validation may need explicit workflow dispatch because GitHub does not recursively trigger every event from workflow-authored activity.
 - `git commit`, branch creation, push, and PR creation are allowed when required to complete the referenced roadmap work unit.
-- `review` runs should target an explicit PR, publish a GitHub PR review artifact, and avoid mutating code.
+- `review` runs should target an explicit PR, publish a GitHub issue comment artifact, and avoid mutating code.
 - `fix` runs should target an explicit existing PR, inspect review/check context first, and update that same PR branch rather than opening a replacement PR.
-- For the current POC, looping between implement, review, and fix may be manually triggered between workflow runs; do not assume an unbounded autonomous loop.
+- Workflow-owned PRs may use labels and machine-readable issue comments to gate a bounded implement/review/fix loop; do not assume an unbounded autonomous loop.
 - Network access is allowed when required for task execution, including GitHub operations, model-provider calls, package downloads, and task-scoped documentation lookup.
 - Use GitHub Actions secrets and committed repo config; do not depend on local machine state.
 - Do not pause for human confirmation steps that cannot occur inside the workflow.

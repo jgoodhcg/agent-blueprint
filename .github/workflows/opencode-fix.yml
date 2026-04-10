@@ -21,9 +21,13 @@ jobs:
   roadmap:
     name: Fix existing pull request
     runs-on: ubuntu-latest
+    concurrency:
+      group: roadmap-fix-pr-${{ inputs.pr_number }}
+      cancel-in-progress: false
     permissions:
       actions: write
       contents: write
+      issues: write
       pull-requests: write
     env:
       OPENCODE_CONFIG: ${{ github.workspace }}/opencode.json
@@ -78,7 +82,7 @@ jobs:
         run: |
           set -euo pipefail
 
-          resolved_model="${{ inputs.model || 'zai-coding-plan/glm-5' }}"
+          resolved_model="${{ inputs.model || 'zai-coding-plan/glm-5.1' }}"
 
           case "${resolved_model}" in
             opencode/*|zai-coding-plan/*) ;;
@@ -339,6 +343,34 @@ jobs:
           printf 'pr_url=%s\n' "${pr_url}" >> "${GITHUB_OUTPUT}"
           printf 'pr_title=%s\n' "${pr_title}" >> "${GITHUB_OUTPUT}"
 
+      - name: Resolve fix attempt
+        id: fix_attempt
+        shell: bash
+        run: |
+          set -euo pipefail
+
+          issue_comments_path="${{ steps.artifacts.outputs.issue_comments_path }}"
+
+          python3 - "${issue_comments_path}" >> "${GITHUB_OUTPUT}" <<'PY'
+          import json
+          import re
+          import sys
+
+          comments_path = sys.argv[1]
+          with open(comments_path, "r", encoding="utf-8") as handle:
+              comments = json.load(handle)
+
+          fix_pattern = re.compile(r"<!--\s*workflow-stage:\s*fix\b", re.IGNORECASE)
+          prior_attempts = sum(
+              1
+              for comment in comments
+              if fix_pattern.search(comment.get("body") or "")
+          )
+
+          print(f"prior_attempts={prior_attempts}")
+          print(f"attempt_number={prior_attempts + 1}")
+          PY
+
       - name: Run OpenCode fix
         id: opencode_fix
         env:
@@ -361,7 +393,7 @@ jobs:
           - Apply the \`Runtime: Autonomous GitHub Actions\` policy in \`AGENTS.md\`.
           - Target \`PR #${{ inputs.pr_number }}\` from \`${{ steps.fix_target.outputs.head_ref }}\` into \`${{ steps.fix_target.outputs.base_ref }}\`.
           - Stay on the current branch \`${{ steps.fix_target.outputs.head_ref }}\`; do not create or switch branches.
-          - Inspect actionable PR review feedback and failing check evidence before editing code.
+          - Inspect actionable PR issue comments, review feedback, and failing check evidence before editing code.
           - Make the narrowest change that resolves the observed issue.
           - Do not run \`gh\`, do not push, do not open pull requests, and do not dispatch downstream workflows.
           - Do not create commits. Leave file changes in the working tree and let the workflow stage and commit them.
@@ -808,12 +840,46 @@ jobs:
         run: |
           set -euo pipefail
 
-          gh workflow run opencode-implement.yml \
+          gh workflow run opencode-review.yml \
             -f roadmap_path="${{ steps.roadmap.outputs.roadmap_path }}" \
-            -f mode=review \
             -f pr_number="${{ inputs.pr_number }}"
 
           printf 'dispatched=true\n' >> "${GITHUB_OUTPUT}"
+
+      - name: Publish fix stage comment
+        if: ${{ steps.opencode_fix.outcome == 'success' }}
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        shell: bash
+        run: |
+          set -euo pipefail
+
+          comment_path="${RUNNER_TEMP}/opencode-fix-stage-comment.md"
+          changes_present="${{ steps.finalize_commit.outputs.changes_present || 'false' }}"
+          head_sha="${{ steps.push_branch.outputs.head_sha }}"
+          if [[ -z "${head_sha}" ]]; then
+            head_sha="$(git rev-parse HEAD)"
+          fi
+
+          cat > "${comment_path}" <<EOF
+          ## Fix Stage
+
+          Attempt \`${{ steps.fix_attempt.outputs.attempt_number }}\` for \`${{ steps.roadmap.outputs.roadmap_path }}\` completed on PR #${{ inputs.pr_number }}.
+
+          - Changes committed: \`${changes_present}\`
+          - Updated head SHA: \`${head_sha}\`
+          - Validation dispatched: \`${{ steps.dispatch_validation.outcome || 'n/a' }}\`
+          - Validation wait state: \`${{ steps.wait_for_validation.outputs.state || 'n/a' }}\`
+          - Pending checks after wait: \`${{ steps.wait_for_validation.outputs.pending_checks || 'n/a' }}\`
+          - Follow-up review dispatched: \`${{ steps.dispatch_review.outcome || 'n/a' }}\`
+          - Canonical evidence directory: \`${{ steps.evidence_paths.outputs.dir }}\`
+
+          _Attribution: ${{ steps.attribution.outputs.provider_label }} / ${{ steps.attribution.outputs.product_label }} / ${{ steps.attribution.outputs.model_label }}_
+          <!-- workflow-stage: fix; run_id: ${GITHUB_RUN_ID}; pr: ${{ inputs.pr_number }}; attempt: ${{ steps.fix_attempt.outputs.attempt_number }}; changes_present: ${changes_present} -->
+          <!-- ai-attribution provider="${{ steps.attribution.outputs.provider_label }}" product="${{ steps.attribution.outputs.product_label }}" model="${{ steps.attribution.outputs.model_label }}" -->
+          EOF
+
+          gh pr comment "${{ inputs.pr_number }}" --body-file "${comment_path}"
 
       - name: Write workflow summary
         if: always()
@@ -826,6 +892,8 @@ jobs:
             echo "- Roadmap status: \`${{ steps.roadmap.outputs.roadmap_status }}\`"
             echo "- Target PR: \`#${{ inputs.pr_number }}\`"
             echo "- Target branch: \`${{ steps.fix_target.outputs.head_ref || 'n/a' }}\`"
+            echo "- Prior fix attempts: \`${{ steps.fix_attempt.outputs.prior_attempts || 'n/a' }}\`"
+            echo "- Current fix attempt: \`${{ steps.fix_attempt.outputs.attempt_number || 'n/a' }}\`"
             echo "- Resolved model: \`${{ steps.model.outputs.model }}\`"
             echo "- Git commit identity: \`${{ steps.git_identity.outputs.author_name }} <${{ steps.git_identity.outputs.author_email }}>\`"
             echo "- OpenCode fix outcome: \`${{ steps.opencode_fix.outcome || 'n/a' }}\`"

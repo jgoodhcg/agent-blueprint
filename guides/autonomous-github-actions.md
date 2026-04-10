@@ -32,8 +32,9 @@ Use this guide when a project wants:
 5. Instruct the agent to follow the autonomous runtime policy from `AGENTS.md`.
 6. Treat the referenced roadmap file as the canonical execution brief.
 7. Run fast validation in the implementation stage and heavier validation in a separate PR workflow.
-8. If remote review is enabled, publish a PR-visible review artifact instead of leaving review output only in workflow logs.
+8. If remote review is enabled, publish a PR-visible issue comment artifact instead of leaving review output only in workflow logs.
 9. Normalize workflow-authored PR bodies so reviewers can scan roadmap context, summary, evidence, test coverage, and validation in a predictable order.
+10. Gate any automatic fix loop with deterministic labels, issue-comment stage markers, and a small hard attempt cap.
 
 ## Validation Template
 
@@ -62,11 +63,21 @@ Use this guide when a project wants:
 - Append visible provider, product, and model attribution to workflow-authored screenshot comments and review comments.
 - Include a machine-checkable marker such as an HTML comment so later tooling can parse attribution without scraping prose.
 
+## Autofix Loop Controls
+
+- Add workflow-owned labels such as `workflow-owned` and `autofix-enabled` when the implement stage opens the PR.
+- Reserve labels such as `autofix-disabled` and `human-needed` as hard stops that the orchestrator honors without asking the model.
+- Have `implement`, `review`, and `fix` each leave one issue comment with a machine-readable stage marker so later workflows can count attempts without scraping prose.
+- Trigger autofix from completed validation runs, not from open-ended model judgment.
+- Use a small hard cap such as two automatic fix attempts per PR.
+- Stop and label the PR `human-needed` when the cap is reached or when the latest fix reports `changes_present: false`.
+
 ## Post-Fix Review
 
 - After a fix run updates a PR, dispatch validation first.
 - Wait for validation to settle when practical, then dispatch a fresh review against the same PR.
 - The latest autonomous recommendation should describe the latest code and check state, even if checks are still pending or failed.
+- Keep post-fix review output in issue comments too, so the whole loop uses one parseable artifact type.
 
 ## Demo PR Cleanup
 
@@ -77,26 +88,28 @@ Use this guide when a project wants:
 
 ## Reference Files
 
-These files are intentionally fetchable as raw GitHub artifacts.
+The workflow shape in this repo is still moving. Until it settles, the live files under `.github/workflows/` are the reference implementation and the example copies are intentionally omitted.
 
 - Guide: `guides/autonomous-github-actions.md`
-- Smoke test workflow: `guides/examples/opencode-hello.yml`
-- Implement workflow: `guides/examples/opencode-implement.yml`
-- PR validation workflow: `guides/examples/pr-validation.yml`
-- Provider config: `guides/examples/opencode.json`
-- Local smoke test: `guides/examples/opencode-hello-local.sh`
+- Implement workflow: `.github/workflows/opencode-implement.yml`
+- Review workflow: `.github/workflows/opencode-review.yml`
+- Fix workflow: `.github/workflows/opencode-fix.yml`
+- Autofix orchestrator workflow: `.github/workflows/autofix-orchestrator.yml`
+- PR validation workflow: `.github/workflows/pr-validation.yml`
+- Provider config: `opencode.json`
 
 ## Suggested Adoption Flow
 
-1. Copy the example files into the target repo and adapt names, secrets, and provider settings.
+1. Start from the live workflow files in this repo and adapt names, secrets, and provider settings.
 2. Update `AGENTS.md` with both interactive-local and autonomous-workflow execution modes.
 3. Commit the provider config that the remote runtime should use.
 4. Add the required GitHub Actions secrets.
 5. Run the local smoke test.
-6. Run the remote hello workflow.
+6. Run the remote hello workflow if you want a smoke test before touching the PR loop.
 7. Run the implementation workflow against a safe `ready` roadmap work unit.
 8. Confirm the resulting PR shows attached validation checks. If the PR was workflow-authored, confirm the implementation workflow dispatched validation explicitly.
-9. Run the review workflow against that PR and confirm it publishes a PR review.
+9. Run the review workflow against that PR and confirm it publishes an issue comment with a machine-readable review marker.
+10. Confirm validation failures on workflow-owned PRs trigger the bounded autofix orchestrator only while labels allow it.
 
 ## Notes
 
