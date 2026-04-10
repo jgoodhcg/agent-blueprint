@@ -48,3 +48,4 @@ Ideas not yet promoted to work units:
 - Ambiguous work unit handling — force a decision artifact or explicit scope narrowing instead of silent assumption drift
 - Base-branch drift recovery — refresh an open autonomous PR after `main` moves and confirm validation still converges
 - Second proxy project — validate the same workflow pattern in a repo with a meaningfully different stack and validation suite
+- Model escalation policy — after the bounded implement/review/fix loop has enough real history, evaluate a deterministic fallback ladder for repeated failed fix attempts instead of adding model-switch orchestration prematurely
