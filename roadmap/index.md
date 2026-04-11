@@ -22,14 +22,16 @@ See individual `[ID]-[slug].md` files in this directory. Use `draft` while clari
 - `016-post-fix-review-convergence.md` (`active`) - ensure review recommendations converge after fix runs and green validation instead of going stale
 - `017-bot-comment-model-attribution.md` (`active`) - stamp workflow-authored comments and reviews with provider, product, and model attribution
 - `018-demo-pr-cleanup-policy.md` (`active`) - decide how superseded demo PRs should be closed, approved, merged, or preserved as canonical artifacts
+- `019-opencode-config-scope.md` (`active`) - separate workflow-pinned OpenCode config from ambient local CLI config so repo examples support both GitHub Actions and local use
 
 ## Recommended Order
 
-1. `014-pr-body-reviewability-defaults.md` - sets the main reviewer-facing surface and reduces ambiguity for the remaining workflow work.
-2. `015-screenshot-evidence-policy.md` - should build on the PR body defaults so evidence placement and storage do not split across competing surfaces.
-3. `017-bot-comment-model-attribution.md` - should follow the evidence/comment decision so attribution lands on the final artifact surfaces.
-4. `016-post-fix-review-convergence.md` - should act on the stabilized review and comment format instead of chasing churn in the artifact shape.
-5. `018-demo-pr-cleanup-policy.md` - should come last because canonical demo PR handling depends on the final workflow ergonomics.
+1. `019-opencode-config-scope.md` - should land first because a broken local OpenCode experience makes the workflow examples harder to validate and reuse.
+2. `014-pr-body-reviewability-defaults.md` - sets the main reviewer-facing surface and reduces ambiguity for the remaining workflow work.
+3. `015-screenshot-evidence-policy.md` - should build on the PR body defaults so evidence placement and storage do not split across competing surfaces.
+4. `017-bot-comment-model-attribution.md` - should follow the evidence/comment decision so attribution lands on the final artifact surfaces.
+5. `016-post-fix-review-convergence.md` - should act on the stabilized review and comment format instead of chasing churn in the artifact shape.
+6. `018-demo-pr-cleanup-policy.md` - should come last because canonical demo PR handling depends on the final workflow ergonomics.
 
 ## Archived
 
