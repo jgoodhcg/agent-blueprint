@@ -23,6 +23,9 @@ See individual `[ID]-[slug].md` files in this directory. Use `draft` while clari
 - `017-bot-comment-model-attribution.md` (`active`) - stamp workflow-authored comments and reviews with provider, product, and model attribution
 - `018-demo-pr-cleanup-policy.md` (`active`) - decide how superseded demo PRs should be closed, approved, merged, or preserved as canonical artifacts
 - `019-opencode-config-scope.md` (`active`) - separate workflow-pinned OpenCode config from ambient local CLI config so repo examples support both GitHub Actions and local use
+- `020-orchestrator-state-machine.md` (`draft`) - temporary controller-design artifact for the central workflow state machine before promotion into the blueprint
+- `021-urgent-scope-validation-guardrail.md` (`draft`) - make the blueprint explicit that urgency does not waive clarification, scoped execution, or validation
+- `022-design-system-artifact-and-visual-capture.md` (`draft`) - define an agent-consumable design system artifact and a project-adaptable visual state capture strategy for on-demand component screenshots
 
 ## Recommended Order
 
@@ -32,6 +35,8 @@ See individual `[ID]-[slug].md` files in this directory. Use `draft` while clari
 4. `017-bot-comment-model-attribution.md` - should follow the evidence/comment decision so attribution lands on the final artifact surfaces.
 5. `016-post-fix-review-convergence.md` - should act on the stabilized review and comment format instead of chasing churn in the artifact shape.
 6. `018-demo-pr-cleanup-policy.md` - should come last because canonical demo PR handling depends on the final workflow ergonomics.
+7. `021-urgent-scope-validation-guardrail.md` - should follow the current workflow tranche as a blueprint hardening pass rather than interrupt the active GitHub workflow work.
+8. `022-design-system-artifact-and-visual-capture.md` - can proceed independently; no hard dependency on the active workflow tranche but should reference `015` for evidence directory conventions once that lands.
 
 ## Archived
 
@@ -42,7 +47,7 @@ See individual `[ID]-[slug].md` files in this directory. Use `draft` while clari
 
 Ideas not yet promoted to work units:
 
-- Design guide maturation — additional component patterns, expanded accessibility guidance
+- Design guide maturation — additional component patterns, expanded accessibility guidance (promoted to `022-design-system-artifact-and-visual-capture.md` for the agent-artifact and visual capture dimension)
 - Cross-agent testing — validate blueprint adoption across all four product lines (codex, claude, gemini, opencode)
 - Adoption tooling — scripted alignment checks, automated drift detection
 - Decision artifact examples — sample `.decisions/` entries for common scenarios
