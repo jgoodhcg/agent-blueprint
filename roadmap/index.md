@@ -7,7 +7,7 @@ goal: "Maintain and evolve a portable agent operating standard for AI-assisted s
 
 ## Current Focus
 
-- Blueprint version: `2026-03-28`
+- Blueprint version: `2026-06-14`
 - Design System Guide version: `2026-03-07`
 - Active roadmap work should now focus only on the remaining GitHub workflow gaps.
 - Older proof runs, pilot experiments, README cleanup tasks, and superseded demo work are archived.

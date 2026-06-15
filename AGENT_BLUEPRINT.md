@@ -1,4 +1,4 @@
-version: "2026-03-28"
+version: "2026-06-14"
 ---
 
 # Agent Blueprint
@@ -19,11 +19,39 @@ Use these IDs in alignment reports for deterministic, machine-checkable outcomes
 - `BP-CORE-05` Commits happen only after explicit user approval.
 - `BP-CORE-06` Alignment responses use the required report format in this blueprint.
 - `BP-CORE-09` `AGENTS.md` stores a commit trailer template (placeholders), not concrete co-author/provider/model values.
+- `BP-CORE-11` On conflicting instructions, apply the precedence order in `[BP-PRECEDENCE]`.
 
 **SHOULD**
-- `BP-CORE-07` Keep policy lean; prefer references over duplicated rules.
+- `BP-CORE-07` Keep policy lean; prefer references over duplicated rules. See `[BP-INSTR]`.
 - `BP-CORE-08` Capture AI commit identity once per repo in `AGENTS.md` to avoid repeated prompts.
 - `BP-CORE-10` Capture user interaction profile in `AGENTS.md` on project init or alignment.
+
+---
+
+## Instruction Precedence [BP-PRECEDENCE]
+
+When instructions conflict, resolve in this order (highest wins):
+
+1. Explicit live user direction in the current session.
+2. The active roadmap work unit's scope and specification.
+3. `AGENTS.md` project policy.
+4. `AGENT_BLUEPRINT.md` defaults.
+
+Safety `[BP-SAFE]` is a gate, not a rank: destructive, irreversible, or out-of-repo actions still require confirmation even when a higher-precedence source requests them.
+
+State precedence explicitly because unresolved instruction conflicts measurably reduce instruction-following ([IFScale], arXiv:2507.11538).
+
+---
+
+## Instruction Design [BP-INSTR]
+
+How to author `AGENTS.md` and work units so agents actually follow them. Instruction-following accuracy declines as the number of active instructions rises ([IFScale]), and models attend most to the start and end of a file and least to the middle ([Lost in the Middle], arXiv:2307.03172). Write to those constraints:
+
+- `BP-INSTR-01` Keep the active instruction set small. Split rules into layered files loaded on demand; a work unit must not restate blueprint or `AGENTS.md` rules. (density)
+- `BP-INSTR-02` Order by importance. Put MUST invariants and precedence at the top of a file and easily-forgotten operational rules near the end; never bury load-bearing rules in the middle. (primacy/recency)
+- `BP-INSTR-03` One instruction, one checkable outcome. Write each rule so compliance is verifiable; prefer concrete, testable criteria over adjectives. (reduces omission under load)
+- `BP-INSTR-04` Prefer positive, specific instructions ("do X, with criterion Y"). Reserve prohibitions for named, recurring failure modes — e.g. the `Never Run` list — rather than blanket "don't." (positive + targeted-negative supervision)
+- `BP-INSTR-05` Reference over restate. Link to the canonical rule instead of copying it; duplication raises density and drifts out of sync. (reinforces `BP-CORE-07`)
 
 ---
 
@@ -208,6 +236,8 @@ Note: `AI-Product` reflects the **tool**, not the model. If both models were use
 ### User Profile [BP-WF-PROFILE]
 
 Calibrate agent interactions based on user context. Store in a git-ignored file (e.g., `.agent-profile.md`) referenced from `AGENTS.md`.
+
+**Response calibration (default):** Lead with the conclusion, support after. Match response length to the task — proportionate over exhaustive. The live conversation outranks the stored profile (see `[BP-PRECEDENCE]`). Store per-user specifics (response modes, explanation depth, domains) in the profile file, not here.
 
 **Prompting conditions:**
 1. **No profile exists** → Prompt to create one
