@@ -608,3 +608,88 @@ jobs:
             -f completed_at="$(date -u +%Y-%m-%dT%H:%M:%SZ)" \
             -f output[title]='end-to-end tests' \
             -f output[summary]="${summary}"
+
+  dispatch-autofix-orchestrator:
+    name: dispatch autofix orchestrator
+    if: ${{ always() }}
+    needs:
+      - repo-validation
+      - pilot-typecheck
+      - pilot-unit-tests
+      - pilot-build
+      - pilot-e2e
+    runs-on: ubuntu-latest
+    permissions:
+      actions: write
+      contents: read
+    steps:
+      - name: Resolve orchestration target
+        id: target
+        shell: bash
+        run: |
+          set -euo pipefail
+
+          case "${GITHUB_EVENT_NAME}" in
+            pull_request)
+              pr_number="${{ github.event.pull_request.number }}"
+              pr_head_ref="${{ github.event.pull_request.head.ref }}"
+              ;;
+            workflow_dispatch)
+              pr_number="${{ inputs.pr_number }}"
+              pr_head_ref="${{ inputs.pr_head_ref }}"
+              ;;
+            *)
+              echo "unsupported event: ${GITHUB_EVENT_NAME}" >&2
+              exit 1
+              ;;
+          esac
+
+          validation_conclusion='success'
+          for result in \
+            "${{ needs.repo-validation.result }}" \
+            "${{ needs.pilot-typecheck.result }}" \
+            "${{ needs.pilot-unit-tests.result }}" \
+            "${{ needs.pilot-build.result }}" \
+            "${{ needs.pilot-e2e.result }}"; do
+            case "${result}" in
+              success) ;;
+              failure|cancelled|timed_out)
+                validation_conclusion='failure'
+                break
+                ;;
+              *)
+                validation_conclusion='failure'
+                break
+                ;;
+            esac
+          done
+
+          printf 'pr_number=%s\n' "${pr_number}" >> "${GITHUB_OUTPUT}"
+          printf 'pr_head_ref=%s\n' "${pr_head_ref}" >> "${GITHUB_OUTPUT}"
+          printf 'validation_conclusion=%s\n' "${validation_conclusion}" >> "${GITHUB_OUTPUT}"
+
+      - name: Dispatch autofix orchestrator
+        if: ${{ steps.target.outputs.pr_number != '' && steps.target.outputs.validation_conclusion == 'failure' }}
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        shell: bash
+        run: |
+          set -euo pipefail
+
+          gh workflow run autofix-orchestrator.yml \
+            -f pr_number="${{ steps.target.outputs.pr_number }}" \
+            -f head_branch="${{ steps.target.outputs.pr_head_ref }}" \
+            -f workflow_conclusion="${{ steps.target.outputs.validation_conclusion }}"
+
+      - name: Write workflow summary
+        if: always()
+        shell: bash
+        run: |
+          {
+            echo "## Autofix Dispatch"
+            echo
+            echo "- Target PR: \`#${{ steps.target.outputs.pr_number || 'n/a' }}\`"
+            echo "- Head branch: \`${{ steps.target.outputs.pr_head_ref || 'n/a' }}\`"
+            echo "- Validation conclusion: \`${{ steps.target.outputs.validation_conclusion || 'n/a' }}\`"
+            echo "- Dispatch attempted: \`${{ steps.target.outputs.pr_number != '' && steps.target.outputs.validation_conclusion == 'failure' }}\`"
+          } >> "${GITHUB_STEP_SUMMARY}"

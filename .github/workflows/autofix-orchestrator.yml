@@ -2,6 +2,20 @@ name: Autofix Orchestrator
 run-name: Autofix orchestrator / validation run ${{ github.event.workflow_run.id }}
 
 on:
+  workflow_dispatch:
+    inputs:
+      pr_number:
+        description: Pull request number to evaluate
+        required: false
+        type: string
+      head_branch:
+        description: Pull request head branch
+        required: false
+        type: string
+      workflow_conclusion:
+        description: Validation workflow conclusion
+        required: false
+        type: string
   workflow_run:
     workflows:
       - Pull Request Validation
@@ -13,7 +27,7 @@ jobs:
     name: Evaluate workflow-owned autofix
     runs-on: ubuntu-latest
     concurrency:
-      group: autofix-orchestrator-${{ github.event.workflow_run.head_branch || github.event.workflow_run.id }}
+      group: autofix-orchestrator-${{ inputs.pr_number || github.event.workflow_run.head_branch || github.event.workflow_run.id }}
       cancel-in-progress: false
     permissions:
       actions: write
@@ -29,11 +43,26 @@ jobs:
         run: |
           set -euo pipefail
 
-          head_branch="${{ github.event.workflow_run.head_branch }}"
-          workflow_conclusion="${{ github.event.workflow_run.conclusion }}"
+          case "${GITHUB_EVENT_NAME}" in
+            workflow_run)
+              pr_number_input=""
+              head_branch="${{ github.event.workflow_run.head_branch }}"
+              workflow_conclusion="${{ github.event.workflow_run.conclusion }}"
+              ;;
+            workflow_dispatch)
+              pr_number_input="${{ inputs.pr_number }}"
+              head_branch="${{ inputs.head_branch }}"
+              workflow_conclusion="${{ inputs.workflow_conclusion }}"
+              ;;
+            *)
+              echo "unsupported event: ${GITHUB_EVENT_NAME}" >&2
+              exit 1
+              ;;
+          esac
+
           max_attempts=2
 
-          if [[ -z "${head_branch}" ]]; then
+          if [[ -z "${pr_number_input}" && -z "${head_branch}" ]]; then
             {
               echo "pr_number="
               echo "pr_url="
@@ -48,7 +77,25 @@ jobs:
             exit 0
           fi
 
-          prs_json="$(gh pr list --state open --head "${head_branch}" --json number,body,labels,url)"
+          if [[ -n "${pr_number_input}" ]]; then
+            prs_json="$(
+              gh pr view "${pr_number_input}" --json number,body,labels,url,state \
+                | python3 - <<'PY'
+          import json
+          import sys
+
+          pr = json.load(sys.stdin)
+          if (pr.get("state") or "").upper() != "OPEN":
+              print("[]")
+          else:
+              pr.pop("state", None)
+              print(json.dumps([pr]))
+          PY
+            )"
+          else
+            prs_json="$(gh pr list --state open --head "${head_branch}" --json number,body,labels,url)"
+          fi
+
           pr_number="$(
             PRS_JSON="${prs_json}" python3 - <<'PY'
           import json
@@ -190,8 +237,9 @@ jobs:
           {
             echo "## Autofix Orchestrator"
             echo
-            echo "- Validation conclusion: \`${{ github.event.workflow_run.conclusion || 'n/a' }}\`"
-            echo "- Head branch: \`${{ github.event.workflow_run.head_branch || 'n/a' }}\`"
+            echo "- Trigger event: \`${{ github.event_name }}\`"
+            echo "- Validation conclusion: \`${{ inputs.workflow_conclusion || github.event.workflow_run.conclusion || 'n/a' }}\`"
+            echo "- Head branch: \`${{ inputs.head_branch || github.event.workflow_run.head_branch || 'n/a' }}\`"
             echo "- Target PR: \`#${{ steps.target.outputs.pr_number || 'n/a' }}\`"
             echo "- Roadmap path: \`${{ steps.target.outputs.roadmap_path || 'n/a' }}\`"
             echo "- Fix attempts observed: \`${{ steps.target.outputs.fix_count || '0' }}\`"
