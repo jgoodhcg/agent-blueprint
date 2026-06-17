@@ -56,3 +56,4 @@ Ideas not yet promoted to work units:
 - Base-branch drift recovery — refresh an open autonomous PR after `main` moves and confirm validation still converges
 - Second proxy project — validate the same workflow pattern in a repo with a meaningfully different stack and validation suite
 - Model escalation policy — after the bounded implement/review/fix loop has enough real history, evaluate a deterministic fallback ladder for repeated failed fix attempts instead of adding model-switch orchestration prematurely
+- Skill/blueprint template dedupe — `.claude/skills/applying-agent-blueprint/reference/*` mirrors the templates embedded in `AGENT_BLUEPRINT.md` (kept inline for one-file portability); decide whether to single-source them or keep the mirror with a sync check

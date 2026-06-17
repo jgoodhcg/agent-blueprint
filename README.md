@@ -22,6 +22,8 @@ It defines a reusable blueprint you can copy into any codebase so human + agent 
 2. Ask your coding agent: "Align this project with AGENT_BLUEPRINT.md".
 3. Answer any prompts the agent provides.
 
+For Claude Code users, the `applying-agent-blueprint` skill (`.claude/skills/applying-agent-blueprint/`) operationalizes this: copy it into your project's `.claude/skills/` and the agent will scaffold `AGENTS.md`, `roadmap/`, and optional companion files, then validate the result.
+
 ## How It Works In Practice
 
 1. `AGENT_BLUEPRINT.md` is the immutable operating contract.

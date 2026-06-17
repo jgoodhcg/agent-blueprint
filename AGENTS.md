@@ -195,6 +195,7 @@ If any answer gives pause, flag it before proceeding.
 - `README.md` — human adoption guide
 - `DESIGN_SYSTEM_GUIDE.md` — optional UI design system guide
 - `collect-project-docs.sh` — multi-project reference collector
+- `.claude/skills/applying-agent-blueprint/` — invokable skill that scaffolds/aligns `AGENTS.md` and companion files from the blueprint
 - `roadmap/index.md` — project roadmap and work unit directory
 - `.decisions/` — decision artifacts (matrix-reloaded JSON records)
 
