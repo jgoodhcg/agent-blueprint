@@ -1,9 +1,9 @@
 ---
 title: "Separate OpenCode Workflow Config From Local CLI Config"
-status: active
+status: dropped
 description: "Prevent workflow-pinned OpenCode config from breaking local auth and provider resolution in this repo or downstream examples."
 created: 2026-04-11
-updated: 2026-04-11
+updated: 2026-06-17
 tags: [workflow, opencode, config, local-dev]
 priority: high
 ---
@@ -45,3 +45,7 @@ Keep the repository's OpenCode GitHub Actions examples usable without hijacking 
 
 - Observed bug in this repo on 2026-04-11: local `opencode` runs failed for multiple providers only inside `agent-blueprint`, while the same local setup worked in other repositories.
 - The likely trigger is repo-root `opencode.json`, which pins providers and env var names for GitHub Actions and is also picked up by local CLI resolution.
+
+## Sunset
+
+Dropped 2026-06-17 with the autonomous GitHub Actions pilot. Full rationale in `roadmap/index.md`: the remote AI execution payoff didn't justify the cost/effort for these projects.

@@ -1,9 +1,9 @@
 ---
 title: "Define Screenshot Evidence Policy"
-status: active
+status: dropped
 description: "Set one opinionated location and presentation policy for workflow-owned screenshots, including before/after support."
 created: 2026-04-09
-updated: 2026-04-09
+updated: 2026-06-17
 tags: [workflow, screenshots, evidence]
 priority: high
 ---
@@ -39,3 +39,7 @@ Make screenshot evidence predictable so reviewers always know where artifacts li
 - [ ] Workflow-authored PRs present screenshots in a consistent place.
 - [ ] UI-driven changes can show before/after evidence without manual cleanup.
 - [ ] The chosen convention scales to future support artifacts beyond screenshots.
+
+## Sunset
+
+Dropped 2026-06-17 with the autonomous GitHub Actions pilot. Full rationale in `roadmap/index.md`: the remote AI execution payoff didn't justify the cost/effort for these projects.

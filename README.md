@@ -6,7 +6,7 @@ Copy one file, run alignment, answer a few prompts, and your repo gets a consist
 
 ## What This Repository Is
 
-This is primarily a docs-and-workflow repository, with a small pilot subproject used to dogfood the GitHub automation flow.
+This is a docs repository.
 
 It defines a reusable blueprint you can copy into any codebase so human + agent collaboration follows the same rules each time.
 
@@ -46,49 +46,9 @@ Not a fit:
 ## Versioning
 
 - The source of truth is the frontmatter version in `AGENT_BLUEPRINT.md`.
-- Current blueprint version in this repo: `2026-03-28`.
+- Current blueprint version in this repo: `2026-06-17`.
 - After upgrading in downstream projects, run an alignment pass.
 
-## Experimental GitHub Automation
+## Sunset: Experimental GitHub Automation
 
-- `.github/workflows/opencode-hello.yml` provides a minimal manual smoke test for OpenCode in GitHub Actions.
-- `.github/workflows/opencode-implement.yml` opens fresh roadmap-driven implementation PRs and also publishes review artifacts.
-- `.github/workflows/opencode-fix.yml` updates an existing PR branch after review feedback or failed checks.
-- `.github/workflows/pr-validation.yml` is the pull-request validation workflow that attaches repository checks to the PR head SHA.
-- `opencode.json` commits the provider routing and default model for the workflow.
-- Add `ZAI_CODING_PLAN_API_KEY` and `OPENCODE_API_KEY` repository secrets in GitHub Actions.
-- Implementation runs default to `zai-coding-plan/glm-5`.
-- Fix runs default to `zai-coding-plan/glm-5`.
-- Review runs default to `opencode/gpt-5.4`.
-- You can override the model in either mode with `-f model=provider/model`, using any `opencode/<model-id>` available in your Zen plan or any `zai-coding-plan/<model-id>` available in your Z.AI Coding Plan access.
-- Stage identities in this repo are `Agent Blueprint Implementer <agent-blueprint-implementer@users.noreply.github.com>`, `Agent Blueprint Reviewer <agent-blueprint-reviewer@users.noreply.github.com>`, and `Agent Blueprint Fixer <agent-blueprint-fixer@users.noreply.github.com>`.
-- Model attribution still lives in `Co-authored-by` plus the `AI-*` trailers; stage identity and model attribution are intentionally separate.
-- Downstream repos should rename those identities relative to the adopting project and can swap the email domain to one they control for recognizable avatars.
-- Review publication still appears as `github-actions[bot]` when using `GITHUB_TOKEN`; custom reviewer avatars require a dedicated GitHub App or another GitHub identity instead of the default workflow token.
-- Local smoke test: run `ZAI_CODING_PLAN_API_KEY=... bash ./opencode-hello-local.sh` to verify the pinned provider route without GitHub.
-- Optional local config dump: add `OPENCODE_SHOW_CONFIG=1` when running the local smoke test.
-- Run the hello smoke test from the Actions UI or with `gh workflow run opencode-hello.yml`.
-- Run roadmap implementation from the Actions UI or with `gh workflow run opencode-implement.yml -f roadmap_path=roadmap/002-readme-once-over.md`.
-- Override the implementation model when needed, for example `gh workflow run opencode-implement.yml -f roadmap_path=roadmap/002-readme-once-over.md -f model=opencode/gemini-3.1-pro`.
-- Run roadmap review from the Actions UI or with `gh workflow run opencode-review.yml -f roadmap_path=roadmap/002-readme-once-over.md -f pr_number=123 -f model=opencode/gpt-5.4`.
-- Run roadmap fix from the Actions UI or with `gh workflow run opencode-fix.yml -f roadmap_path=roadmap/002-readme-once-over.md -f pr_number=123`.
-- The review workflow expects the agent to write a structured review artifact that the workflow publishes as a PR-visible issue comment.
-- `pilots/todo-app/` is the concrete Bun + Preact pilot app used for real project-smoke validation in this repository.
-- Pilot-only demo work units now live under `pilots/todo-app/roadmap/`; the root `roadmap/` is for Agent Blueprint work itself.
-- The roadmap work unit is the canonical execution brief; GitHub only supplies the trigger and the `roadmap_path`.
-- In this repo the `project-smoke` job now runs pilot-app install, typecheck, unit tests, build, and Playwright e2e checks against `pilots/todo-app/`.
-- Human-authored PR updates can use normal `pull_request` triggers. Because implementation PRs here are created by `GITHUB_TOKEN`, the implementation workflow also explicitly dispatches PR validation after the PR is created so the checks attach reliably.
-- Recommended pilot proof order:
-  1. Run the local smoke test.
-  2. Run `opencode-hello.yml` and confirm the workflow summary reports a successful OpenCode action outcome.
-  3. Run `opencode-implement.yml` against a safe `ready` roadmap work unit and confirm it creates a fresh branch/PR.
-  4. Confirm the PR shows attached repository and pilot-app validation checks from `.github/workflows/pr-validation.yml`.
-  5. Run `opencode-review.yml` against that PR and confirm it posts a PR-visible issue comment with the selected model and target PR.
-  6. Seed a real review comment or failing check, then run `opencode-fix.yml` against that same PR and confirm it pushes a follow-up commit to the existing branch and re-dispatches PR validation.
-  7. Update the acceptance checklist in `roadmap/001-github-opencode-pilot.md` only after the corresponding GitHub evidence exists.
-
-For the current POC loop, implementation is automatic up to validation and bounded autofix can continue from failing validation on workflow-owned PRs. Manual dispatch is still useful for review or recovery:
-- dispatch `implement`
-- let PR validation workflows run on the resulting PR
-- dispatch `review` after checks are green or after you want review feedback on the current state
-- if checks fail or review requests changes, dispatch `fix` against the same roadmap unit and PR number to update that existing PR, or let the bounded autofix orchestrator do that when labels allow it
+The autonomous GitHub Actions pilot (roadmap-driven remote implement/review/fix) was sunset on 2026-06-17. The workflows, setup guide, and pilot app were removed; they remain recoverable from git history at the tag `autonomous-gha-pilot`. See the Sunset section of `roadmap/index.md` for the rationale.

@@ -1,9 +1,9 @@
 ---
 title: "Define Demo PR Cleanup Policy"
-status: active
+status: dropped
 description: "Decide how to treat superseded demo PRs after a workflow proof succeeds."
 created: 2026-04-09
-updated: 2026-04-09
+updated: 2026-06-17
 tags: [workflow, demo, cleanup]
 priority: medium
 ---
@@ -38,3 +38,7 @@ Avoid ad hoc cleanup after demos by deciding how the repository should treat sup
 - [ ] The repo has a documented rule for superseded demo PRs.
 - [ ] The roadmap can reflect demo outcomes without manual guesswork.
 - [ ] Maintainers can explain the difference between a proof artifact and a PR intended for merge.
+
+## Sunset
+
+Dropped 2026-06-17 with the autonomous GitHub Actions pilot. Full rationale in `roadmap/index.md`: the remote AI execution payoff didn't justify the cost/effort for these projects.

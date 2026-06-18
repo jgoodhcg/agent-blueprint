@@ -38,7 +38,7 @@ Claude Code (and similar agents) produce better UI work when they can read a str
   - **E2e test screenshot helpers** — Playwright/Cypress page-object patterns with a `screenshot(path, state)` convenience that captures a specific route or DOM state.
   - **Hybrid** — e2e screenshots for full-page states, component renders for isolated states.
 - The blueprint should specify the interface contract (what to call, what it returns) but leave framework choice to the project.
-- Captured screenshots should land in a predictable path, aligned with the evidence convention from `015-screenshot-evidence-policy.md`.
+- Captured screenshots should land in a predictable, documented path (this work unit defines its own convention; there is no separate evidence-policy unit).
 
 ### Claude Code integration
 
@@ -50,7 +50,7 @@ Claude Code (and similar agents) produce better UI work when they can read a str
 - [ ] The blueprint provides a template or spec for an agent-consumable design system artifact (condensed token summary).
 - [ ] The blueprint describes the visual state capture contract with at least one concrete implementation pattern per major stack category (e.g., React component render, Playwright e2e).
 - [ ] The artifact format stays under a documented size target suitable for agent context windows.
-- [ ] The capture strategy references and stays consistent with the evidence directory convention from `015-screenshot-evidence-policy.md`.
+- [ ] The capture strategy defines a clear, documented screenshot output path convention.
 - [ ] `DESIGN_SYSTEM_GUIDE.md` gains a section referencing the artifact and capture guidance, or a new companion section is added to the blueprint.
 
 ## Notes

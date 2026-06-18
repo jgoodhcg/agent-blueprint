@@ -52,26 +52,14 @@ AI-Model: [AI_MODEL]
 
 ## Execution Modes
 
-Shared repo rules always apply; runtime-specific rules override only where they differ. See `AGENT_BLUEPRINT.md` `Execution Modes` for the full policy.
-
-### Shared Rules
+See `AGENT_BLUEPRINT.md` `Execution Modes` for the full policy.
 
 - `roadmap/` is the canonical planning surface; the referenced work unit is the source of scope.
 - Work-unit IDs use [3]-digit zero-padded prefixes: `[ID]-[slug].md`.
 - Apply the validation commands above when their triggers fire.
 - Keep changes minimal and scoped to the requested work unit.
-
-### Runtime: Interactive Local
-
 - Require user confirmation before `git commit`, dependency install/upgrade, and network side effects.
 - Stopping for clarification when scope is ambiguous is acceptable.
-
-### Runtime: Autonomous Workflow
-
-- The workflow input identifies the work unit; the referenced roadmap file is the canonical brief.
-- Run fast checks in-run; defer heavier suites to PR workflows.
-- `git commit`, branch/PR creation, push, and task-scoped network access are allowed to complete the work unit.
-- Fail clearly on true ambiguity rather than inventing scope.
 
 ## Never Run
 

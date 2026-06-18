@@ -1,6 +1,6 @@
 # AGENTS
 
-Follows `AGENT_BLUEPRINT.md` (version: 2026-06-14)
+Follows `AGENT_BLUEPRINT.md` (version: 2026-06-17)
 
 ## Project Overview
 
@@ -28,15 +28,6 @@ AI-Provider: [AI_PROVIDER]
 AI-Product: [AI_PRODUCT_LINE]
 AI-Model: [AI_MODEL]
 ```
-
-## Autonomous Commit Identity
-
-- GitHub Actions roadmap workflows in this repo should use stage-specific project-relative identities:
-  - `Agent Blueprint Implementer <agent-blueprint-implementer@users.noreply.github.com>`
-  - `Agent Blueprint Reviewer <agent-blueprint-reviewer@users.noreply.github.com>`
-  - `Agent Blueprint Fixer <agent-blueprint-fixer@users.noreply.github.com>`
-- Model attribution still belongs in `Co-authored-by` plus the `AI-*` trailers; the workflow-owned git author/committer should stay separate from model attribution.
-- In downstream repos, rename these identities relative to the adopting project and optionally swap the email domain to one you control.
 
 Template rules:
 - `AI_PRODUCT_LINE`: `codex|claude|gemini|opencode`
@@ -75,53 +66,18 @@ Template rules:
 
 ## Execution Modes
 
-Use one policy file for both paired local work and autonomous GitHub Actions runs. Shared repo rules always apply; runtime-specific rules override only where they differ.
-
-### Shared Rules
+Local interactive work with the user is the only runtime for this repo.
 
 - Canonical planning surface is `roadmap/`; treat the referenced work unit as the source of scope.
 - Roadmap work unit filenames use 3-digit IDs in this repo: `[ID]-[slug].md`.
 - Use the validation commands above when their trigger conditions apply.
-- Prefer a staged validation model: fast agent-run checks before PR update, then repository PR workflows for the heavier validation suite.
 - Keep changes minimal and focused on the requested work unit.
 - `git status` and `git diff` are always allowed for change review.
 - `rg`, `sed`, `cat`, `nl`, and `wc` are always allowed for inspecting docs and scripts.
 - `bash -n collect-project-docs.sh` is allowed after script changes.
-
-### Runtime: Interactive Local
-
-- Default mode when working directly with the user in a local agent session.
-- Require user confirmation before `git commit`.
-- Require user confirmation before dependency install or upgrade.
-- Require user confirmation before network calls or other external side effects.
+- Require user confirmation before `git commit`, dependency install/upgrade, or network calls with external side effects.
 - Ask before destructive actions or anything not clearly covered by the allowlist.
 - It is acceptable to stop for clarification when scope is ambiguous.
-
-### Runtime: Autonomous GitHub Actions
-
-- Applies to workflow-driven agent runs such as roadmap execution in GitHub Actions.
-- The workflow input, especially `roadmap_path`, identifies the work unit; the referenced roadmap file is the canonical brief.
-- `implement` runs should execute the fast validation commands that fit inside the agent runtime before updating a branch or PR.
-- Heavier validation such as full integration or e2e suites should run in separate PR workflows after the implementation PR is updated.
-- If a PR is created by `GITHUB_TOKEN`, downstream PR validation may need explicit workflow dispatch because GitHub does not recursively trigger every event from workflow-authored activity.
-- `git commit`, branch creation, push, and PR creation are allowed when required to complete the referenced roadmap work unit.
-- `review` runs should target an explicit PR, publish a GitHub issue comment artifact, and avoid mutating code.
-- `fix` runs should target an explicit existing PR, inspect review/check context first, and update that same PR branch rather than opening a replacement PR.
-- Workflow-owned PRs may use labels and machine-readable issue comments to gate a bounded implement/review/fix loop; do not assume an unbounded autonomous loop.
-- Network access is allowed when required for task execution, including GitHub operations, model-provider calls, package downloads, and task-scoped documentation lookup.
-- Use GitHub Actions secrets and committed repo config; do not depend on local machine state.
-- Do not pause for human confirmation steps that cannot occur inside the workflow.
-- Do not browse or perform open-ended research unless the work unit requires it.
-- If blocked by a true ambiguity or missing prerequisite, fail clearly in logs rather than inventing scope.
-
-## Autonomous Review Rubric
-
-- Review the PR against the referenced roadmap work unit first, then against general code quality.
-- Blocking findings should be limited to correctness, validation gaps, security/safety issues, or clear roadmap mismatches.
-- Non-blocking suggestions should stay concise and should not block approval on style-only preferences.
-- Approval is appropriate only when the implementation matches the roadmap intent and the relevant PR validation checks are green or explicitly accounted for.
-- Request changes when there is at least one blocking finding or when required validation is failing without an accepted explanation.
-- If the state is informative but not ready for approval or blocking, leave a comment review instead of forcing approval semantics.
 
 ## Never Run
 
@@ -137,10 +93,6 @@ Use one policy file for both paired local work and autonomous GitHub Actions run
 - Keep `CLAUDE.md` and `GEMINI.md` as thin pointers to this file.
 - Preserve one-file portability of the blueprint across projects.
 - Keep language concise and deterministic; avoid unnecessary ceremony.
-- For workflow-owned screenshots, use `<project-root>/docs/evidence/<work-unit-slug>/` as the canonical artifact directory.
-- Treat the PR body `Evidence` section as the canonical screenshot surface; use PR comments only for supplemental timeline context such as refreshed post-fix evidence.
-- Workflow-authored screenshot comments and review comments should include visible provider/product/model attribution plus a machine-checkable marker.
-- Demo or proof PRs are artifacts first: close superseded demos with a final pointer, and do not merge a demo PR unless it is intentionally the long-lived change vehicle.
 
 ## Codebase Reconnaissance
 

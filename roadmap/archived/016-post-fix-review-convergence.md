@@ -1,9 +1,9 @@
 ---
 title: "Make Post-Fix Review Converge Cleanly"
-status: active
+status: dropped
 description: "Reduce stale review recommendations by sequencing or rerunning review after fix completion and green validation."
 created: 2026-04-09
-updated: 2026-04-09
+updated: 2026-06-17
 tags: [workflow, review, fix, validation]
 priority: high
 ---
@@ -36,3 +36,7 @@ Eliminate the awkward demo state where a PR is actually healthy but the most vis
 - [ ] A fix run no longer leaves the PR with an obviously stale recommendation comment.
 - [ ] The final autonomous recommendation reflects current checks and code state.
 - [ ] The workflow behavior is documented well enough for demo and day-to-day use.
+
+## Sunset
+
+Dropped 2026-06-17 with the autonomous GitHub Actions pilot. Full rationale in `roadmap/index.md`: the remote AI execution payoff didn't justify the cost/effort for these projects.

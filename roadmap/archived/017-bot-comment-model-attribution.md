@@ -1,9 +1,9 @@
 ---
 title: "Add Model Attribution to Workflow Comments and Reviews"
-status: active
+status: dropped
 description: "Stamp workflow-authored PR comments and reviews with provider, product, and model attribution."
 created: 2026-04-09
-updated: 2026-04-09
+updated: 2026-06-17
 tags: [workflow, attribution, github]
 priority: medium
 ---
@@ -36,3 +36,7 @@ Make every workflow-authored review artifact self-describing so a human can see 
 - [ ] Autonomous review comments include provider, product, and model attribution.
 - [ ] Screenshot evidence comments include the same attribution.
 - [ ] The formatting is consistent across implement, review, and fix stages where comments are published.
+
+## Sunset
+
+Dropped 2026-06-17 with the autonomous GitHub Actions pilot. Full rationale in `roadmap/index.md`: the remote AI execution payoff didn't justify the cost/effort for these projects.

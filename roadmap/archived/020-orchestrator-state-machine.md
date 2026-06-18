@@ -1,9 +1,9 @@
 ---
 title: "Draft Orchestrator State Machine"
-status: draft
+status: dropped
 description: "Temporary design artifact for central-controller workflow orchestration before promotion into AGENT_BLUEPRINT.md."
 created: 2026-04-11
-updated: 2026-04-11
+updated: 2026-06-17
 tags: [workflow, orchestrator, state-machine]
 priority: medium
 ---
@@ -95,3 +95,7 @@ flowchart LR
 - The transition table is stable enough to implement without guessing.
 - The orchestrator owns stage sequencing in practice, not just on paper.
 - The same rules are ready to be described as blueprint guidance rather than repo-local experimentation.
+
+## Sunset
+
+Dropped 2026-06-17 with the autonomous GitHub Actions pilot. Full rationale in `roadmap/index.md`: the remote AI execution payoff didn't justify the cost/effort for these projects.

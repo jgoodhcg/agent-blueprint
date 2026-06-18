@@ -1,4 +1,4 @@
-version: "2026-06-14"
+version: "2026-06-17"
 ---
 
 # Agent Blueprint
@@ -117,40 +117,9 @@ Work through the validation hierarchy. Escalate only when lower levels pass.
 ### Guardrails [BP-WF-GUARD]
 
 - Run validation after changes.
-- Follow the runtime-specific execution policy defined in `AGENTS.md`; interactive sessions and autonomous workflow runs may have different command and confirmation rules.
+- Follow the execution policy defined in `AGENTS.md`.
 - Keep changes minimal and focused; avoid unrelated improvements.
 - For critical logic changes, review `git diff` before declaring completion.
-
-### Autonomous GitHub Actions Pattern [BP-WF-AUTO]
-
-When a project supports autonomous remote execution, prefer this pattern:
-
-1. Keep `roadmap/` as the canonical planning surface.
-2. Use a manually dispatched workflow (`workflow_dispatch` or equivalent CLI/API dispatch), not issue comments, as the primary remote trigger.
-3. Pass a single scoped execution handle such as `roadmap_path`; do not use free-form trigger prose as the canonical task definition.
-4. Validate that the referenced roadmap file exists under `roadmap/` and is in an executable state such as `ready` or `active`.
-5. Instruct the remote agent to apply the autonomous runtime policy from `AGENTS.md`.
-6. Store provider credentials in workflow secrets and keep provider routing/model defaults in committed repo config.
-7. Maintain a separate smoke-test workflow for validating remote runtime wiring before relying on the full implementation workflow.
-8. Split fast agent-run validation from heavier PR validation; let the implementation run do the fast checks and let normal PR workflows handle the full suite.
-9. Use a separate review stage that targets a specific PR and publishes a PR-visible review artifact.
-10. If implementation PRs are created with `GITHUB_TOKEN`, account for GitHub's event-recursion limits; use explicit workflow dispatch or alternate credentials when PR validation must run automatically.
-
-This keeps scope versioned with the repo, makes remote execution reproducible, and prevents trigger-time drift.
-
-### Autonomous Review Pattern [BP-WF-REVIEW]
-
-When a project adds remote review runs, prefer this pattern:
-
-1. Require an explicit PR target such as `pr_number`.
-2. Review against the referenced roadmap work unit first, then against general code quality.
-3. Publish a GitHub PR review artifact rather than keeping review output only in workflow logs.
-4. Distinguish approval from blocking feedback:
-   - approve when the work matches the roadmap intent and relevant validation is green or explicitly accounted for
-   - request changes when there is a blocking correctness, validation, security, or scope issue
-   - comment when feedback is informative but not approval-grade or blocking
-5. Keep the review stage read-only with respect to code changes unless the project explicitly defines a separate fix-up loop.
-6. If the project is still piloting orchestration, manual re-triggering between implement and review runs is acceptable; define loop caps before automating retries.
 
 ### Commits [BP-WF-COMMIT]
 
@@ -279,43 +248,6 @@ Calibrate agent interactions based on user context. Store in a git-ignored file 
 4. Optionally create agent-specific wrappers (`CLAUDE.md`, `GEMINI.md`, etc.) using the wrapper template.
 
 Agent-specific files (`CLAUDE.md`, `GEMINI.md`, etc.) are optional and should be thin pointers to `AGENTS.md`.
-
-### Optional: Autonomous GitHub Actions Setup [BP-ADOPT-AUTO]
-
-If the project should support roadmap-driven autonomous execution in GitHub Actions:
-
-1. Add runtime-specific policy to `AGENTS.md` for both interactive local work and autonomous workflow runs.
-2. Commit any provider/model routing config the remote runtime should use.
-3. Add a manual smoke-test workflow for validating secrets and remote agent wiring.
-4. Add a `workflow_dispatch` implementation workflow with a required input such as `roadmap_path`.
-5. Validate `roadmap_path` before invoking the agent.
-6. Treat the referenced roadmap file as the canonical execution brief.
-7. Store remote provider credentials in repository or environment secrets, never in local-only config.
-8. Add a PR validation workflow for the repository checks that should run automatically on PR updates.
-9. If review should happen remotely, add a review stage that posts PR-visible review output rather than only workflow summaries.
-
-Recommended default:
-- `roadmap/` remains canonical.
-- GitHub Actions is the remote trigger surface.
-- Workflow input is a path to a `roadmap/[ID]-[slug].md` work unit.
-- A local smoke test exists for provider/config verification without GitHub.
-- PR validation is a separate workflow from roadmap implementation.
-- Review mode targets a specific PR and publishes a PR review artifact.
-
-### Reference Files [BP-ADOPT-AUTO-REF]
-
-When aligning another repo, the agent may fetch concrete reference guidance and example files from this source repository.
-
-Prefer a version-matched tag or commit ref when one exists. If no pinned ref is available, use the current paths below as the best-effort source of truth:
-
-- Guide: [https://raw.githubusercontent.com/jgoodhcg/agent-blueprint/main/guides/autonomous-github-actions.md](https://raw.githubusercontent.com/jgoodhcg/agent-blueprint/main/guides/autonomous-github-actions.md)
-- Smoke test workflow: [https://raw.githubusercontent.com/jgoodhcg/agent-blueprint/main/guides/examples/opencode-hello.yml](https://raw.githubusercontent.com/jgoodhcg/agent-blueprint/main/guides/examples/opencode-hello.yml)
-- Implement workflow: [https://raw.githubusercontent.com/jgoodhcg/agent-blueprint/main/guides/examples/opencode-implement.yml](https://raw.githubusercontent.com/jgoodhcg/agent-blueprint/main/guides/examples/opencode-implement.yml)
-- PR validation workflow: [https://raw.githubusercontent.com/jgoodhcg/agent-blueprint/main/guides/examples/pr-validation.yml](https://raw.githubusercontent.com/jgoodhcg/agent-blueprint/main/guides/examples/pr-validation.yml)
-- Provider config: [https://raw.githubusercontent.com/jgoodhcg/agent-blueprint/main/guides/examples/opencode.json](https://raw.githubusercontent.com/jgoodhcg/agent-blueprint/main/guides/examples/opencode.json)
-- Local smoke test: [https://raw.githubusercontent.com/jgoodhcg/agent-blueprint/main/guides/examples/opencode-hello-local.sh](https://raw.githubusercontent.com/jgoodhcg/agent-blueprint/main/guides/examples/opencode-hello-local.sh)
-
-These files are reference artifacts, not core invariants. Agents should adapt them to the target repo while preserving the blueprint rules above.
 
 ---
 
@@ -451,32 +383,12 @@ Template rules:
 
 ## Execution Modes
 
-Use one policy file for both paired local work and autonomous workflow runs. Shared repo rules always apply; runtime-specific rules override only where they differ.
-
-### Shared Rules
-
 - `roadmap/` is the canonical planning surface.
 - If roadmap work unit files use numeric IDs, document the digit width used by this repo in `AGENTS.md` (blueprint default: 3).
 - Validation commands are defined above and applied when relevant.
-- Prefer a staged validation model: fast agent-run checks before PR update, then repository PR workflows for the heavier suite.
 - Keep changes minimal and scoped to the requested work unit.
-
-### Runtime: Interactive Local
-
-- Require user confirmation before `git commit`.
-- Require user confirmation before installs, upgrades, or network calls with external side effects.
+- Require user confirmation before `git commit`, installs, upgrades, or network calls with external side effects.
 - It is acceptable to stop for clarification when scope is ambiguous.
-
-### Runtime: Autonomous Workflow
-
-- The workflow input identifies the work unit; the referenced roadmap file is the canonical brief.
-- Implementation runs should execute the fast validation checks that fit inside the agent runtime before updating the PR.
-- Heavier validation should run in separate PR workflows after the PR is updated.
-- `git commit`, branch creation, push, PR creation, and network access are allowed when required to complete the scoped work unit.
-- Review runs should target an explicit PR and publish a PR-visible review artifact.
-- If orchestration is still a POC, manual re-triggering between implement and review runs is acceptable until loop limits are defined.
-- Use workflow secrets and committed repo config; do not depend on local machine state.
-- Fail clearly when blocked by a true ambiguity or missing prerequisite rather than inventing scope.
 
 ## Never Run
 
