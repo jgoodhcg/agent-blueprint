@@ -11,6 +11,7 @@ import {
   editingTitle,
   removeTodo,
   saveEdit,
+  todayTodos,
   toggleTodo,
   visibleTodos,
   type TodoFilter,
@@ -159,7 +160,52 @@ export function App() {
         </form>
       </section>
 
-      <section class="panel">
+      <section class="panel panel--today" role="region" aria-label="Today focus">
+        <div class="today-header">
+          <p class="eyebrow">Today focus</p>
+          <h2>Today</h2>
+          <p class="today-count">
+            {todayTodos.value.length === 1
+              ? "1 task to finish today"
+              : `${todayTodos.value.length} tasks to finish today`}
+          </p>
+        </div>
+
+        {todayTodos.value.length === 0 ? (
+          <div class="empty-state">
+            <h2>No tasks for today</h2>
+            <p>Nothing due today — add a task above to get started on today's work.</p>
+          </div>
+        ) : (
+          <ul class="todo-list todo-list--compact">
+            {todayTodos.value.map((todo) => (
+              <li class={`todo-card todo-card--today ${todo.completed ? "todo-card--done" : ""}`}>
+                <div class="todo-card__main">
+                  <label class="todo-card__toggle">
+                    <input
+                      type="checkbox"
+                      checked={todo.completed}
+                      onChange={() => toggleTodo(todo.id)}
+                      aria-label={`Mark ${todo.title} as ${todo.completed ? "open" : "done"}`}
+                    />
+                    <span>{todo.completed ? "Done" : "Open"}</span>
+                  </label>
+                  <div class="todo-card__content">
+                    <p class="todo-card__title">{todo.title}</p>
+                    <p class="todo-card__meta">
+                      <span class={`priority-badge priority-badge--${todo.priority}`}>
+                        {renderPriority(todo.priority)}
+                      </span>
+                    </p>
+                  </div>
+                </div>
+              </li>
+            ))}
+          </ul>
+        )}
+      </section>
+
+      <section class="panel" role="region" aria-label="Todo list">
         <div class="toolbar">
           <div class="filter-group" role="tablist" aria-label="Todo filters">
             {(Object.keys(FILTER_LABELS) as TodoFilter[]).map((filterName) => (
