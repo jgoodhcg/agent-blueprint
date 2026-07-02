@@ -1,6 +1,6 @@
 # AGENTS
 
-Follows `AGENT_BLUEPRINT.md` (version: 2026-06-17)
+Follows `AGENT_BLUEPRINT.md` (version: 2026-07-02)
 
 ## Project Overview
 
@@ -30,30 +30,8 @@ AI-Model: [AI_MODEL]
 ```
 
 Template rules:
-- `AI_PRODUCT_LINE`: `codex|claude|gemini|opencode`
-- Product-line derivation:
-  - Codex or ChatGPT coding agent -> `codex`
-  - Claude Code -> `claude`
-  - Gemini CLI -> `gemini`
-  - OpenCode -> `opencode` (regardless of underlying provider/model, including z.ai)
-- `AI_PROVIDER` and `AI_MODEL`: runtime-derived at commit time
-- `AI_PRODUCT_NAME` and `AI_PRODUCT_EMAIL`: resolved from **model name** using tiered lookup (see `AGENT_BLUEPRINT.md` `[BP-WF-COMMIT]`):
-  1. **Brand match** (case-insensitive against model name):
-     - `codex` → `Codex <codex@users.noreply.github.com>`
-     - `claude` → `Claude <claude@users.noreply.github.com>`
-     - `gemini` → `Gemini <google-gemini@users.noreply.github.com>`
-     - `glm` → `GLM <zai-org@users.noreply.github.com>`
-  2. **Provider fallback** (no brand match — use provider's GitHub org):
-     - OpenAI → `OpenAI <openai@users.noreply.github.com>`
-     - Anthropic → `Anthropic <anthropics@users.noreply.github.com>`
-     - Google → `Google <google-gemini@users.noreply.github.com>`
-     - Zhipu → `Zhipu <zai-org@users.noreply.github.com>`
-     - Mistral → `Mistral <mistralai@users.noreply.github.com>`
-     - Meta → `Meta <meta-llama@users.noreply.github.com>`
-     - DeepSeek → `DeepSeek <deepseek-ai@users.noreply.github.com>`
-  3. **Unknown**: `{Provider Name} <{github-org}@users.noreply.github.com>` or `AI Agent <noreply@users.noreply.github.com>`
-- Do not store filled runtime values in this file
-- For multi-model commits, see `AGENT_BLUEPRINT.md` `[BP-WF-COMMIT-MULTI]` — add one `Co-authored-by` line per contributing model and comma-separate the other trailers
+- Fill at commit time; do not store filled runtime values in this file.
+- Resolve all values (product line, provider/model, co-author identity, multi-model attribution) per `references/commit-attribution.md`.
 
 ## Validation Commands
 

@@ -46,8 +46,15 @@ Not a fit:
 ## Versioning
 
 - The source of truth is the frontmatter version in `AGENT_BLUEPRINT.md`.
-- Current blueprint version in this repo: `2026-06-17`.
+- Current blueprint version in this repo: `2026-07-02`.
 - After upgrading in downstream projects, run an alignment pass.
+
+### Why date-based versions, not semver
+
+- A version number should tell you **when**, not make a speculative promise about compatibility.
+- Semver encodes intent ("this is a breaking change") but that intent is unreliable — accidental breakage ships as patches, and major bumps happen for trivial reasons.
+- Date versions are honest, monotonically increasing, and require zero decision overhead. There is no debate about whether a change is "major" or "minor."
+- This aligns with the approach used by Babashka, several Clojure libraries, and other projects that favor simplicity over ceremony.
 
 ## Sunset: Experimental GitHub Automation
 
