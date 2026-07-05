@@ -1,6 +1,6 @@
 # AGENTS
 
-Follows `AGENT_BLUEPRINT.md` (version: 2026-07-02)
+Follows `AGENT_BLUEPRINT.md` (version: 2026-07-04)
 
 ## Project Overview
 
@@ -126,6 +126,7 @@ If any answer gives pause, flag it before proceeding.
 - `DESIGN_SYSTEM_GUIDE.md` — optional UI design system guide
 - `collect-project-docs.sh` — multi-project reference collector
 - `.claude/skills/applying-agent-blueprint/` — invokable skill that scaffolds/aligns `AGENTS.md` and companion files from the blueprint
+- `.claude/skills/roam-thread-summary/` — invokable skill that emits a paste-ready Roam `[[ai-thread]]` block summary of the session
 - `roadmap/index.md` — project roadmap and work unit directory
 - `.decisions/` — decision artifacts (matrix-reloaded JSON records)
 
@@ -133,10 +134,9 @@ If any answer gives pause, flag it before proceeding.
 
 Tool: Roam Research
 
-When asked to generate a Roam summary or thread:
-- Parent block: `- [[<tool>]] [[<model-id>]] [[ai-thread]] [[agent-blueprint]]`
-- Tool names: `opencode` | `claude-code` | `gemini-cli` | `codex-cli`
-- Page refs: only include `[[Page Name]]` if explicitly instructed
+When asked to generate a Roam summary or thread, use the `roam-thread-summary` skill:
+- Required parent block: `- [[ai-thread]] [[<model-id>]] [[agent-blueprint]]`
+- Optional refs (only if instructed): tool (`opencode` | `claude-code` | `gemini-cli` | `codex-cli`), topic pages
 - Sections: ask user what they want (chronological, functional, Q&A)
 
 ## User Profile
