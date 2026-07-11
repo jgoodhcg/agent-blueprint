@@ -7,7 +7,7 @@ goal: "Maintain and evolve a portable agent operating standard for AI-assisted s
 
 ## Current Focus
 
-- Blueprint version: `2026-06-17`
+- Blueprint version: `2026-07-11`
 - Design System Guide version: `2026-03-07`
 - Focus is the durable core: the blueprint standard, the `applying-agent-blueprint` skill, and instruction-design quality.
 - The autonomous GitHub Actions pilot was sunset on 2026-06-17 (see Sunset below); its work units were dropped and its workflows, guide, and pilot app were removed.

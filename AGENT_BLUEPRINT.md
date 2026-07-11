@@ -1,5 +1,5 @@
 ---
-version: "2026-07-05"
+version: "2026-07-11"
 ---
 
 # Agent Blueprint
@@ -95,6 +95,15 @@ If the ecosystem has a lockfile, commit it. When installing dependencies, use th
 ### Setup Command [BP-ENV-SETUP]
 
 Document a single command (or short sequence) that bootstraps the environment from scratch. Store it in the `## Environment` section of `AGENTS.md` so agents can self-bootstrap.
+
+### Web Server Port [BP-ENV-PORT]
+
+For web app projects, the dev server should resolve its listening port with this precedence:
+
+1. **Explicit override** (e.g. `--port`) — use it; if unavailable, error out. A user-specified port is a hard requirement, not a suggestion.
+2. **Default port** — if no override, try the project's configured default; if unavailable, fall back to an open port.
+
+Always print the chosen port so the user (and agent) knows where to connect. Document the default port and the override flag in the `## Environment` section of `AGENTS.md`.
 
 ---
 

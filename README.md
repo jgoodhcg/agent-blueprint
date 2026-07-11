@@ -46,7 +46,7 @@ Not a fit:
 ## Versioning
 
 - The source of truth is the frontmatter version in `AGENT_BLUEPRINT.md`.
-- Current blueprint version in this repo: `2026-07-05`.
+- Current blueprint version in this repo: `2026-07-11`.
 - After upgrading in downstream projects, run an alignment pass.
 
 ### Why date-based versions, not semver
