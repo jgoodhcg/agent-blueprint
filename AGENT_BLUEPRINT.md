@@ -1,5 +1,5 @@
 ---
-version: "2026-08-04"
+version: "2026-08-04.1"
 ---
 
 # Agent Blueprint
@@ -68,6 +68,19 @@ How to author `AGENTS.md` and work units so agents actually follow them. Instruc
 - `BP-INSTR-10` Write requirements with `must`, `can`, or `will`. In a rule body, "should" reads as optional and "may/might/could" read as speculative. Write `must` for a requirement, `can` for a permission, or delete the rule. `SHOULD` stays valid as the normative label in `Core Invariants`. (removes hedge ambiguity)
 
 Source for `BP-INSTR-09` and `BP-INSTR-10`: ASD-STE100 Simplified Technical English (Issue 9, 2025), adapted for agent instructions via [SimpleEnglish](https://github.com/AminBlg/SimpleEnglish) — AminBlg, MIT. `BP-INSTR-03` and `BP-INSTR-06` restate that standard's "one instruction per sentence" and "condition before command" rules, derived here independently. ASD-STE100 is a registered trademark of ASD; no specification or dictionary text is reproduced. Full bibliography: `references/sources.md` (`[18]`, `[19]`).
+
+---
+
+## Authored Artifacts [BP-WRITE]
+
+Prose that an agent writes into the repository. `[BP-INSTR]` governs instruction files. `[BP-WF-PROFILE]` governs replies to the user. This section governs everything else.
+
+- `BP-WRITE-01` Write documentation, code comments, commit messages, PR descriptions, and error text in the factual register defined in `[BP-WF-PROFILE]`.
+- `BP-WRITE-02` Commit messages take an imperative subject line and a body in simple past. State what changed and why. Do not state intent ("this commit aims to").
+- `BP-WRITE-03` Leave code, identifiers, file paths, and quoted error text exact. They are names, not prose.
+- `BP-WRITE-04` Exempt human-facing persuasive text: launch posts, brand writing, and any marketing section of a `README`. The factual register deletes persuasion by design. Record a project's exemptions in `AGENTS.md`.
+
+Source: `references/sources.md` (`[18]`, `[19]`).
 
 ---
 
@@ -158,6 +171,7 @@ Work through the validation hierarchy. Escalate only when lower levels pass.
 
 - Commit only after user approval.
 - Before committing, present: proposed commit message, files included, and validation results.
+- Write the message per `[BP-WRITE]`: imperative subject, body in simple past.
 - Read the commit trailer template from `AGENTS.md`; if missing, ask once before the first commit in a repo.
 - Never persist runtime values (`Co-authored-by`, `AI-Provider`, `AI-Product`, `AI-Model`) in `AGENTS.md`; fill them at commit time from session metadata.
 - When filling trailers, resolve co-author identity, provider/model values, and multi-model attribution per `references/commit-attribution.md` (copied alongside this blueprint). When more than one model contributed, attribute all of them per that reference — never auto-add a second model without user confirmation.
@@ -322,6 +336,7 @@ AI-Model: [AI_MODEL]
 ## Project-Specific Rules
 
 - [constraints, data sensitivity, architectural boundaries]
+- [`BP-WRITE-04` exemptions: files or sections that carry persuasive voice, or "none"]
 
 ## Decision Artifacts
 

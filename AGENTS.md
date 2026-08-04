@@ -1,6 +1,6 @@
 # AGENTS
 
-Follows `AGENT_BLUEPRINT.md` (version: 2026-08-04)
+Follows `AGENT_BLUEPRINT.md` (version: 2026-08-04.1)
 
 ## Project Overview
 
@@ -67,6 +67,7 @@ Local interactive work with the user is the only runtime for this repo.
 ## Project-Specific Rules
 
 - Keep `README.md` human-facing and adoption-focused.
+- `BP-WRITE-04` exemptions: none. This repo sells nothing, so `README.md` follows the factual register like every other file.
 - Keep `AGENT_BLUEPRINT.md` as the canonical operational spec.
 - Keep `CLAUDE.md` and `GEMINI.md` as thin pointers to this file.
 - Preserve one-file portability of the blueprint across projects.
