@@ -7,14 +7,14 @@ goal: "Maintain and evolve a portable agent operating standard for AI-assisted s
 
 ## Current Focus
 
-- Blueprint version: `2026-08-02`
+- Blueprint version: `2026-08-04`
 - Design System Guide version: `2026-03-07`
 - Focus is the durable core: the blueprint standard, the `applying-agent-blueprint` skill, and instruction-design quality.
 - The autonomous GitHub Actions pilot was sunset on 2026-06-17 (see Sunset below); its work units were dropped and its workflows, guide, and pilot app were removed.
 
 ## Work Units
 
-See individual `[ID]-[slug].md` files in this directory. Use `draft` while clarifying and `ready` when autonomous execution can begin.
+See individual `[ID]-[slug].md` files in this directory. Use `draft` during clarification and `ready` when autonomous execution can begin.
 
 - `021-urgent-scope-validation-guardrail.md` (`draft`) - make the blueprint explicit that urgency does not waive clarification, scoped execution, or validation
 - `022-design-system-artifact-and-visual-capture.md` (`draft`) - define an agent-consumable design system artifact and a project-adaptable visual state capture strategy for on-demand component screenshots

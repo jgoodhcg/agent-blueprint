@@ -12,7 +12,7 @@ priority: medium
 
 ## Intent
 
-Close a small but important gap in the blueprint: rushed or emotionally phrased coding requests should not cause agents to invent scope, skip clarification, or claim completion without validation.
+Close a small but important gap in the blueprint: rushed or emotionally phrased coding requests must not cause agents to invent scope, skip clarification, or claim completion without validation.
 
 ## Sequencing
 

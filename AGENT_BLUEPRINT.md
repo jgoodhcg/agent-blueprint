@@ -1,5 +1,5 @@
 ---
-version: "2026-08-02"
+version: "2026-08-04"
 ---
 
 # Agent Blueprint
@@ -21,6 +21,7 @@ Use these IDs in alignment reports for deterministic, machine-checkable outcomes
 - `BP-CORE-06` Alignment responses use the required report format in this blueprint.
 - `BP-CORE-09` `AGENTS.md` stores a commit trailer template (placeholders), not concrete co-author/provider/model values.
 - `BP-CORE-11` On conflicting instructions, apply the precedence order in `[BP-PRECEDENCE]`.
+- `BP-CORE-12` Completion reports name the checks that ran and the checks that did not (`[BP-VERIFY]`).
 
 **SHOULD**
 - `BP-CORE-07` Keep policy lean; prefer references over duplicated rules. A rule that restates blueprint or `AGENTS.md` text verbatim is a FAIL in alignment reports. See `[BP-INSTR]`.
@@ -66,7 +67,21 @@ How to author `AGENTS.md` and work units so agents actually follow them. Instruc
 - `BP-INSTR-09` One word, one meaning. Use one term per concept across this blueprint, `AGENTS.md`, and work units. Three terms are fixed here: **validate** = run the project validation commands; **confirm** = get user approval; **check** = evaluate a stated condition. An agent reads three verbs as three operations. (vocabulary discipline)
 - `BP-INSTR-10` Write requirements with `must`, `can`, or `will`. In a rule body, "should" reads as optional and "may/might/could" read as speculative. Write `must` for a requirement, `can` for a permission, or delete the rule. `SHOULD` stays valid as the normative label in `Core Invariants`. (removes hedge ambiguity)
 
-Source for `BP-INSTR-09` and `BP-INSTR-10`: ASD-STE100 Simplified Technical English (Issue 9, 2025), adapted for agent instructions via [SimpleEnglish](https://github.com/AminBlg/SimpleEnglish) — AminBlg, MIT. `BP-INSTR-03` and `BP-INSTR-06` restate that standard's "one instruction per sentence" and "condition before command" rules, derived here independently. ASD-STE100 is a registered trademark of ASD; no specification or dictionary text is reproduced.
+Source for `BP-INSTR-09` and `BP-INSTR-10`: ASD-STE100 Simplified Technical English (Issue 9, 2025), adapted for agent instructions via [SimpleEnglish](https://github.com/AminBlg/SimpleEnglish) — AminBlg, MIT. `BP-INSTR-03` and `BP-INSTR-06` restate that standard's "one instruction per sentence" and "condition before command" rules, derived here independently. ASD-STE100 is a registered trademark of ASD; no specification or dictionary text is reproduced. Full bibliography: `references/sources.md` (`[18]`, `[19]`).
+
+---
+
+## Verifiability [BP-VERIFY]
+
+An agent produces work faster than a user can check it. Users follow incorrect AI advice most of the time when checking is expensive (`[20]`, `[22]`), so lower the cost to check instead of adding friction — friction works, and users turn it off (`[21]`).
+
+- `BP-VERIFY-01` Anchor every factual claim to something the user can check: `file:line`, the exact command, the diff, or the quoted output.
+- `BP-VERIFY-02` Separate what you verified from what you inferred. Name the checks you ran and the checks you skipped.
+- `BP-VERIFY-03` Report failures and gaps in full. State what you did not do, and why.
+- `BP-VERIFY-04` Keep calibrated uncertainty. Do not convert `may` into `will` to sound decisive. False confidence suppresses user scrutiny (`[23]`).
+- `BP-VERIFY-05` Before an irreversible or high-impact action, state the disconfirming case: what would make this the wrong move, and what the user can look at to decide. Gate this to the actions in `[BP-SAFE]`. Do not apply it to routine turns (`[21]`).
+
+Numbered citations resolve in `references/sources.md`.
 
 ---
 
@@ -169,7 +184,7 @@ Profile dimensions, interview questions, and calibration guidance live in `refer
 ## Adoption [BP-ADOPT]
 
 1. Copy this file as `AGENT_BLUEPRINT.md`.
-2. Copy the `references/` directory alongside it (commit attribution, user profile guidance, work unit example).
+2. Copy the `references/` directory alongside it (commit attribution, user profile guidance, work unit example, sources).
 3. Create `AGENTS.md` using the template below.
 4. Create `roadmap/index.md`.
 5. Optionally create agent-specific wrappers (`CLAUDE.md`, `GEMINI.md`, etc.) using the wrapper template.
@@ -463,7 +478,7 @@ goal: "One sentence: what this project exists to achieve."
 
 ## Work Units
 
-See individual `[ID]-[slug].md` files in this directory. Use `draft` while clarifying and `ready` when autonomous execution can begin.
+See individual `[ID]-[slug].md` files in this directory. Use `draft` during clarification and `ready` when autonomous execution can begin.
 
 ## Quick Ideas
 
