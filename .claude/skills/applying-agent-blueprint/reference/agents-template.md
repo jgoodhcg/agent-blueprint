@@ -70,6 +70,11 @@ See `AGENT_BLUEPRINT.md` `Execution Modes` for the full policy.
 - [constraints, data sensitivity, architectural boundaries — ground these in detection + recon]
 - [`BP-WRITE-04` exemptions: files or sections that carry persuasive voice, or "none"]
 
+## Skills (optional)
+
+- When [trigger], read and follow `[path]/SKILL.md` before acting.
+- Treat `[path]/SKILL.md` as canonical; client-specific skill metadata is only a discovery adapter.
+
 ## References
 
 - For operating rules, see `AGENT_BLUEPRINT.md`.

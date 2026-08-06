@@ -22,7 +22,9 @@ It defines a reusable blueprint you can copy into any codebase so human + agent 
 2. Ask your coding agent: "Align this project with AGENT_BLUEPRINT.md".
 3. Answer any prompts the agent provides.
 
-For Claude Code users, the `applying-agent-blueprint` skill (`.claude/skills/applying-agent-blueprint/`) operationalizes this: copy it into your project's `.claude/skills/` and the agent will scaffold `AGENTS.md`, `roadmap/`, and optional companion files, then validate the result.
+Reusable, agent-neutral skills live in `skills/`. Reference their triggers and canonical paths from `AGENTS.md` so Codex, Claude Code, OpenCode, Gemini, and other clients can load the same instructions. Client-specific discovery configuration and metadata remain optional adapters.
+
+The `decision-matrix` skill (`skills/decision-matrix/`) builds collaborative Google Sheets matrices through `gws`. The legacy `applying-agent-blueprint` skill remains under `.claude/skills/` while its cross-agent migration is evaluated.
 
 ## How It Works In Practice
 

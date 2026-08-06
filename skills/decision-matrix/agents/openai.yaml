@@ -1,0 +1,4 @@
+interface:
+  display_name: "Decision Matrix"
+  short_description: "Build collaborative Google Sheets decision matrices"
+  default_prompt: "Use $decision-matrix to compare these options in a collaborative Google Sheet."

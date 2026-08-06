@@ -15,6 +15,7 @@ Verify each and record PASS/FAIL with one line of evidence:
 | BP-CORE-06 | Alignment responses use this report format |
 | BP-CORE-09 | `AGENTS.md` stores a trailer **template**, not concrete co-author/provider/model values |
 | BP-CORE-12 | Policy does not suppress completion reporting; the agent names checks that ran and checks that did not |
+| BP-CORE-13 | When `skills/` exists, `AGENTS.md` lists each shared skill's trigger and canonical path |
 | BP-RM-DOR | Every `ready` work unit satisfies the Definition of Ready (Intent, Specification, Validation, Scope, Context concrete; no Open Questions) |
 | BP-RM-FRONTMATTER | Frontmatter includes title, status, description, created, updated, tags, priority |
 | BP-ADOPT-02 | `references/` sits beside the blueprint with all four companion files, including `sources.md` |

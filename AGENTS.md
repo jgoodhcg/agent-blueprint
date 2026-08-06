@@ -73,6 +73,11 @@ Local interactive work with the user is the only runtime for this repo.
 - Preserve one-file portability of the blueprint across projects.
 - Keep language concise and deterministic; avoid unnecessary ceremony.
 
+## Skills
+
+- When asked to create or revise a decision matrix, compare options against criteria, or populate a decision matrix in Google Sheets, read and follow `skills/decision-matrix/SKILL.md` before acting.
+- Treat `skills/` as the canonical agent-neutral skill directory. Treat `.claude/skills/` and `agents/openai.yaml` as compatibility adapters only.
+
 ## Codebase Reconnaissance
 
 Run these git commands when applying the blueprint to an existing codebase or auditing a mature blueprint-following project. The output informs AGENTS.md sections like project-specific rules, validation priorities, and key files — grounding them in observed risk rather than assumptions.
@@ -116,6 +121,7 @@ If any answer gives pause, flag it before proceeding.
 - For operating rules, see `AGENT_BLUEPRINT.md`
 - For active work units and execution prompts, see `roadmap/`
 - For decision artifacts and matrix format, see `AGENT_BLUEPRINT.md` section `Decision Artifacts [BP-DECISIONS]`
+- For agent-neutral skill conventions, see `AGENT_BLUEPRINT.md` section `Agent-Agnostic Skills [BP-SKILLS]`.
 - For UI system workflows, see `DESIGN_SYSTEM_GUIDE.md`
 - For cross-project audit collection, see `collect-project-docs.sh`
 
@@ -128,6 +134,7 @@ If any answer gives pause, flag it before proceeding.
 - `collect-project-docs.sh` — multi-project reference collector
 - `.claude/skills/applying-agent-blueprint/` — invokable skill that scaffolds/aligns `AGENTS.md` and companion files from the blueprint
 - `.claude/skills/roam-thread-summary/` — invokable skill that emits a paste-ready Roam `[[ai-thread]]` block summary of the session
+- `skills/decision-matrix/` — canonical agent-neutral workflow for collaborative Google Sheets decision matrices
 - `roadmap/index.md` — project roadmap and work unit directory
 - `.decisions/` — decision artifacts (matrix-reloaded JSON records)
 
