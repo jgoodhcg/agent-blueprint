@@ -7,6 +7,10 @@ Fill the bracketed placeholders from project detection and the user interview. D
 
 Follows `AGENT_BLUEPRINT.md` (version: [BLUEPRINT_VERSION])
 
+## Session Start
+
+- When `HERDR_ENV=1` and `HERDR_TAB_ID` is set, apply `AGENT_BLUEPRINT.md` `[BP-WF-HERDR]` before other task work.
+
 ## Project Overview
 
 [One paragraph: what this is, language/framework, key domains.]
