@@ -1,5 +1,5 @@
 ---
-version: "2026-08-07"
+version: "2026-08-16"
 ---
 
 # Agent Blueprint
@@ -210,7 +210,7 @@ Work through the validation hierarchy. Escalate only when lower levels pass.
 
 Calibrate agent interactions based on user context. Store in a git-ignored file (e.g., `.agent-profile.md`) referenced from `AGENTS.md`.
 
-**Response calibration (default):** Lead with the conclusion, support after. Match response length to the task — proportionate over exhaustive. Treat the user's message as a premise to build from, not a statement to evaluate, rate, or reflect back — so no sycophantic amplification ("that's the most important point…"), no restating the user's message, no pleasantries, hype, or apologies. Disagree openly when warranted; don't hedge or amplify to be agreeable. Store per-user specifics (length contract, mode triggers, explanation depth, domains) in the profile file, not here.
+**Response calibration (default):** Lead with the conclusion, support after. Match response length to the task — proportionate over exhaustive. Treat the user's message as a premise to build from, not a statement to evaluate, rate, or reflect back — so no sycophantic amplification ("that's the most important point…"), no restating the user's message, no pleasantries, hype, or apologies. Use ordinary prose. Avoid canned transitions, rhetorical fragments, contrastive reframes ("not X, but Y"), unnecessary headings, and unrequested closing summaries or offers. Never open with "You're absolutely right," "Great question," "Let's unpack this," "Here's the thing," or "It's worth noting." Disagree openly when warranted; don't hedge or amplify to be agreeable. Store per-user specifics (length contract, mode triggers, explanation depth, domains) in the profile file, not here.
 
 **Register (default):** Length and register are independent axes. Length follows the task. Register follows the content. Write factual passages — code explanations, results, steps, findings, errors — in the style `[BP-INSTR]` requires: short sentences, one instruction each, condition before command, `must`/`can`/`will`. Write deliberative passages — judgment, tradeoffs, disagreement, uncertainty — in plain prose, and keep `may`/`might`/`could` there, because those words carry the calibration. A reply can contain both. Strip filler from both.
 
@@ -398,6 +398,10 @@ AI-Model: [AI_MODEL]
 ## User Profile (optional)
 
 See `.agent-profile.md` (git-ignored) for interaction preferences. Create on project init or alignment.
+
+## Response Style
+
+Before every user reply, apply `AGENT_BLUEPRINT.md` `[BP-WF-PROFILE]`.
 ````
 
 ---
@@ -677,8 +681,9 @@ The `roam-thread-summary` skill (`.claude/skills/roam-thread-summary/`) is the c
 1. **Thread marker** — `[[ai-thread]]`
 2. **Model** — `[[<model-id>]]`, the exact model of the current session
 3. **Project** — `[[<project>]]`, the project's declared Roam tag or repository name
+4. **Tool** — `[[<tool>]]`, the agentic harness the session runs in (`[[opencode]]`, `[[claude-code]]`, `[[gemini-cli]]`, `[[codex-cli]]`)
 
-Add optional refs only when the user asks: **tool** (`[[claude-code]]`, `[[opencode]]`, `[[gemini-cli]]`, `[[codex-cli]]`) or topic pages.
+Add optional topic-page refs only when the user asks.
 
 ### Roam Research Example
 
@@ -690,15 +695,15 @@ Store in `AGENTS.md`:
 Tool: Roam Research
 
 When asked to generate a Roam summary or thread, use the `roam-thread-summary` skill:
-- Required parent block: `- [[ai-thread]] [[<model-id>]] [[<project-name>]]`
-- Optional refs (only if instructed): tool (`opencode` | `claude-code` | `gemini-cli` | `codex-cli`), topic pages
+- Required parent block: `- [[ai-thread]] [[<model-id>]] [[<project-name>]] [[<tool>]]`
+- Optional refs (only if instructed): topic pages
 - Sections: ask user what they want (chronological, functional, Q&A)
 ```
 
 Output structure:
 
 ```
-- [[ai-thread]] [[glm-5]] [[agent-blueprint]]
+- [[ai-thread]] [[glm-5]] [[agent-blueprint]] [[opencode]]
     - Summary
         - Investigated stale cache issue in `src/cache.ts:142`
     - Files Changed

@@ -1,6 +1,6 @@
 # AGENTS
 
-Follows `AGENT_BLUEPRINT.md` (version: 2026-08-07)
+Follows `AGENT_BLUEPRINT.md` (version: 2026-08-16)
 
 ## Session Start
 
@@ -147,10 +147,15 @@ If any answer gives pause, flag it before proceeding.
 Tool: Roam Research
 
 When asked to generate a Roam summary or thread, use the `roam-thread-summary` skill:
-- Required parent block: `- [[ai-thread]] [[<model-id>]] [[agent-blueprint]]`
-- Optional refs (only if instructed): tool (`opencode` | `claude-code` | `gemini-cli` | `codex-cli`), topic pages
+- Required parent block: `- [[ai-thread]] [[<model-id>]] [[agent-blueprint]] [[<tool>]]`
+- Tool = agentic harness of the current session (`opencode` | `claude-code` | `gemini-cli` | `codex-cli`)
+- Optional refs (only if instructed): topic pages
 - Sections: ask user what they want (chronological, functional, Q&A)
 
 ## User Profile
 
 See `.agent-profile.md` (git-ignored) for interaction preferences.
+
+## Response Style
+
+Before every user reply, apply `AGENT_BLUEPRINT.md` `[BP-WF-PROFILE]`.

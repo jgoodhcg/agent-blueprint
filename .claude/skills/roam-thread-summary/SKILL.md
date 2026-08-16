@@ -14,16 +14,17 @@ Nest all AI-generated content under a parent attribution block that includes, in
 1. `[[ai-thread]]` — marks this as AI-generated content
 2. `[[<model-id>]]` — the exact model ID of the current session; take it from the running session, never from an example or an earlier summary
 3. `[[<project>]]` — the project this session belongs to. Use the project's declared Roam tag if `AGENTS.md` specifies one; otherwise use the repository/directory name. If it genuinely cannot be determined, ask the user before generating.
+4. `[[<tool>]]` — the agentic harness the session runs in (`opencode` | `claude-code` | `gemini-cli` | `codex-cli`); detect it from the running session, never assume it from an example.
 
 ```
-- [[ai-thread]] [[<model-id>]] [[<project>]]
+- [[ai-thread]] [[<model-id>]] [[<project>]] [[<tool>]]
     - <content nested here>
 ```
 
 ## Formatting Conventions
 
 - **Ticket / issue references**: use page refs — `[[5593]]` or `#5593`
-- **Other page refs** (tool, topic): only include `[[Page Name]]` refs if explicitly instructed
+- **Other page refs** (topics): only include `[[Page Name]]` refs if explicitly instructed
 
 ## Section Structure
 
@@ -35,10 +36,10 @@ The organization under the thread block is flexible. Before generating, ask the 
 
 ## Example Output
 
-(`[[<model-id>]]` and `[[<project>]]` are shown literally here; substitute the current session's model ID and project.)
+(`[[<model-id>]]`, `[[<project>]]`, and `[[<tool>]]` are shown literally here; substitute the current session's model ID, project, and tool.)
 
 ```
-- [[ai-thread]] [[<model-id>]] [[<project>]]
+- [[ai-thread]] [[<model-id>]] [[<project>]] [[<tool>]]
     - Summary
         - Investigated [[5593]] — stale cache entries in `src/services/cache.ts:142`
     - Files Changed
