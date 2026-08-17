@@ -79,6 +79,10 @@ See `AGENT_BLUEPRINT.md` `Execution Modes` for the full policy.
 - When [trigger], read and follow `[path]/SKILL.md` before acting.
 - Treat `[path]/SKILL.md` as canonical; client-specific skill metadata is only a discovery adapter.
 
+## Learning Log (optional)
+
+- When `MISTAKES.md` exists, after scoping a task, search it for relevant prior failures before implementation. Apply `AGENT_BLUEPRINT.md` `[BP-WF-LEARN]`.
+
 ## References
 
 - For operating rules, see `AGENT_BLUEPRINT.md`.

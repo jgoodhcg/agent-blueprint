@@ -197,6 +197,34 @@ Work through the validation hierarchy. Escalate only when lower levels pass.
 - Keep changes minimal and focused; avoid unrelated improvements.
 - For critical logic changes, review `git diff` before declaring completion.
 
+### Learning Log [BP-WF-LEARN]
+
+Projects can keep a `MISTAKES.md` evidence log for failures that can improve future work.
+
+- `BP-WF-LEARN-01` After scoping a task, when `MISTAKES.md` exists, search it for entries relevant to the affected paths, systems, or operations before implementation.
+- `BP-WF-LEARN-02` When an agent action causes an incorrect outcome, or the user corrects the agent, add a newest-first entry. Do not log expected exploration, rejected options, or failures outside the agent's control.
+- `BP-WF-LEARN-03` Record the context, observed failure, consequence, root cause, prevention, related entries, and status. Mark an unverified root cause as `unknown`; do not convert a guess into policy.
+- `BP-WF-LEARN-04` When multiple entries support the same verified prevention, promote it into the narrowest applicable canonical instruction. If policy changes are outside the current scope, report the promotion candidate instead.
+- `BP-WF-LEARN-05` After promotion, mark the evidence entries `promoted` and link to the canonical instruction. Do not duplicate the promoted rule in the log.
+
+This workflow is optional. When a project adopts it, surface the pre-implementation trigger in `AGENTS.md` under `Learning Log` per `BP-INSTR-11`.
+
+Suggested `MISTAKES.md` entry:
+
+```markdown
+## YYYY-MM-DD — Short failure label
+
+- Context: [task and affected area]
+- Failure: [observable incorrect action or outcome]
+- Consequence: [impact]
+- Root cause: verified | unknown — [cause or missing evidence]
+- Prevention: [specific action that would prevent recurrence]
+- Related: [entry links or "none"]
+- Status: active | promoted to `[canonical instruction]`
+```
+
+Source: `references/sources.md` (`[26]`).
+
 ### Commits [BP-WF-COMMIT]
 
 - Commit only after user approval.
@@ -231,7 +259,8 @@ Profile dimensions, interview questions, and calibration guidance live in `refer
 2. Copy the `references/` directory alongside it (commit attribution, user profile guidance, work unit example, sources).
 3. Create `AGENTS.md` using the template below.
 4. Create `roadmap/index.md`.
-5. Optionally create agent-specific wrappers (`CLAUDE.md`, `GEMINI.md`, etc.) using the wrapper template.
+5. Optionally create `MISTAKES.md` using `[BP-WF-LEARN]` and add its trigger bridge to `AGENTS.md`.
+6. Optionally create agent-specific wrappers (`CLAUDE.md`, `GEMINI.md`, etc.) using the wrapper template.
 
 Agent-specific files (`CLAUDE.md`, `GEMINI.md`, etc.) are optional. When you create one, keep it a thin pointer to `AGENTS.md`.
 
@@ -377,6 +406,10 @@ AI-Model: [AI_MODEL]
 
 - When [trigger], read and follow `[path]/SKILL.md` before acting.
 - Treat `[path]/SKILL.md` as canonical; client-specific skill metadata is only a discovery adapter.
+
+## Learning Log (optional)
+
+- When `MISTAKES.md` exists, after scoping a task, search it for relevant prior failures before implementation. Apply `AGENT_BLUEPRINT.md` `[BP-WF-LEARN]`.
 
 ## Decision Artifacts
 
