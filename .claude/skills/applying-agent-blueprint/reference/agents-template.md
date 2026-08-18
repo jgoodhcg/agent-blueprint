@@ -15,6 +15,11 @@ Follows `AGENT_BLUEPRINT.md` (version: [BLUEPRINT_VERSION])
 
 [One paragraph: what this is, language/framework, key domains.]
 
+## Repository Visibility
+
+- Visibility: public | private (defaults to public when unspecified)
+- Before staging or committing, apply `AGENT_BLUEPRINT.md` `[BP-PUBLIC]`.
+
 ## Stack
 
 - [Language + version]
@@ -96,6 +101,10 @@ See `AGENT_BLUEPRINT.md` `Execution Modes` for the full policy.
 ## User Profile (optional)
 
 See `.agent-profile.md` (git-ignored) for interaction preferences.
+
+## Response Style
+
+Before every user reply, apply `AGENT_BLUEPRINT.md` `[BP-WF-PROFILE]`.
 ```
 
 Note: in the real file, the trailer fence is a normal ```` ``` ```` block; the zero-width characters above only prevent nesting issues inside this template-of-a-template.

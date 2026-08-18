@@ -1,6 +1,6 @@
 # AGENTS
 
-Follows `AGENT_BLUEPRINT.md` (version: 2026-08-17)
+Follows `AGENT_BLUEPRINT.md` (version: 2026-08-18)
 
 ## Session Start
 
@@ -9,6 +9,11 @@ Follows `AGENT_BLUEPRINT.md` (version: 2026-08-17)
 ## Project Overview
 
 This repository defines and maintains a portable agent operating standard. The primary deliverables are the blueprint (`AGENT_BLUEPRINT.md`) and optional UI companion (`DESIGN_SYSTEM_GUIDE.md`), plus a small audit utility script.
+
+## Repository Visibility
+
+- Visibility: public
+- Before staging or committing, apply `AGENT_BLUEPRINT.md` `[BP-PUBLIC]`.
 
 ## Stack
 
@@ -43,7 +48,7 @@ Template rules:
 |-------|---------|------|
 | 1 | `bash -n collect-project-docs.sh` | After script changes |
 | 2 | `rg -n "^version:" AGENT_BLUEPRINT.md` | After blueprint edits |
-| 3 | `rg -n "BP-CORE-01|BP-ALIGN-REPORT|BP-RM-DOR" AGENT_BLUEPRINT.md` | Before completing blueprint changes |
+| 3 | `rg -n "BP-CORE-01|BP-CORE-15|BP-PUBLIC|BP-ALIGN-REPORT|BP-RM-DOR" AGENT_BLUEPRINT.md` | Before completing blueprint changes |
 | 4 | `echo "N/A: no UI/e2e in this repository"` | Always |
 
 ## Execution Modes

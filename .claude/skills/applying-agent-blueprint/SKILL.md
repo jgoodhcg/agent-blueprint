@@ -1,6 +1,6 @@
 ---
 name: applying-agent-blueprint
-description: Scaffolds and aligns a project's agent operating files (AGENTS.md, roadmap/, optional CLAUDE.md/GEMINI.md, .agent-profile.md) from the Agent Blueprint standard. Use when setting up agent policy for a new or existing repo, creating or updating AGENTS.md, adopting AGENT_BLUEPRINT.md, or running an alignment/compliance check against the blueprint.
+description: Scaffolds and aligns a project's agent operating files and public-repository safeguards (AGENTS.md, roadmap/, .gitignore, optional CLAUDE.md/GEMINI.md, .agent-profile.md) from the Agent Blueprint standard. Use when setting up agent policy for a new or existing repo, creating or updating AGENTS.md, adopting AGENT_BLUEPRINT.md, or running an alignment/compliance check against the blueprint.
 ---
 
 # Applying the Agent Blueprint
@@ -30,8 +30,9 @@ Scaffold progress:
 - [ ] 2. Gather gaps from the user (only what detection cannot answer)
 - [ ] 3. Write AGENTS.md from the template
 - [ ] 4. Create roadmap/ (index.md + _template.md)
-- [ ] 5. Optional files (wrappers, profile, design system)
-- [ ] 6. Validate with check.sh; fix until green
+- [ ] 5. Apply public-repository safeguards (.gitignore + pre-stage trigger)
+- [ ] 6. Optional files (wrappers, profile, design system)
+- [ ] 7. Validate with check.sh; fix until green
 ```
 
 **1. Detect the project.** Inspect the repo to fill as much of `AGENTS.md` as possible without asking: language/runtime, version file (`.nvmrc`, `.python-version`, `rust-toolchain.toml`, …), lockfile, and the format/build/test/e2e commands. For a mature repo, run the git reconnaissance in [reference/recon.md](reference/recon.md) to ground project-specific rules in real churn/bug/ownership risk rather than convention.
@@ -42,12 +43,14 @@ Scaffold progress:
 
 **4. Create `roadmap/`** from [reference/roadmap-templates.md](reference/roadmap-templates.md): `roadmap/index.md` (required — its existence marks a compatible project, `BP-CORE-02`) and `roadmap/_template.md`. Document the work-unit ID digit width in `AGENTS.md` if not the default of 3.
 
-**5. Optional files** (offer; create only what the user wants):
+**5. Apply public-repository safeguards.** Treat visibility as public unless `AGENTS.md` explicitly declares otherwise. Create or update `.gitignore` from `[BP-PUBLIC-IGNORE]` without replacing project-specific entries. Include `.private/` for sensitive local content, and surface the `[BP-PUBLIC]` pre-stage trigger in `AGENTS.md`.
+
+**6. Optional files** (offer; create only what the user wants):
 - Thin `CLAUDE.md` / `GEMINI.md` wrappers → [reference/wrappers.md](reference/wrappers.md).
 - Git-ignored `.agent-profile.md` → [reference/profile-template.md](reference/profile-template.md). Also add it to `.gitignore`.
 - Visual UI project → offer the design system; point to `DESIGN_SYSTEM_GUIDE.md` (`[BP-DESIGN]`). Skip for CLIs, libraries, and backends.
 
-**6. Validate.** Run `scripts/check.sh` from the repo root. Fix every FAIL and re-run until it passes (generate → validate → fix).
+**7. Validate.** Run `scripts/check.sh` from the repo root. Fix every FAIL and re-run until it passes (generate → validate → fix).
 
 ## Align workflow
 
@@ -56,7 +59,7 @@ For a repo that already follows the blueprint. Copy this checklist:
 ```
 Align progress:
 - [ ] 1. Run check.sh for a fast structural baseline
-- [ ] 2. Compare AGENTS.md + roadmap/ against the rule list
+- [ ] 2. Compare AGENTS.md + roadmap/ + .gitignore against the rule list
 - [ ] 3. Emit the Alignment Report (exact format)
 - [ ] 4. Apply minimal patches; re-run check.sh
 ```

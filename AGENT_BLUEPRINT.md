@@ -1,5 +1,5 @@
 ---
-version: "2026-08-17"
+version: "2026-08-18"
 ---
 
 # Agent Blueprint
@@ -23,6 +23,7 @@ Use these IDs in alignment reports for deterministic, machine-checkable outcomes
 - `BP-CORE-11` On conflicting instructions, apply the precedence order in `[BP-PRECEDENCE]`.
 - `BP-CORE-12` Completion reports name the checks that ran and the checks that did not (`[BP-VERIFY]`).
 - `BP-CORE-14` `AGENTS.md` surfaces each blueprint rule that must run at session start or before other task work. See `BP-INSTR-11`.
+- `BP-CORE-15` Repositories apply the public-by-default and sensitive-content controls in `[BP-PUBLIC]`; `AGENTS.md` surfaces the pre-stage trigger.
 
 **SHOULD**
 - `BP-CORE-07` Keep policy lean; prefer references over duplicated rules. A rule that restates blueprint or `AGENTS.md` text verbatim is a FAIL in alignment reports. See `[BP-INSTR]`.
@@ -42,7 +43,7 @@ When instructions conflict, resolve in this order (highest wins):
 4. `AGENT_BLUEPRINT.md` defaults.
 5. Persistent memory and stored user profiles — background context only; they inform tone and defaults but never override the levels above.
 
-Safety `[BP-SAFE]` is a gate, not a rank: destructive, irreversible, or out-of-repo actions still require confirmation even when a higher-precedence source requests them.
+Safety `[BP-SAFE]` is a gate, not a rank: destructive, irreversible, out-of-repo, or sensitive-publication actions still require confirmation even when a higher-precedence source requests them.
 
 State precedence explicitly because unresolved instruction conflicts measurably reduce instruction-following ([IFScale], arXiv:2507.11538).
 
@@ -50,7 +51,46 @@ State precedence explicitly because unresolved instruction conflicts measurably 
 
 ## Safety [BP-SAFE]
 
-Confirm before running destructive commands, installing dependencies, or taking actions outside the repo.
+Confirm before running destructive commands, installing dependencies, taking actions outside the repo, or including sensitive content in repository history.
+
+---
+
+## Public Repository Safety [BP-PUBLIC]
+
+Treat every repository as public unless `AGENTS.md` explicitly declares another visibility. Private visibility does not make credentials safe to commit.
+
+### Default Ignore Policy [BP-PUBLIC-IGNORE]
+
+At project initialization and alignment, ensure `.gitignore` covers these untracked local artifacts when relevant:
+
+- `.env` and `.env.*`, with explicit exceptions for sanitized example files.
+- Private keys, credential files, and local secret directories.
+- `.agent-profile.md` and local agent memory or session transcripts that are not project documentation.
+- `.private/` as the standard path for personal, unpublished, embargoed, or confidential content.
+- Local exports, database copies, logs, backups, and generated files that can contain real user or production data.
+
+Use project-specific paths when a broad wildcard can hide source artifacts. Do not ignore every draft path. Keep publishable drafts tracked, and place private drafts under `.private/`.
+
+`.gitignore` does not protect files already tracked by Git. During alignment, flag tracked files that match these categories; do not remove or rewrite them without confirmation.
+
+### Sensitive Content Check [BP-PUBLIC-CHECK]
+
+Before staging or committing:
+
+1. Inspect every candidate path and diff for secrets, personal data, unpublished or embargoed drafts, private correspondence, confidential business information, and real user or production data.
+2. If live authentication material appears, stop and exclude it. Never commit or reproduce passwords, tokens, private keys, session cookies, or recovery codes. If the value can already exist in Git history, tell the user to revoke or rotate it.
+3. For any other sensitive candidate, name the path, state the concern without quoting the sensitive content, and make exclusion the default.
+4. Confirm inclusion of the named sensitive candidates separately from general commit approval.
+5. Stage only reviewed paths. Do not use bulk staging while unreviewed files are present.
+
+Use this confirmation format:
+
+```text
+Sensitive-content check:
+- content/resume-draft.md — contains personal contact details and unpublished material.
+Default: exclude this file.
+Confirm inclusion of this file in a repository treated as public.
+```
 
 ---
 
@@ -228,7 +268,8 @@ Source: `references/sources.md` (`[26]`).
 ### Commits [BP-WF-COMMIT]
 
 - Commit only after user approval.
-- Before committing, present: proposed commit message, files included, and validation results.
+- Before staging or committing, apply `[BP-PUBLIC-CHECK]`.
+- Before committing, present: proposed commit message, files included, sensitive-content check result, and validation results.
 - Write the message per `[BP-WRITE]`: imperative subject, body in simple past.
 - Read the commit trailer template from `AGENTS.md`; if missing, ask once before the first commit in a repo.
 - Never persist runtime values (`Co-authored-by`, `AI-Provider`, `AI-Product`, `AI-Model`) in `AGENTS.md`; fill them at commit time from session metadata.
@@ -238,11 +279,11 @@ Source: `references/sources.md` (`[26]`).
 
 Calibrate agent interactions based on user context. Store in a git-ignored file (e.g., `.agent-profile.md`) referenced from `AGENTS.md`.
 
-**Response calibration (default):** Lead with the conclusion, support after. Match response length to the task — proportionate over exhaustive. Treat the user's message as a premise to build from, not a statement to evaluate, rate, or reflect back. Disagree openly when warranted; don't hedge or amplify to be agreeable. Store per-user specifics (length contract, mode triggers, explanation depth, domains) in the profile file, not here.
+**Response calibration (default):** Use concise factual STE for ordinary conversation. Expand only when the user asks or the requested artifact requires detail. Lead with the conclusion, support after. Treat the user's message as a premise to build from, not a statement to evaluate, rate, or reflect back. Disagree openly when warranted; don't hedge or amplify to be agreeable. Store per-user specifics (length contract, mode triggers, explanation depth, domains) in the profile file, not here.
 
 **Response style (default):** Start with substance. Do not praise the user's framing before engaging, restate it with inflated importance, or mirror emotion performatively. Use ordinary prose. Avoid canned transitions, rhetorical fragments, contrastive reframes ("not X, but Y"), manufactured emphasis, decorative three-part lists, and excessive em dashes. Use headings only when they improve navigation. Do not repeat the conclusion or end with a summary or offer unless requested. Never open with "You're absolutely right," "Great question," "Let's unpack this," "Here's the thing," or "It's worth noting." Skip pleasantries, hype, and apologies except when correcting an error.
 
-**Register (default):** Length and register are independent axes. Length follows the task. Register follows the content. Write factual passages — code explanations, results, steps, findings, errors — in the style `[BP-INSTR]` requires: short sentences, one instruction each, condition before command, `must`/`can`/`will`. Write deliberative passages — judgment, tradeoffs, disagreement, uncertainty — in plain prose, and keep `may`/`might`/`could` there, because those words carry the calibration. A reply can contain both. Strip filler from both.
+**Register (default):** Length and register are independent axes. An expansion request changes length, not register. Write factual passages — code explanations, results, steps, findings, errors — in the style `[BP-INSTR]` requires: short sentences, one instruction each, condition before command, `must`/`can`/`will`. Write deliberative passages — judgment, tradeoffs, disagreement, uncertainty — in plain prose, and keep `may`/`might`/`could` there, because those words carry the calibration. A reply can contain both. Strip filler from both.
 
 Precedence for response calibration: this default < `.agent-profile.md` < live conversation. (See `[BP-PRECEDENCE]` for the full ladder.)
 
@@ -261,8 +302,9 @@ Profile dimensions, interview questions, and calibration guidance live in `refer
 2. Copy the `references/` directory alongside it (commit attribution, user profile guidance, work unit example, sources).
 3. Create `AGENTS.md` using the template below.
 4. Create `roadmap/index.md`.
-5. Optionally create `MISTAKES.md` using `[BP-WF-LEARN]` and add its trigger bridge to `AGENTS.md`.
-6. Optionally create agent-specific wrappers (`CLAUDE.md`, `GEMINI.md`, etc.) using the wrapper template.
+5. Create or update `.gitignore` using `[BP-PUBLIC-IGNORE]`.
+6. Optionally create `MISTAKES.md` using `[BP-WF-LEARN]` and add its trigger bridge to `AGENTS.md`.
+7. Optionally create agent-specific wrappers (`CLAUDE.md`, `GEMINI.md`, etc.) using the wrapper template.
 
 Agent-specific files (`CLAUDE.md`, `GEMINI.md`, etc.) are optional. When you create one, keep it a thin pointer to `AGENTS.md`.
 
@@ -351,6 +393,11 @@ Follows `AGENT_BLUEPRINT.md` (version: [BLUEPRINT_VERSION])
 ## Project Overview
 
 [One paragraph: what this is, language/framework, key domains.]
+
+## Repository Visibility
+
+- Visibility: public | private (defaults to public when unspecified)
+- Before staging or committing, apply `AGENT_BLUEPRINT.md` `[BP-PUBLIC]`.
 
 ## Stack
 

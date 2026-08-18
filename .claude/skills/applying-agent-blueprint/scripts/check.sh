@@ -69,6 +69,13 @@ else
   flunk "BP-ADOPT-02" "references/ is missing:$missing"
 fi
 
+# BP-CORE-15: AGENTS.md surfaces the public-repository safety trigger.
+if [ -f "$ROOT/AGENTS.md" ] && grep -q "BP-PUBLIC" "$ROOT/AGENTS.md" && grep -q "Before staging or committing" "$ROOT/AGENTS.md"; then
+  pass "BP-CORE-15" "AGENTS.md surfaces the pre-stage public-repository safety check"
+else
+  flunk "BP-CORE-15" "AGENTS.md does not surface BP-PUBLIC before staging or committing"
+fi
+
 # BP-VERSION: AGENTS.md carries the same version string as the blueprint.
 bp_ver=$(sed -n 's/^version:[[:space:]]*"\{0,1\}\([^"]*\)"\{0,1\}$/\1/p' "$ROOT/AGENT_BLUEPRINT.md" 2>/dev/null | head -n 1)
 if [ -z "$bp_ver" ]; then
