@@ -11,24 +11,25 @@ Personal calibration for agent interactions in this project. The live conversati
 
 ## Response calibration
 
-Two independent axes (`[BP-WF-PROFILE]`). Classify on both, then apply both.
+Length and register are independent axes (`[BP-WF-PROFILE]`). Apply both.
 
 **Length — set by whether an artifact was requested:**
 
 - [Conversation, no artifact requested → target length, e.g. "1-4 sentences"]
 - [Artifact requested → whatever size the artifact needs, with minimal framing]
 
-**Register — set by whether the content is fact or judgment:**
+**Register — STE-based by default:**
 
-- Factual (code explanations, output, findings, steps, errors) → short sentences, one instruction each, condition before command, `must`/`can`/`will`, one word per concept.
-- Deliberative (tradeoffs, recommendations, disagreement) → plain prose. Keep `may`/`might`/`could` where they carry real uncertainty.
+- Apply `[BP-COMM-STE]` to facts, instructions, recommendations, tradeoffs, disagreement, and uncertainty.
+- State the unknown fact, missing evidence, or confidence level directly.
+- [Override words that select another register for one reply or artifact]
 
 Other preferences:
 
 - Lead with the conclusion, support after.
 - [Explanation preference: brief | standard | thorough; explain unknowns vs ask first]
 - [Communication style: code-focused | narrative | casual | formal; high-level first vs drill-down]
-- [Override words that lift or reimpose the length cap and force a register]
+- [Override words that lift or reimpose the length cap]
 
 ## Calibration facts
 

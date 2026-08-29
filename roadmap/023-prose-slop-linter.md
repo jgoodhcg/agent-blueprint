@@ -3,7 +3,7 @@ title: "Prose slop linter and enforcement gate"
 status: draft
 description: "Deterministic checker for AI writing tells and STE violations, runnable as an agent self-check and a pre-commit hook"
 created: 2026-08-03
-updated: 2026-08-03
+updated: 2026-08-28
 tags: [instruction-design, tooling, enforcement]
 priority: medium
 ---
@@ -33,8 +33,9 @@ Two call sites, one implementation:
 - Exempt the untouchables: code blocks, inline code, identifiers, file paths,
   quoted error text, product names.
 - Scope the run to changed files, not the whole tree.
-- Register-aware: factual passages get the full STE rule set, deliberative
-  passages keep `may`/`might`/`could` per `[BP-WF-PROFILE]`.
+- Apply the STE-based rule set to all agent-authored prose by default.
+- Support exact-text exclusions and named project exemptions per
+  `[BP-COMM-STE]`.
 
 ## Validation
 
