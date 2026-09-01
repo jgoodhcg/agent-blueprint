@@ -1,5 +1,5 @@
 ---
-version: "2026-08-28"
+version: "2026-09-01"
 ---
 
 # Agent Blueprint
@@ -291,6 +291,24 @@ Suggested `MISTAKES.md` entry:
 
 Source: `references/sources.md` (`[26]`).
 
+### Visual Timeline [BP-WF-VISUAL]
+
+Optional. Projects with visual UI and a screenshot or e2e harness can capture screenshot progressions during UI work. Keep two practices separate:
+
+- **Series ticks** — one capture of every manifest route, building an ongoing progression timeline.
+- **Before/after pairs** — per-change evidence for changelogs, reviews, and posts.
+
+- `BP-WF-VISUAL-01` Before UI edits, capture a baseline series tick. A prior tick from the current source state counts. The user can waive the baseline.
+- `BP-WF-VISUAL-02` When the working tree is dirty at baseline time, ask whether existing changes belong in the baseline.
+- `BP-WF-VISUAL-03` Before committing UI changes, capture another series tick. Capture it even when no visible change is expected.
+- `BP-WF-VISUAL-04` When capture needs a server the agent must not start, ask the user to run it. Wait for the result.
+- `BP-WF-VISUAL-05` Keep ticks comparable: one canonical route manifest, fixed viewports, fixed wait conditions. Update the manifest in the same change as navigation changes.
+- `BP-WF-VISUAL-06` Store each tick in one timestamped directory with a metadata sidecar: source revision, branch, dirty state, per-route capture status.
+- `BP-WF-VISUAL-07` Prefix pair filenames with the phase (`before`/`after`) via environment variable or flag. Omit the prefix for CI captures.
+- `BP-WF-VISUAL-08` Define the harness, output paths, and capture commit policy in `AGENTS.md`. The blueprint defines the contract; the project implements the mechanism.
+
+When a project adopts this workflow, surface the baseline trigger in `AGENTS.md` per `BP-INSTR-11`. Skip for non-visual projects.
+
 ### Commits [BP-WF-COMMIT]
 
 - Commit only after user approval.
@@ -330,7 +348,8 @@ Profile dimensions, interview questions, and calibration guidance live in `refer
 4. Create `roadmap/index.md`.
 5. Create or update `.gitignore` using `[BP-PUBLIC-IGNORE]`.
 6. Optionally create `MISTAKES.md` using `[BP-WF-LEARN]` and add its trigger bridge to `AGENTS.md`.
-7. Optionally create agent-specific wrappers (`CLAUDE.md`, `GEMINI.md`, etc.) using the wrapper template.
+7. For visual UI projects, optionally adopt `[BP-WF-VISUAL]` and add its trigger bridge to `AGENTS.md`.
+8. Optionally create agent-specific wrappers (`CLAUDE.md`, `GEMINI.md`, etc.) using the wrapper template.
 
 Agent-specific files (`CLAUDE.md`, `GEMINI.md`, etc.) are optional. When you create one, keep it a thin pointer to `AGENTS.md`.
 
@@ -485,6 +504,10 @@ AI-Model: [AI_MODEL]
 ## Learning Log (optional)
 
 - When `MISTAKES.md` exists, after scoping a task, search it for relevant prior failures before implementation. Apply `AGENT_BLUEPRINT.md` `[BP-WF-LEARN]`.
+
+## Visual Timeline (optional)
+
+- When work touches UI, before edits, capture a baseline series tick. Apply `AGENT_BLUEPRINT.md` `[BP-WF-VISUAL]`.
 
 ## Decision Artifacts
 
