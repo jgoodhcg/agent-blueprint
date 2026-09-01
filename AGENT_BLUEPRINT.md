@@ -1,5 +1,5 @@
 ---
-version: "2026-09-01.1"
+version: "2026-09-01.2"
 ---
 
 # Agent Blueprint
@@ -163,8 +163,12 @@ Prose that an agent writes into the repository. `[BP-INSTR]` governs instruction
 - `BP-WRITE-03` Leave code, identifiers, file paths, and quoted error text exact. They are names, not prose.
 - `BP-WRITE-04` Exempt human-facing persuasive text: launch posts, brand writing, and any marketing section of a `README`. The STE-based register removes persuasion by design. Record a project's exemptions in `AGENTS.md`.
 - `BP-WRITE-05` Limit a commit subject to 50 characters. Limit a commit body to 3 sentences. Omit the body when the subject states the change completely.
+- `BP-WRITE-06` Use semantic line breaks (`sembr.org`) in Markdown documentation.
+  Apply to new and revised text only;
+  do not reformat untouched paragraphs.
+  Exempt commit messages and paste targets with block semantics, such as Roam.
 
-Source: `references/sources.md` (`[18]`, `[19]`).
+Source: `references/sources.md` (`[18]`, `[19]`, `[27]`).
 
 ---
 
