@@ -45,6 +45,8 @@ AI-Product: [AI_PRODUCT_LINE]
 AI-Model: [AI_MODEL]
 ​```
 
+Write the trailer lines consecutively. A blank line between trailers stops `git interpret-trailers` from parsing the lines above it.
+
 - `AI_PRODUCT_LINE` ∈ `codex | claude | gemini | opencode`, derived from the current tool.
 - `AI_PROVIDER` / `AI_MODEL`: runtime-derived at commit time (prefer session metadata > tool config > UI label).
 - `AI_PRODUCT_NAME` / `AI_PRODUCT_EMAIL`: resolved from the model name via the tiered lookup in `references/commit-attribution.md`.

@@ -1,5 +1,5 @@
 ---
-version: "2026-09-01"
+version: "2026-09-01.1"
 ---
 
 # Agent Blueprint
@@ -162,6 +162,7 @@ Prose that an agent writes into the repository. `[BP-INSTR]` governs instruction
 - `BP-WRITE-02` Commit messages take an imperative subject line and a body in simple past. State what changed and why. Do not state intent ("this commit aims to").
 - `BP-WRITE-03` Leave code, identifiers, file paths, and quoted error text exact. They are names, not prose.
 - `BP-WRITE-04` Exempt human-facing persuasive text: launch posts, brand writing, and any marketing section of a `README`. The STE-based register removes persuasion by design. Record a project's exemptions in `AGENTS.md`.
+- `BP-WRITE-05` Limit a commit subject to 50 characters. Limit a commit body to 3 sentences. Omit the body when the subject states the change completely.
 
 Source: `references/sources.md` (`[18]`, `[19]`).
 
@@ -469,6 +470,8 @@ AI-Product: [AI_PRODUCT_LINE]
 AI-Model: [AI_MODEL]
 ```
 
+Write the trailer lines consecutively. A blank line between trailers stops `git interpret-trailers` from parsing the lines above it.
+
 ## Validation Commands
 
 | Level | Command | When |
@@ -550,9 +553,12 @@ See `AGENTS.md` for project policies and operating rules.
 
 - [Instruction specific to this agent, if any]
 - [e.g., tool preferences, model-specific behavior, constraints]
+- [Override of a conflicting built-in harness instruction, if any]
 ```
 
 Keep minimal. Defer to `AGENTS.md` for all shared policy.
+
+A wrapper can override a built-in instruction in its host agent harness. Use this only when the built-in instruction conflicts with `AGENTS.md`. Name the conflicting instruction and state the required behavior. A pointer to `AGENTS.md` does not by itself displace a harness default.
 
 ---
 
