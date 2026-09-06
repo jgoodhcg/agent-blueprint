@@ -69,6 +69,15 @@ else
   flunk "BP-ADOPT-02" "references/ is missing:$missing"
 fi
 
+# BP-CORE-14: AGENTS.md surfaces session-start triggers as executable lines
+# (identifier + exact command). Only the mandatory trigger (BP-WF-HERDR) is
+# machine-checkable; optional adopted triggers are checked during alignment.
+if [ -f "$ROOT/AGENTS.md" ] && grep -q "BP-WF-HERDR" "$ROOT/AGENTS.md" && grep -q "herdr tab rename" "$ROOT/AGENTS.md"; then
+  pass "BP-CORE-14" "AGENTS.md carries the Herdr trigger (identifier + command)"
+else
+  flunk "BP-CORE-14" "AGENTS.md must surface BP-WF-HERDR with the exact rename command inline"
+fi
+
 # BP-CORE-15: AGENTS.md surfaces the public-repository safety trigger.
 if [ -f "$ROOT/AGENTS.md" ] && grep -q "BP-PUBLIC" "$ROOT/AGENTS.md" && grep -q "Before staging or committing" "$ROOT/AGENTS.md"; then
   pass "BP-CORE-15" "AGENTS.md surfaces the pre-stage public-repository safety check"

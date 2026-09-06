@@ -16,7 +16,7 @@ Verify each and record PASS/FAIL with one line of evidence:
 | BP-CORE-09 | `AGENTS.md` stores a trailer **template**, not concrete co-author/provider/model values |
 | BP-CORE-12 | Policy does not suppress completion reporting; the agent names checks that ran and checks that did not |
 | BP-CORE-13 | When `skills/` exists, `AGENTS.md` lists each shared skill's trigger and canonical path |
-| BP-CORE-14 | `AGENTS.md` surfaces each blueprint rule that must run at session start or before other task work |
+| BP-CORE-14 | `AGENTS.md` surfaces each session-start/pre-work rule as an executable line: rule identifier and exact command both present |
 | BP-CORE-15 | `AGENTS.md` surfaces `[BP-PUBLIC]` before staging or committing; `.gitignore` follows `[BP-PUBLIC-IGNORE]` |
 | BP-RM-DOR | Every `ready` work unit satisfies the Definition of Ready (Intent, Specification, Validation, Scope, Context concrete; no Open Questions) |
 | BP-RM-FRONTMATTER | Frontmatter includes title, status, description, created, updated, tags, priority |

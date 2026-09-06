@@ -7,7 +7,7 @@ description: Scaffolds and aligns a project's agent operating files and public-r
 
 This skill executes the blueprint's adoption (`[BP-ADOPT]`) and alignment (`[BP-ALIGN]`) flows. The **rules and rationale live in `AGENT_BLUEPRINT.md`** — read it for any rule you are unsure about. This file is the operator: it decides the mode, drives the steps, and points to the templates and rubric you need at each step.
 
-Core principle while generating files: **reference the blueprint, do not restate it** (`BP-INSTR-05`). Generated `AGENTS.md` must point to `AGENT_BLUEPRINT.md` for shared rules, not paste them in.
+Core principle while generating files: **reference the blueprint, do not restate it** (`BP-INSTR-05`). Generated `AGENTS.md` must point to `AGENT_BLUEPRINT.md` for shared rules, not paste them in. Exception: do-first trigger bridges (`BP-INSTR-11`) must carry the exact command inline alongside the rule identifier.
 
 ## Prerequisite
 
