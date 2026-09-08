@@ -1,10 +1,10 @@
 # AGENTS
 
-Follows `AGENT_BLUEPRINT.md` (version: 2026-09-06.1)
+Follows `AGENT_BLUEPRINT.md` (version: 2026-09-07)
 
 ## Session Start
 
-- Herdr tab naming `[BP-WF-HERDR]`: before other task work, when `HERDR_TAB_ID` is set, run once `herdr tab rename "$HERDR_TAB_ID" "<label>"` (`<label>` = one relevant emoji + at most five words naming the primary task); on failure, continue silently without retry.
+- Herdr tab naming `[BP-WF-HERDR]`: before other task work, when `HERDR_ENV=1` and `HERDR_TAB_ID` is set, run once `herdr tab rename "$HERDR_TAB_ID" "<label>"` (`<label>` = one relevant emoji + at most five words naming the primary task); on failure, continue silently without retry.
 
 ## Project Overview
 
