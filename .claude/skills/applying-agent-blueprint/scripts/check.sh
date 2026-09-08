@@ -78,11 +78,48 @@ else
   flunk "BP-CORE-14" "AGENTS.md must surface BP-WF-HERDR with the exact rename command inline"
 fi
 
+# BP-WF-HERDR-02: the tab label must be derived from the task, not hardcoded.
+# A fixed project label cannot "name the primary task", so the trigger line
+# must carry the <label> placeholder rather than a literal string.
+if [ -f "$ROOT/AGENTS.md" ] && grep -q "herdr tab rename" "$ROOT/AGENTS.md"; then
+  if grep -q 'herdr tab rename .*"<label>"' "$ROOT/AGENTS.md"; then
+    pass "BP-WF-HERDR" "tab label uses the <label> placeholder"
+  else
+    flunk "BP-WF-HERDR" "tab label is hardcoded; use \"<label>\" derived from the task"
+  fi
+fi
+
 # BP-CORE-15: AGENTS.md surfaces the public-repository safety trigger.
 if [ -f "$ROOT/AGENTS.md" ] && grep -q "BP-PUBLIC" "$ROOT/AGENTS.md" && grep -q "Before staging or committing" "$ROOT/AGENTS.md"; then
   pass "BP-CORE-15" "AGENTS.md surfaces the pre-stage public-repository safety check"
 else
   flunk "BP-CORE-15" "AGENTS.md does not surface BP-PUBLIC before staging or committing"
+fi
+
+# BP-SYNC: the project's AGENT_BLUEPRINT.md is a verbatim copy of canonical.
+# Enforces the blueprint header rule "Do not edit a project's copy; propose
+# changes in the agent-blueprint repo and re-sync". BP-VERSION compares a
+# project against its own copy, so it cannot see drift from canonical.
+# Canonical source: $AGENT_BLUEPRINT_CANONICAL, else a discovered
+# agent-blueprint/ ancestor. Skipped (not failed) when unavailable.
+canon="${AGENT_BLUEPRINT_CANONICAL:-}"
+if [ -z "$canon" ]; then
+  probe=$(cd "$ROOT" 2>/dev/null && pwd)
+  while [ -n "$probe" ] && [ "$probe" != "/" ]; do
+    if [ -f "$probe/agent-blueprint/AGENT_BLUEPRINT.md" ]; then
+      canon="$probe/agent-blueprint/AGENT_BLUEPRINT.md"; break
+    fi
+    probe=$(dirname "$probe")
+  done
+fi
+if [ ! -f "$ROOT/AGENT_BLUEPRINT.md" ]; then
+  flunk "BP-SYNC" "AGENT_BLUEPRINT.md is missing"
+elif [ -z "$canon" ] || [ ! -f "$canon" ]; then
+  printf 'SKIP  %-12s %s\n' "BP-SYNC" "canonical blueprint not found; set AGENT_BLUEPRINT_CANONICAL to check drift"
+elif cmp -s "$canon" "$ROOT/AGENT_BLUEPRINT.md"; then
+  pass "BP-SYNC" "AGENT_BLUEPRINT.md matches canonical verbatim"
+else
+  flunk "BP-SYNC" "AGENT_BLUEPRINT.md differs from canonical ($canon); re-sync, do not edit the copy"
 fi
 
 # BP-VERSION: AGENTS.md carries the same version string as the blueprint.
