@@ -132,6 +132,60 @@ else
   flunk "BP-VERSION" "AGENTS.md does not carry blueprint version $bp_ver"
 fi
 
+# BP-AGENT-WRAPPER: a CLAUDE.md wrapper must make Claude Code *load* AGENTS.md
+# via an unquoted @import, not merely mention it in prose. Claude Code reads
+# CLAUDE.md, never AGENTS.md, and skips import parsing inside code spans and
+# fenced blocks -- so a backticked `@AGENTS.md` or a "See AGENTS.md" pointer
+# silently loads nothing and the project's rules never enter context.
+# The wrapper itself is optional; a wrapper that does not import is a failure.
+if [ ! -f "$ROOT/CLAUDE.md" ]; then
+  pass "BP-WRAPPER" "no CLAUDE.md wrapper (optional)"
+else
+  # Collect standalone @path import lines, ignoring fenced code blocks.
+  imports=$(awk '
+    /^[[:space:]]*```/ { infence = !infence; next }
+    infence { next }
+    /^[[:space:]]*@[^[:space:]`]+[[:space:]]*$/ {
+      line = $0
+      sub(/^[[:space:]]*@/, "", line)
+      sub(/[[:space:]]*$/, "", line)
+      print line
+    }
+  ' "$ROOT/CLAUDE.md")
+
+  if [ -z "$imports" ]; then
+    if grep -qE '`@[^`]*AGENTS\.md`' "$ROOT/CLAUDE.md"; then
+      flunk "BP-WRAPPER" "CLAUDE.md backticks its @AGENTS.md import; imports inside code spans are inert -- unquote it"
+    else
+      flunk "BP-WRAPPER" "CLAUDE.md does not import AGENTS.md; a prose pointer is never loaded -- use an unquoted @AGENTS.md line"
+    fi
+  else
+    unresolved=""
+    found_agents=""
+    while IFS= read -r imp; do
+      [ -z "$imp" ] && continue
+      case "$imp" in
+        /*) target="$imp" ;;
+        "~/"*) target="$HOME/${imp#\~/}" ;;
+        *) target="$ROOT/$imp" ;;
+      esac
+      if [ -f "$target" ]; then
+        case "$imp" in *AGENTS.md) found_agents=1 ;; esac
+      else
+        unresolved="$unresolved $imp"
+      fi
+    done <<< "$imports"
+
+    if [ -n "$unresolved" ]; then
+      flunk "BP-WRAPPER" "CLAUDE.md imports a file that does not exist:$unresolved (the wrapper loads nothing, with no error)"
+    elif [ -z "$found_agents" ]; then
+      flunk "BP-WRAPPER" "CLAUDE.md has imports but none resolve to AGENTS.md"
+    else
+      pass "BP-WRAPPER" "CLAUDE.md imports AGENTS.md and the target resolves"
+    fi
+  fi
+fi
+
 # BP-WRITE-04: the project declares its persuasive-text exemptions, or "none".
 if [ -f "$ROOT/AGENTS.md" ] && grep -q "BP-WRITE-04" "$ROOT/AGENTS.md"; then
   pass "BP-WRITE-04" "AGENTS.md declares its exemptions"
