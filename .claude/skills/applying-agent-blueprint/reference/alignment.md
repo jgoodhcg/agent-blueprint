@@ -22,6 +22,7 @@ Verify each and record PASS/FAIL with one line of evidence:
 | BP-RM-FRONTMATTER | Frontmatter includes title, status, description, created, updated, tags, priority |
 | BP-ADOPT-02 | `references/` sits beside the blueprint with all four companion files, including `sources.md` |
 | BP-VERSION | `AGENTS.md` carries the same version string as the blueprint frontmatter |
+| BP-AGENT-WRAPPER | A `CLAUDE.md` wrapper, if present, loads `AGENTS.md` via an unquoted `@AGENTS.md` import whose target resolves — not a prose pointer or a backticked/fenced one, which load nothing silently |
 | BP-INSTR-09 | `AGENTS.md` and work units use one term per concept; no check/confirm/ensure rotation |
 | BP-INSTR-10 | Requirements in `AGENTS.md` and work units read `must`/`can`/`will`, not `should`/`may`/`might`/`could` |
 | BP-WRITE-04 | `AGENTS.md` declares its persuasive-text exemptions, or states "none" |
