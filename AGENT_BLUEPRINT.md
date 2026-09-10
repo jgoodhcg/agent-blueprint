@@ -1,5 +1,5 @@
 ---
-version: "2026-09-08"
+version: "2026-09-08.1"
 ---
 
 # Agent Blueprint
@@ -845,7 +845,7 @@ Add a `## Knowledge Base` section to `AGENTS.md` with tool-specific conventions.
 
 ### Thread Summary Format
 
-The `roam-thread-summary` skill (`.claude/skills/roam-thread-summary/`) is the canonical generator; it emits a paste-ready block. Its required parent attribution block is:
+The `roam-thread-summary` skill (`skills/roam-thread-summary/`) is the canonical generator; it emits a paste-ready block. Its required parent attribution block is:
 
 1. **Thread marker** — `[[ai-thread]]`
 2. **Model** — `[[<model-id>]]`, the exact model of the current session

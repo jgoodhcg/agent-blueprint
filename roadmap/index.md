@@ -39,4 +39,4 @@ Ideas not yet promoted to work units:
 - Adoption tooling — scripted alignment checks, automated drift detection
 - Decision artifact examples — sample `.decisions/` entries for common scenarios
 - Ambiguous work unit handling — force a decision artifact or explicit scope narrowing instead of silent assumption drift
-- Skill/blueprint template dedupe — `.claude/skills/applying-agent-blueprint/reference/*` mirrors the templates embedded in `AGENT_BLUEPRINT.md` (kept inline for one-file portability); decide whether to single-source them or keep the mirror with a sync check
+- Skill/blueprint template dedupe — `skills/applying-agent-blueprint/reference/*` mirrors the templates embedded in `AGENT_BLUEPRINT.md` (kept inline for one-file portability); decide whether to single-source them or keep the mirror with a sync check

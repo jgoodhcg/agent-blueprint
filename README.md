@@ -24,7 +24,7 @@ It defines a reusable blueprint you can copy into any codebase so human + agent 
 
 Reusable, agent-neutral skills live in `skills/`. Reference their triggers and canonical paths from `AGENTS.md` so Codex, Claude Code, OpenCode, Gemini, and other clients can load the same instructions. Client-specific discovery configuration and metadata remain optional adapters.
 
-The `decision-matrix` skill (`skills/decision-matrix/`) builds collaborative Google Sheets matrices through `gws`. The legacy `applying-agent-blueprint` skill remains under `.claude/skills/` while its cross-agent migration is evaluated.
+The `decision-matrix` skill (`skills/decision-matrix/`) builds collaborative Google Sheets matrices through `gws`. The `applying-agent-blueprint` skill (`skills/applying-agent-blueprint/`) scaffolds and aligns projects against the blueprint, and `roam-thread-summary` (`skills/roam-thread-summary/`) emits session summaries. `.claude/skills/` holds symlink adapters.
 
 ## How It Works In Practice
 

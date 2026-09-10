@@ -1,6 +1,6 @@
 # AGENTS
 
-Follows `AGENT_BLUEPRINT.md` (version: 2026-09-08)
+Follows `AGENT_BLUEPRINT.md` (version: 2026-09-08.1)
 
 ## Session Start
 
@@ -142,8 +142,8 @@ If any answer gives pause, flag it before proceeding.
 - `README.md` — human adoption guide
 - `DESIGN_SYSTEM_GUIDE.md` — optional UI design system guide
 - `collect-project-docs.sh` — multi-project reference collector
-- `.claude/skills/applying-agent-blueprint/` — invokable skill that scaffolds/aligns `AGENTS.md` and companion files from the blueprint
-- `.claude/skills/roam-thread-summary/` — invokable skill that emits a paste-ready Roam `[[ai-thread]]` block summary of the session
+- `skills/applying-agent-blueprint/` — invokable skill that scaffolds/aligns `AGENTS.md` and companion files from the blueprint
+- `skills/roam-thread-summary/` — invokable skill that emits a paste-ready Roam `[[ai-thread]]` block summary of the session
 - `skills/decision-matrix/` — canonical agent-neutral workflow for collaborative Google Sheets decision matrices
 - `roadmap/index.md` — project roadmap and work unit directory
 - `.decisions/` — decision artifacts (matrix-reloaded JSON records)
