@@ -70,6 +70,7 @@ See `AGENT_BLUEPRINT.md` `Execution Modes` for the full policy.
 - Apply the validation commands above when their triggers fire.
 - Keep changes minimal and scoped to the requested work unit.
 - Require user confirmation before `git commit`, dependency install/upgrade, and network side effects.
+- Before using a vendor-hosted feature (for example, Claude Artifacts), confirm with the user unless they asked for it. Apply `AGENT_BLUEPRINT.md` `[BP-VENDOR]`.
 - Stopping for clarification when scope is ambiguous is acceptable.
 
 ## Never Run

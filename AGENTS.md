@@ -1,6 +1,6 @@
 # AGENTS
 
-Follows `AGENT_BLUEPRINT.md` (version: 2026-09-08.1)
+Follows `AGENT_BLUEPRINT.md` (version: 2026-09-11)
 
 ## Session Start
 
@@ -64,6 +64,7 @@ Local interactive work with the user is the only runtime for this repo.
 - `rg`, `sed`, `cat`, `nl`, and `wc` are always allowed for inspecting docs and scripts.
 - `bash -n collect-project-docs.sh` is allowed after script changes.
 - Require user confirmation before `git commit`, dependency install/upgrade, or network calls with external side effects.
+- Before using a vendor-hosted feature (for example, Claude Artifacts), confirm with the user unless they asked for it. Apply `AGENT_BLUEPRINT.md` `[BP-VENDOR]`.
 - Ask before destructive actions or anything not clearly covered by the allowlist.
 - It is acceptable to stop for clarification when scope is ambiguous.
 

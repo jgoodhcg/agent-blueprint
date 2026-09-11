@@ -1,5 +1,5 @@
 ---
-version: "2026-09-08.1"
+version: "2026-09-11"
 ---
 
 # Agent Blueprint
@@ -151,6 +151,23 @@ Use `skills/<skill-name>/SKILL.md` as the canonical location for reusable skill 
 - `BP-SKILLS-05` Keep a skill self-contained. Put detailed tool mechanics in `references/`, deterministic automation in `scripts/`, and output templates or reusable media in `assets/`.
 
 Use the shared skill by relative path when projects live in one workspace. Copy the skill into the consuming repository's `skills/` directory when the repository must remain portable outside that workspace.
+
+---
+
+## Vendor-Hosted Features [BP-VENDOR]
+
+A vendor-hosted feature stores output in one vendor's service or works in only one vendor's client.
+Examples: Claude Artifacts, ChatGPT Canvas, Gemini Canvas, hosted share links, and cloud-scheduled agents.
+These features add lock-in and can publish content outside the repository.
+
+- `BP-VENDOR-01` Deliver output as a terminal reply, a repository file, or an open format (Markdown, HTML, JSON, CSV, SVG).
+- `BP-VENDOR-02` Use a vendor-hosted feature only when the user asks for it or confirms it in the current session.
+- `BP-VENDOR-03` When a vendor-hosted feature can help, offer it in one sentence.
+  Do not create it before the user confirms.
+- `BP-VENDOR-04` An approval covers only the requested output.
+  A project can record standing approval for a named feature in `AGENTS.md`.
+- `BP-VENDOR-05` This rule overrides agent-client defaults that encourage proactive use.
+  When a harness instruction conflicts, record the override in the agent wrapper per `[BP-AGENT-WRAPPER]`.
 
 ---
 
@@ -492,6 +509,7 @@ Write the trailer lines consecutively. A blank line between trailers stops `git 
 - Validation commands are defined above and applied when relevant.
 - Keep changes minimal and scoped to the requested work unit.
 - Require user confirmation before `git commit`, installs, upgrades, or network calls with external side effects.
+- Before using a vendor-hosted feature (for example, Claude Artifacts), confirm with the user unless they asked for it. Apply `AGENT_BLUEPRINT.md` `[BP-VENDOR]`.
 - It is acceptable to stop for clarification when scope is ambiguous.
 
 ## Never Run
