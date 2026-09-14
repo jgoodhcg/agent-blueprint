@@ -1,6 +1,6 @@
 # AGENTS
 
-Follows `AGENT_BLUEPRINT.md` (version: 2026-09-11)
+Follows `AGENT_BLUEPRINT.md` (version: 2026-09-14)
 
 ## Session Start
 
@@ -41,6 +41,7 @@ AI-Model: [AI_MODEL]
 Template rules:
 - Fill at commit time; do not store filled runtime values in this file.
 - Write the trailer lines consecutively. A blank line between trailers stops `git interpret-trailers` from parsing the lines above it.
+- `[AI_MODEL]` is the exact runtime model ID (for example, `gpt-5.6-sol`), never a family label such as `GPT-5`.
 - Resolve all values (product line, provider/model, co-author identity, multi-model attribution) per `references/commit-attribution.md`.
 
 ## Validation Commands

@@ -48,7 +48,8 @@ AI-Model: [AI_MODEL]
 Write the trailer lines consecutively. A blank line between trailers stops `git interpret-trailers` from parsing the lines above it.
 
 - `AI_PRODUCT_LINE` ∈ `codex | claude | gemini | opencode`, derived from the current tool.
-- `AI_PROVIDER` / `AI_MODEL`: runtime-derived at commit time (prefer session metadata > tool config > UI label).
+- `AI_PROVIDER` / `AI_MODEL`: runtime-derived at commit time (prefer session metadata > launch overrides > tool config > UI label).
+- `AI_MODEL` is the exact runtime model ID (for example, `gpt-5.6-sol`), never a family label such as `GPT-5`.
 - `AI_PRODUCT_NAME` / `AI_PRODUCT_EMAIL`: resolved from the model name via the tiered lookup in `references/commit-attribution.md`.
 - Fill at commit time; never persist filled values here. Multi-model commits: see `references/commit-attribution.md`.
 

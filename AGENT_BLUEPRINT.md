@@ -1,5 +1,5 @@
 ---
-version: "2026-09-11"
+version: "2026-09-14"
 ---
 
 # Agent Blueprint
@@ -339,6 +339,8 @@ When a project adopts this workflow, surface the baseline trigger in `AGENTS.md`
 - Write the message per `[BP-WRITE]`: imperative subject, body in simple past.
 - Read the commit trailer template from `AGENTS.md`; if missing, ask once before the first commit in a repo.
 - Never persist runtime values (`Co-authored-by`, `AI-Provider`, `AI-Product`, `AI-Model`) in `AGENTS.md`; fill them at commit time from session metadata.
+- `AI-Model` must be the exact runtime model ID (for example, `gpt-5.6-sol`). Never use a family label such as `GPT-5`.
+- Do not use the model's own statement of its identity as the `AI-Model` source. If no source gives the exact ID, ask the user.
 - When filling trailers, resolve co-author identity, provider/model values, and multi-model attribution per `references/commit-attribution.md` (copied alongside this blueprint). When more than one model contributed, attribute all of them per that reference — never auto-add a second model without user confirmation.
 
 ### User Profile [BP-WF-PROFILE]
@@ -492,6 +494,8 @@ AI-Model: [AI_MODEL]
 ```
 
 Write the trailer lines consecutively. A blank line between trailers stops `git interpret-trailers` from parsing the lines above it.
+
+`[AI_MODEL]` is the exact runtime model ID (for example, `gpt-5.6-sol`), never a family label such as `GPT-5`.
 
 ## Validation Commands
 
