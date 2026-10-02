@@ -87,6 +87,8 @@ Local interactive work with the user is the only runtime for this repo.
 
 ## Skills
 
+- When setting up or aligning agent policy, read and follow `skills/applying-agent-blueprint/SKILL.md` before acting.
+- When asked for a Roam summary or ai thread, read and follow `skills/roam-thread-summary/SKILL.md` before acting.
 - When asked to create or revise a decision matrix, compare options against criteria, or populate a decision matrix in Google Sheets, read and follow `skills/decision-matrix/SKILL.md` before acting.
 - Treat `skills/` as the canonical agent-neutral skill directory. Treat `.claude/skills/` and `agents/openai.yaml` as compatibility adapters only.
 

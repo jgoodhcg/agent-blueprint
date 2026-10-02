@@ -9,7 +9,7 @@ Follows `AGENT_BLUEPRINT.md` (version: [BLUEPRINT_VERSION])
 
 ## Session Start
 
-- Herdr tab naming `[BP-WF-HERDR]`: before other task work, when `HERDR_ENV=1` and `HERDR_TAB_ID` is set, run once `herdr tab rename "$HERDR_TAB_ID" "<label>"` (`<label>` = one relevant emoji + at most five words naming the primary task); on failure, continue silently without retry.
+- Herdr tab naming `[BP-WF-HERDR]`: before other task work, when `HERDR_ENV=1` and `HERDR_TAB_ID` is set, run `herdr tab rename "$HERDR_TAB_ID" "<label>"` (`<label>` = one relevant emoji + at most five words naming the primary task); on sandbox permission error, retry once with elevated permissions (Codex: `sandbox_permissions: "require_escalated"`); if elevation is unavailable or denied, or the retry fails, continue without comment.
 
 ## Project Overview
 
