@@ -92,6 +92,10 @@ See `AGENT_BLUEPRINT.md` `Execution Modes` for the full policy.
 
 - When `MISTAKES.md` exists, after scoping a task, search it for relevant prior failures before implementation. Apply `AGENT_BLUEPRINT.md` `[BP-WF-LEARN]`.
 
+## Human Contributions (optional)
+
+- During work and at milestones or session end, maintain `docs/human-contributions.md` per `[BP-WF-HUMAN]`.
+
 ## References
 
 - For operating rules, see `AGENT_BLUEPRINT.md`.

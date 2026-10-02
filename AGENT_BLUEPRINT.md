@@ -1,5 +1,5 @@
 ---
-version: "2026-09-24"
+version: "2026-10-02"
 ---
 
 # Agent Blueprint
@@ -314,6 +314,42 @@ Suggested `MISTAKES.md` entry:
 
 Source: `references/sources.md` (`[26]`).
 
+### Human Contributions [BP-WF-HUMAN]
+
+Optional. Projects can retain a committed record of human judgment and direction during agent-assisted development.
+When adopting this workflow, specify the record path in `AGENTS.md`; the default is `docs/human-contributions.md`.
+
+- `BP-WF-HUMAN-01` During work, draft an entry when human input materially shapes scope, behavior, design, or acceptance.
+  Include taste judgments, domain knowledge, constraints, critiques, rejected directions, and decisions.
+  Skip routine prompts and repeated input without a new effect.
+- `BP-WF-HUMAN-02` For each entry, record the date, milestone, contributor, contribution, resulting action, outcome, and evidence.
+  Distinguish ideas introduced, constraints supplied, critiques supplied, options selected, and proposals approved.
+  Attribute agent proposals approved by a human as approvals.
+- `BP-WF-HUMAN-03` Use exact quotations or labeled paraphrases of available human input.
+  Record reasons only when the human states them.
+  Do not infer motives, time spent, or contribution from prompt counts or commits.
+- `BP-WF-HUMAN-04` Link evidence to the resulting artifact, diff, commit, screenshot, or decision record.
+  Until the outcome is verified, mark it `pending`.
+  When evidence becomes available, update the entry with the observed outcome.
+- `BP-WF-HUMAN-05` At each milestone or session end, present new or revised entries for correction in the normal progress report.
+  Apply human corrections to the record.
+  Do not treat silence as confirmation of accuracy.
+- `BP-WF-HUMAN-06` Include the record in the next authorized commit, subject to `[BP-PUBLIC-CHECK]`.
+  Keep entries concise enough to serve as project documentation.
+
+Example entry (illustrative):
+
+```markdown
+## 2026-10-02 — Search result review
+
+- Contributor: Project maintainer
+- Contribution: Critique supplied; constraint supplied (paraphrase).
+  Results felt too dense; each result must show its title and status before secondary details.
+- Action: The agent reduced visible fields and moved secondary details into an expandable section.
+- Outcome: verified — the reviewed result view shows title and status first.
+- Evidence: [Before](evidence/search-before.png), [after](evidence/search-after.png).
+```
+
 ### Visual Timeline [BP-WF-VISUAL]
 
 Optional. Projects with visual UI and a screenshot or e2e harness can capture screenshot progressions during UI work. Keep two practices separate:
@@ -375,6 +411,7 @@ Profile dimensions, interview questions, and calibration guidance live in `refer
 6. Optionally create `MISTAKES.md` using `[BP-WF-LEARN]` and add its trigger bridge to `AGENTS.md`.
 7. For visual UI projects, optionally adopt `[BP-WF-VISUAL]` and add its trigger bridge to `AGENTS.md`.
 8. Optionally create agent-specific wrappers (`CLAUDE.md`, `GEMINI.md`, etc.) using the wrapper template.
+9. Optionally adopt `[BP-WF-HUMAN]` and specify the contribution record path in `AGENTS.md`.
 
 Agent-specific files (`CLAUDE.md`, `GEMINI.md`, etc.) are optional. When you create one, keep it a thin pointer to `AGENTS.md`.
 
@@ -534,6 +571,10 @@ Write the trailer lines consecutively. A blank line between trailers stops `git 
 ## Learning Log (optional)
 
 - When `MISTAKES.md` exists, after scoping a task, search it for relevant prior failures before implementation. Apply `AGENT_BLUEPRINT.md` `[BP-WF-LEARN]`.
+
+## Human Contributions (optional)
+
+- During work and at milestones or session end, maintain `docs/human-contributions.md` per `[BP-WF-HUMAN]`.
 
 ## Visual Timeline (optional)
 
