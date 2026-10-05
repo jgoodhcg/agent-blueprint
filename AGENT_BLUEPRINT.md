@@ -1,5 +1,5 @@
 ---
-version: "2026-10-02"
+version: "2026-10-04"
 ---
 
 # Agent Blueprint
@@ -248,16 +248,37 @@ Always print the chosen port so the user (and agent) knows where to connect. Doc
 
 ### Herdr Tab Naming [BP-WF-HERDR]
 
-- `BP-WF-HERDR-01` After the first user prompt, when `HERDR_ENV=1` and `HERDR_TAB_ID` is set, rename the current tab before other task work.
-- `BP-WF-HERDR-02` Prefix the label with one relevant emoji. Use the fewest words that identify the primary task, with a maximum of five words excluding the emoji.
-- `BP-WF-HERDR-03` Run `herdr tab rename "$HERDR_TAB_ID" "<label>"` once per session.
-- `BP-WF-HERDR-04` On a sandbox permission error, retry the same command once with elevated permissions. In Codex, set `sandbox_permissions: "require_escalated"` and include a short approval question.
-- `BP-WF-HERDR-05` If elevation is unavailable or denied, or the retry fails, continue without comment. Do not retry other failures.
+- `BP-WF-HERDR-01` After the first user prompt, when `HERDR_ENV=1`, rename the calling tab before other task work.
+  Apply this rule in every agent harness and execution environment.
+  Outside Herdr, skip this procedure.
+- `BP-WF-HERDR-02` Prefix the label with one relevant emoji.
+  Use at most five words, excluding the emoji, to identify the primary task.
+- `BP-WF-HERDR-03` Run `herdr pane current --current` first.
+  Read `.result.pane.tab_id` from the successful JSON response.
+  Run `herdr tab rename "<resolved-tab-id>" "<label>"` with that returned ID.
+  Treat inherited `HERDR_TAB_ID`, `HERDR_PANE_ID`, and `HERDR_WORKSPACE_ID` as hints that can become stale.
+  Complete one successful rename per session; discovery and recovery attempts do not count as completion.
+- `BP-WF-HERDR-04` On a sandbox permission error, retry the same command once with elevated permissions.
+  In Codex, set `sandbox_permissions: "require_escalated"` and include a short approval question in `justification`.
+  After elevation succeeds, use that execution context for the remaining Herdr commands.
+  Approval does not prove that a command succeeded; inspect its exit status and JSON response.
+- `BP-WF-HERDR-05` On `pane_not_found` or `tab_not_found`, run `herdr pane list` without an inherited workspace filter.
+  Identify the calling pane through a unique session identity or the current session's unique task title.
+  Cross-check its agent kind and working directory.
+  Read its `tab_id` from the returned metadata, then retry the rename once with that ID.
+  Never select a target from focus, list order, agent status, or working directory alone.
+  Never construct IDs by replacing characters in stale IDs.
+- `BP-WF-HERDR-06` If caller identity remains ambiguous, stop Herdr mutations and continue the user's task.
+  If elevation is denied, unavailable, or recovery fails, continue the user's task.
+  Report the unresolved tab rename and its reason briefly; never claim success or silently discard the failure.
+  Do not create tabs, change focus, or restart Herdr to recover a rename.
+- `BP-WF-HERDR-07` If installed syntax or response fields differ, inspect `herdr --skill` and relevant `--help` output.
+  Use the installed CLI's documented syntax and returned IDs.
 
-Example:
+Example, after resolving the caller's live tab ID:
 
 ```sh
-herdr tab rename "$HERDR_TAB_ID" "🧭 Audit Payment Flow"
+herdr tab rename "<resolved-tab-id>" "🧭 Audit Payment Flow"
 ```
 
 ### Operating Model [BP-WF-OPS]
@@ -495,7 +516,16 @@ Follows `AGENT_BLUEPRINT.md` (version: [BLUEPRINT_VERSION])
 
 ## Session Start
 
-- Herdr tab naming `[BP-WF-HERDR]`: before other task work, when `HERDR_ENV=1` and `HERDR_TAB_ID` is set, run `herdr tab rename "$HERDR_TAB_ID" "<label>"` (`<label>` = one relevant emoji + at most five words naming the primary task); on sandbox permission error, retry once with elevated permissions (Codex: `sandbox_permissions: "require_escalated"`); if elevation is unavailable or denied, or the retry fails, continue without comment.
+- Herdr tab naming `[BP-WF-HERDR]`: when `HERDR_ENV=1`, run `herdr pane current --current` before other task work.
+  Read the returned pane's `tab_id`, then run `herdr tab rename "<resolved-tab-id>" "<label>"`.
+  Use one relevant emoji and at most five task words for `<label>`.
+  On sandbox denial, retry once with elevated permissions (Codex: `sandbox_permissions: "require_escalated"`).
+  On `pane_not_found` or `tab_not_found`, run `herdr pane list` without a workspace filter.
+  Match a unique session identity or task title; cross-check agent kind and working directory.
+  Retry once with that pane's returned `tab_id`; never guess from focus or directory alone.
+  Inspect the rename response; approval or an attempted command does not count as success.
+  If resolution or recovery fails, report the reason briefly and continue the task.
+  Follow `AGENT_BLUEPRINT.md` `[BP-WF-HERDR]` for the full procedure.
 
 ## Project Overview
 
