@@ -1,0 +1,4 @@
+interface:
+  display_name: "Herdr Handoff"
+  short_description: "Hand off work to a new agent in a Herdr worktree, tab, or pane"
+  default_prompt: "Use $herdr-handoff to hand off this work to a new agent."

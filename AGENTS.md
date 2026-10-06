@@ -1,6 +1,6 @@
 # AGENTS
 
-Follows `AGENT_BLUEPRINT.md` (version: 2026-10-04)
+Follows `AGENT_BLUEPRINT.md` (version: 2026-10-06)
 
 ## Session Start
 
@@ -98,6 +98,7 @@ Local interactive work with the user is the only runtime for this repo.
 
 - When setting up or aligning agent policy, read and follow `skills/applying-agent-blueprint/SKILL.md` before acting.
 - When asked for a Roam summary or ai thread, read and follow `skills/roam-thread-summary/SKILL.md` before acting.
+- When asked to hand off or spin off work to another agent in Herdr, read and follow `skills/herdr-handoff/SKILL.md` before acting.
 - When asked to create or revise a decision matrix, compare options against criteria, or populate a decision matrix in Google Sheets, read and follow `skills/decision-matrix/SKILL.md` before acting.
 - Treat `skills/` as the canonical agent-neutral skill directory. Treat `.claude/skills/` and `agents/openai.yaml` as compatibility adapters only.
 
@@ -157,6 +158,7 @@ If any answer gives pause, flag it before proceeding.
 - `collect-project-docs.sh` — multi-project reference collector
 - `skills/applying-agent-blueprint/` — invokable skill that scaffolds/aligns `AGENTS.md` and companion files from the blueprint
 - `skills/roam-thread-summary/` — invokable skill that emits a paste-ready Roam `[[ai-thread]]` block summary of the session
+- `skills/herdr-handoff/` — invokable skill that hands off work to a new agent in a Herdr worktree, tab, or pane
 - `skills/decision-matrix/` — canonical agent-neutral workflow for collaborative Google Sheets decision matrices
 - `roadmap/index.md` — project roadmap and work unit directory
 - `.decisions/` — decision artifacts (matrix-reloaded JSON records)
