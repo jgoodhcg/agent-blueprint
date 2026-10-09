@@ -1,6 +1,6 @@
 # AGENTS
 
-Follows `AGENT_BLUEPRINT.md` (version: 2026-10-06)
+Follows `AGENT_BLUEPRINT.md` (version: 2026-10-08)
 
 ## Session Start
 
@@ -37,6 +37,7 @@ This repository defines and maintains a portable agent operating standard. The p
 - Version file: n/a
 - Lockfile: n/a
 - Setup: n/a
+- Worktree root: `../agent-blueprint.worktrees/` (sibling of the main checkout; e.g. `~/projects/agent-blueprint.worktrees/`)
 
 ## Commit Trailer Template
 

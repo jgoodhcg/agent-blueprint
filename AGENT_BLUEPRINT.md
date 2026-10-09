@@ -1,5 +1,5 @@
 ---
-version: "2026-10-06"
+version: "2026-10-08"
 ---
 
 # Agent Blueprint
@@ -295,15 +295,25 @@ Optional. Use this workflow to hand off work to a new agent in Herdr.
   Submit the brief text inline as the new agent's first prompt.
 - `BP-WF-HANDOFF-04` Confirm that the new agent reaches the `working` state.
   In `continue` mode, close the caller pane only after that confirmation.
-- `BP-WF-HANDOFF-05` Put `tangent` worktrees at `<repo parent>/<repo name>.worktrees/<branch>`.
-  This path matches the GitKraken worktree convention.
+- `BP-WF-HANDOFF-05` Put `tangent` worktrees in the project's worktree root.
+  The worktree root is a sibling folder of the main checkout, named `<main checkout folder>.worktrees`.
+  Each worktree is `<worktree root>/<branch>`.
+  Example: for a main checkout at `~/projects/gleanmo`, put branch `dev-1` at `~/projects/gleanmo.worktrees/dev-1`.
+  This layout matches the GitKraken worktree convention.
+- `BP-WF-HANDOFF-06` Record the project's worktree root in the `AGENTS.md` `## Environment` section.
+  Write it relative to the main checkout, and add the absolute example for the maintainer's checkout.
+- `BP-WF-HANDOFF-07` When the caller is in a worktree, resolve the main checkout from the Git common directory.
+  Put the new worktree in the same worktree root, as a sibling of the caller's worktree.
+  Never nest a worktree root inside a worktree.
 
 To adopt this workflow:
 
 1. Copy the template below to `skills/herdr-handoff/SKILL.md`.
 2. Add this trigger to the `AGENTS.md` `## Skills` section:
    `- When asked to hand off or spin off work to another agent in Herdr, read and follow skills/herdr-handoff/SKILL.md before acting.`
-3. Optionally add client adapters, for example a `.claude/skills/herdr-handoff` symlink.
+3. Add the worktree root to the `AGENTS.md` `## Environment` section, for example:
+   `- Worktree root: ../gleanmo.worktrees/ (sibling of the main checkout; e.g. ~/projects/gleanmo.worktrees/)`
+4. Optionally add client adapters, for example a `.claude/skills/herdr-handoff` symlink.
 
 Skill template:
 
@@ -383,12 +393,24 @@ From: <caller agent kind and model ID>, pane <caller pane ID>
 
 `tangent`:
 
+Resolve the main checkout and the worktree root.
+These commands give the same result from the main checkout and from inside any worktree:
+
 ```sh
-herdr worktree create --cwd "<repo root>" --branch "<branch>" --base "<base ref>" \
-  --path "<repo parent>/<repo name>.worktrees/<branch>" --label "<emoji> <task words>" --no-focus
+main_root="$(dirname "$(git rev-parse --path-format=absolute --git-common-dir)")"
+worktree_root="$(dirname "$main_root")/$(basename "$main_root").worktrees"
 ```
 
-- Use the GitKraken worktree convention: `<repo parent>/<repo name>.worktrees/<branch>`.
+```sh
+herdr worktree create --cwd "$main_root" --branch "<branch>" --base "<base ref>" \
+  --path "$worktree_root/<branch>" --label "<emoji> <task words>" --no-focus
+```
+
+- The worktree root is a sibling of the main checkout (GitKraken convention).
+  Example: main checkout `~/projects/gleanmo`, worktree `~/projects/gleanmo.worktrees/dev-1`.
+- If `AGENTS.md` `## Environment` records a different worktree root, use the recorded root.
+- When the caller is in a worktree, the new worktree is a sibling of the caller's worktree.
+  Never create a `.worktrees` folder inside a worktree.
 - Use a branch name without `/` so that the folder name equals the branch name.
 - Read the new pane ID from `.result.root_pane.pane_id`.
 
@@ -722,6 +744,7 @@ Follows `AGENT_BLUEPRINT.md` (version: [BLUEPRINT_VERSION])
 - Version file: [e.g. `.python-version`, `.nvmrc`, `rust-toolchain.toml`]
 - Lockfile: [e.g. `uv.lock`, `package-lock.json`, `Cargo.lock`]
 - Setup: `[single bootstrap command, e.g. "uv sync", "npm ci", "cargo build"]`
+- Worktree root (only with `[BP-WF-HANDOFF]`): `../[main checkout folder].worktrees/` (sibling of the main checkout; e.g. `~/projects/[name].worktrees/`)
 
 ## Commit Trailer Template
 

@@ -73,12 +73,24 @@ From: <caller agent kind and model ID>, pane <caller pane ID>
 
 `tangent`:
 
+Resolve the main checkout and the worktree root.
+These commands give the same result from the main checkout and from inside any worktree:
+
 ```sh
-herdr worktree create --cwd "<repo root>" --branch "<branch>" --base "<base ref>" \
-  --path "<repo parent>/<repo name>.worktrees/<branch>" --label "<emoji> <task words>" --no-focus
+main_root="$(dirname "$(git rev-parse --path-format=absolute --git-common-dir)")"
+worktree_root="$(dirname "$main_root")/$(basename "$main_root").worktrees"
 ```
 
-- Use the GitKraken worktree convention: `<repo parent>/<repo name>.worktrees/<branch>`.
+```sh
+herdr worktree create --cwd "$main_root" --branch "<branch>" --base "<base ref>" \
+  --path "$worktree_root/<branch>" --label "<emoji> <task words>" --no-focus
+```
+
+- The worktree root is a sibling of the main checkout (GitKraken convention).
+  Example: main checkout `~/projects/gleanmo`, worktree `~/projects/gleanmo.worktrees/dev-1`.
+- If `AGENTS.md` `## Environment` records a different worktree root, use the recorded root.
+- When the caller is in a worktree, the new worktree is a sibling of the caller's worktree.
+  Never create a `.worktrees` folder inside a worktree.
 - Use a branch name without `/` so that the folder name equals the branch name.
 - Read the new pane ID from `.result.root_pane.pane_id`.
 
