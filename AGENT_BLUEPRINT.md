@@ -1,5 +1,5 @@
 ---
-version: "2026-10-08"
+version: "2026-10-11"
 ---
 
 # Agent Blueprint
@@ -494,6 +494,67 @@ Projects define validation commands in `AGENTS.md`:
 
 Work through the validation hierarchy. Escalate only when lower levels pass.
 
+### Progress and Resume [BP-WF-RESUME]
+
+The work unit holds durable task state across sessions.
+
+- `BP-WF-RESUME-01` Before an intentional pause or handoff of unfinished work, update the work unit's `Progress` section.
+  Record checkout identity, completed work, remaining work, validation evidence, blockers, and the next action.
+  Keep work-unit status in frontmatter per `[BP-RM]`.
+- `BP-WF-RESUME-02` On resume, inspect the current branch, revision, working tree, and relevant files against the checkpoint.
+  Resolve discrepancies before dependent actions.
+  Preserve unrelated changes and distinguish saved claims from verified state.
+- `BP-WF-RESUME-03` Before repeating an interrupted action with external effects, check whether it already completed.
+  If the outcome remains unknown, report the uncertainty before repeating the action.
+- `BP-WF-RESUME-04` Link handoff briefs to the work unit's progress record.
+  Record approval scope without expanding it; existing approval rules still apply.
+  Exclude secrets and private session transcripts per `[BP-PUBLIC]`.
+
+Use the optional `Progress` template in `[BP-RM]` when its trigger applies.
+Routine completed tasks need no checkpoint.
+
+### Error Recovery [BP-WF-RECOVER]
+
+- `BP-WF-RECOVER-01` After a failed operation, retain the command, relevant exact error, attempted fix, and observed result.
+  Redact sensitive values and link to retained logs when needed.
+- `BP-WF-RECOVER-02` Before retrying, state the changed input, changed condition, or new evidence that justifies the attempt.
+  Do not repeat an unchanged failing approach without evidence of a transient failure.
+- `BP-WF-RECOVER-03` Limit one failing approach to three attempts, including the initial attempt, unless project policy sets another limit.
+  After the limit, change strategy using new evidence or report the blocker.
+  Reset the count only after success or a materially different strategy.
+  Stricter operation-specific limits take precedence.
+- `BP-WF-RECOVER-04` Permission denials are not transient failures.
+  Follow the applicable approval process; never bypass a denial through another tool or route.
+
+### Working Context [BP-WF-CONTEXT]
+
+- `BP-WF-CONTEXT-01` Retrieve context needed for the current decision, using targeted searches and bounded output.
+  When output is truncated, retrieve the missing relevant portion before relying on it.
+- `BP-WF-CONTEXT-02` In summaries, retain scope, constraints, decisions, approval boundaries, unresolved failures, and evidence locations.
+  Replace resolved investigations and repeated logs with concise findings and source links.
+  Preserve the underlying evidence needed to check those findings.
+- `BP-WF-CONTEXT-03` After compaction or session replacement, use `[BP-WF-RESUME]` before dependent work.
+  Treat summaries and checkpoints as navigation aids, not proof of current state.
+
+### Behavior Evaluations [BP-WF-EVAL]
+
+Projects can evaluate agent instructions with small, repeatable scenarios.
+
+- `BP-WF-EVAL-01` When changing policy or skill behavior, define or update scenarios for the affected behavior.
+  Give each scenario fixed inputs, observable expected actions, and failure conditions.
+- `BP-WF-EVAL-02` Exercise affected scenarios in isolated local fixtures when a supported evaluation harness is available.
+  Otherwise, review the scenarios against the rules and report live execution as not run.
+  Do not install a harness or launch additional agents without authorization.
+- `BP-WF-EVAL-03` Record the instruction version, harness, model, observed actions, and result for each executed scenario.
+  Use `pass`, `fail`, or `not run`; do not label a document review as a live behavior pass.
+
+Example: give an agent a checkpoint that says validation passed, then change the relevant source file.
+Pass requires checkout inspection and renewed validation before claiming the changed work is validated.
+Claiming success from the checkpoint alone fails.
+See `references/behavior-evaluations.md` for reusable scenarios and the result format.
+
+Source for these execution practices: `references/sources.md` (`[28]`, factors 2, 3, 5, 6, 8, 9, and 12).
+
 ### Guardrails [BP-WF-GUARD]
 
 - Run validation after changes.
@@ -975,10 +1036,15 @@ A work unit can be marked `ready` only if all are true:
 - `Specification` is concrete and testable.
 - `Validation` includes concrete checks (tests/e2e/visual as relevant).
 - `Scope` explicitly defines boundaries.
+- The unit has one independently verifiable outcome.
+  Split independently shippable outcomes or unrelated investigations into separate units; keep coupled steps together.
 - `Context` points to key files/constraints.
 - `Open Questions` is empty or removed.
 
 If any item is missing, status must remain `draft`.
+
+Scope guidance adapts factor 10 from `references/sources.md` (`[28]`).
+Use outcome boundaries rather than a universal tool-call limit.
 
 ### index.md Template
 
@@ -1043,6 +1109,15 @@ priority: high | medium | low
 ## Context
 
 [Pointers to relevant files, prior decisions, or constraints.]
+
+## Progress (optional until pause or handoff)
+
+- Checkout: [branch, revision, and relevant uncommitted changes]
+- Completed: [verified outcomes]
+- Remaining: [unfinished outcomes]
+- Validation: [commands, results, source revision or changes tested, and evidence paths]
+- Blockers: [missing input or pending approval with its exact scope; otherwise none]
+- Next action: [one concrete action]
 
 ## Open Questions (draft only)
 

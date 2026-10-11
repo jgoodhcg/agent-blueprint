@@ -18,11 +18,30 @@ priority: medium
 
 [Concrete description of the change. What exists after this is done.]
 
-## Acceptance Criteria
+## Validation
 
-- [ ] [Testable outcome]
-- [ ] [Testable outcome]
+[How to know it's done:]
+- [ ] Tests to create/pass
+- [ ] E2E flows to run
+- [ ] Visual criteria (reference style guide if applicable)
 
-## Notes
+## Scope
 
-[Optional context, links, prior art.]
+[What's not included. Boundaries to prevent drift.]
+
+## Context
+
+[Pointers to relevant files, prior decisions, or constraints.]
+
+## Progress (optional until pause or handoff)
+
+- Checkout: [branch, revision, and relevant uncommitted changes]
+- Completed: [verified outcomes]
+- Remaining: [unfinished outcomes]
+- Validation: [commands, results, source revision or changes tested, and evidence paths]
+- Blockers: [missing input or pending approval with its exact scope; otherwise none]
+- Next action: [one concrete action]
+
+## Open Questions (draft only)
+
+[Unresolved items. Clear this section before moving to ready.]

@@ -65,6 +65,15 @@ priority: high | medium | low
 
 [Pointers to relevant files, prior decisions, or constraints.]
 
+## Progress (optional until pause or handoff)
+
+- Checkout: [branch, revision, and relevant uncommitted changes]
+- Completed: [verified outcomes]
+- Remaining: [unfinished outcomes]
+- Validation: [commands, results, source revision or changes tested, and evidence paths]
+- Blockers: [missing input or pending approval with its exact scope; otherwise none]
+- Next action: [one concrete action]
+
 ## Open Questions (draft only)
 
 [Unresolved items. Clear this section before moving to ready.]
@@ -72,4 +81,7 @@ priority: high | medium | low
 
 ## Definition of Ready
 
-A unit can be `ready` only when Intent, Specification, Validation, Scope, and Context are concrete and Open Questions is empty (`[BP-RM-DOR]`). Otherwise keep it `draft`.
+A unit can be `ready` only when Intent, Specification, Validation, Scope, and Context are concrete and Open Questions is empty (`[BP-RM-DOR]`).
+The unit must have one independently verifiable outcome.
+Split independently shippable outcomes or unrelated investigations; keep coupled steps together.
+Otherwise keep it `draft`.
