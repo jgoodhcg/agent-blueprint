@@ -26,6 +26,7 @@ Verify each and record PASS/FAIL with one line of evidence:
 | BP-INSTR-09 | `AGENTS.md` and work units use one term per concept; no check/confirm/ensure rotation |
 | BP-INSTR-10 | Requirements in `AGENTS.md` and work units read `must`/`can`/`will`, not `should`/`may`/`might`/`could` |
 | BP-WRITE-04 | `AGENTS.md` declares its persuasive-text exemptions, or states "none" |
+| BP-ENV-SCRIPTS | Project scripts use the reserved names from `[BP-ENV-SCRIPTS]`; conflicts were listed for the user at alignment, and kept ones are recorded as deviations in `AGENTS.md` (`## Environment`) |
 
 Status lives in frontmatter, not prose. `done`/`dropped` units belong in `roadmap/archived/`.
 

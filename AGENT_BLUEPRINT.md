@@ -1,5 +1,5 @@
 ---
-version: "2026-10-11"
+version: "2026-10-12"
 ---
 
 # Agent Blueprint
@@ -52,6 +52,23 @@ State precedence explicitly because unresolved instruction conflicts measurably 
 ## Safety [BP-SAFE]
 
 Confirm before running destructive commands, installing dependencies, taking actions outside the repo, or including sensitive content in repository history.
+
+### Credential Entry [BP-SAFE-SECRET]
+
+- `BP-SAFE-SECRET-01` When a command needs a credential, pass it as an environment variable.
+  Never write a literal secret in a command line, a script body, a tracked file, or chat.
+  Command lines persist in shell history and process listings.
+- `BP-SAFE-SECRET-02` Load the variable from an untracked `.env.local` file (see `[BP-PUBLIC-IGNORE]`) or from a secret manager.
+- `BP-SAFE-SECRET-03` For interactive runs, put a hidden prompt inside the script, or tell the user to run `read -rs VARNAME` in their own terminal.
+  An agent cannot answer an interactive prompt, so the secret never crosses its command line or transcript.
+
+```bash
+if [ -z "${SERVICE_PASSWORD:-}" ]; then
+  printf 'Password: '
+  read -rs SERVICE_PASSWORD
+  printf '\n'
+fi
+```
 
 ---
 
@@ -232,6 +249,28 @@ If the ecosystem has a lockfile, commit it. When installing dependencies, use th
 ### Setup Command [BP-ENV-SETUP]
 
 Document a single command (or short sequence) that bootstraps the environment from scratch. Store it in the `## Environment` section of `AGENTS.md` so agents can self-bootstrap.
+
+### Standard Script Names [BP-ENV-SCRIPTS]
+
+For projects with a script runner (`package.json` scripts, `Makefile`, `justfile`, `Taskfile`, cargo aliases), reserve these names:
+
+| Script | Meaning |
+|--------|---------|
+| `dev` | Run the app in development mode, with watch and reload. |
+| `build` | Produce production artifacts. |
+| `start` | Run the built app in production. |
+| `test` | Run the test suite. |
+| `lint` | Run linters. |
+| `typecheck` | Run the type checker, when it is distinct from `lint` and `build`. |
+
+- `BP-ENV-SCRIPTS-01` Use each reserved name only for its listed meaning.
+- `BP-ENV-SCRIPTS-02` Do not add a synonym (`serve`, `run-server`) for a reserved operation.
+  `start` is the canonical name for running in production.
+- `BP-ENV-SCRIPTS-03` When a project cannot use a reserved name, record the deviation and its reason in `AGENTS.md` (`## Environment`).
+- `BP-ENV-SCRIPTS-04` At alignment, list every script that conflicts with a reserved name.
+  Ask the user once how to resolve each conflict: rename, alias, or keep.
+  Apply the directed changes.
+  Record each kept conflict as a deviation under `BP-ENV-SCRIPTS-03`.
 
 ### Web Server Port [BP-ENV-PORT]
 
@@ -805,6 +844,7 @@ Follows `AGENT_BLUEPRINT.md` (version: [BLUEPRINT_VERSION])
 - Version file: [e.g. `.python-version`, `.nvmrc`, `rust-toolchain.toml`]
 - Lockfile: [e.g. `uv.lock`, `package-lock.json`, `Cargo.lock`]
 - Setup: `[single bootstrap command, e.g. "uv sync", "npm ci", "cargo build"]`
+- Script-name deviations: [none, or reserved names not used and why — see `[BP-ENV-SCRIPTS]`; omit when the project has no script runner]
 - Worktree root (only with `[BP-WF-HANDOFF]`): `../[main checkout folder].worktrees/` (sibling of the main checkout; e.g. `~/projects/[name].worktrees/`)
 
 ## Commit Trailer Template

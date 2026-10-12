@@ -42,6 +42,7 @@ Follows `AGENT_BLUEPRINT.md` (version: [BLUEPRINT_VERSION])
 - Version file: [.python-version | .nvmrc | rust-toolchain.toml | …]
 - Lockfile: [uv.lock | package-lock.json | Cargo.lock | …]
 - Setup: `[single bootstrap command]`
+- Script-name deviations: [none, or reserved names not used and why — see `[BP-ENV-SCRIPTS]`; omit when the project has no script runner]
 - Worktree root (only with `[BP-WF-HANDOFF]`): `../[main checkout folder].worktrees/` (sibling of the main checkout; e.g. `~/projects/[name].worktrees/`)
 
 ## Commit Trailer Template

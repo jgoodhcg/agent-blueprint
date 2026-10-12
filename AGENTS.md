@@ -1,6 +1,6 @@
 # AGENTS
 
-Follows `AGENT_BLUEPRINT.md` (version: 2026-10-11)
+Follows `AGENT_BLUEPRINT.md` (version: 2026-10-12)
 
 ## Session Start
 
